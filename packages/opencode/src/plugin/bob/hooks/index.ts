@@ -4,7 +4,6 @@ import { createClosureInjector } from "./closure-injector";
 import { createTodoContinuationHook } from "./todo-continuation";
 import { createQualityGate } from "./quality-gate";
 import { createContextWindowMonitor } from "./context-window-monitor";
-import { createToolOutputTruncator } from "./tool-output-truncator";
 import { createToolPairValidator } from "./tool-pair-validator";
 import { createThinkingBlockValidator } from "./thinking-block-validator";
 import { createWriteExistingFileGuard } from "./write-existing-file-guard";
@@ -103,7 +102,6 @@ const ALL_NAMED_HOOK_FACTORIES: NamedHookFactory[] = [
   { name: "todo-continuation", factory: createTodoContinuationHook },
   { name: "quality-gate", factory: createQualityGate },
   { name: "context-window-monitor", factory: createContextWindowMonitor },
-  { name: "tool-output-truncator", factory: createToolOutputTruncator },
   { name: "tool-pair-validator", factory: createToolPairValidator },
   { name: "thinking-block-validator", factory: createThinkingBlockValidator },
   { name: "write-existing-file-guard", factory: createWriteExistingFileGuard },

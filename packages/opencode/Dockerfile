@@ -1,10 +1,8 @@
-FROM alpine AS base
-
-# Disable the runtime transpiler cache by default inside Docker containers.
-# On ephemeral containers, the cache is not useful
+FROM alpine:3.21 AS base
 ARG BUN_RUNTIME_TRANSPILER_CACHE_PATH=0
 ENV BUN_RUNTIME_TRANSPILER_CACHE_PATH=${BUN_RUNTIME_TRANSPILER_CACHE_PATH}
 RUN apk add libgcc libstdc++ ripgrep
+RUN addgroup -S bob && adduser -S bob -G bob
 
 FROM base AS build-amd64
 COPY dist/opencode-linux-x64-baseline-musl/bin/opencode /usr/local/bin/opencode
@@ -15,4 +13,5 @@ COPY dist/opencode-linux-arm64-musl/bin/opencode /usr/local/bin/opencode
 ARG TARGETARCH
 FROM build-${TARGETARCH}
 RUN opencode --version
+USER bob
 ENTRYPOINT ["opencode"]

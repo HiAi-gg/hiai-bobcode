@@ -45,8 +45,8 @@ let targetArch = archMap[os.arch()]
 if (!targetArch) {
   targetArch = os.arch()
 }
-const base = "opencode-" + targetPlatform + "-" + targetArch
-const binary = targetPlatform === "windows" ? "opencode.exe" : "opencode"
+const base = "hiai-bob-" + targetPlatform + "-" + targetArch
+const binary = targetPlatform === "windows" ? "bob.exe" : "bob"
 
 function supportsAvx2() {
   if (targetArch !== "x64") return false

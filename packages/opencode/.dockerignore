@@ -1,0 +1,9 @@
+node_modules
+.git
+.turbo
+dist
+*.tsbuildinfo
+.logs
+src
+test
+migration

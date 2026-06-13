@@ -20,10 +20,10 @@ body:
       required: false
 
   - type: input
-    id: opencode-version
+    id: hiai-bob-version
     attributes:
-      label: OpenCode version
-      description: What version of OpenCode are you using?
+      label: hiai-bob version
+      description: What version of hiai-bob are you using?
     validations:
       required: false
 

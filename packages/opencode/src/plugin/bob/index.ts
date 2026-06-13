@@ -62,7 +62,7 @@ import { createThinkModeHook } from "./hooks/think-mode"
 import { createThinkingBlockValidator } from "./hooks/thinking-block-validator"
 import { createTodoContinuationHook } from "./hooks/todo-continuation"
 import { createTokenBudgetHook } from "./hooks/token-budget"
-import { createToolOutputTruncator } from "./hooks/tool-output-truncator"
+
 import { createToolPairValidator } from "./hooks/tool-pair-validator"
 import { createUnstableAgentBabysitterHook } from "./hooks/unstable-agent-babysitter"
 import { createWriteExistingFileGuard } from "./hooks/write-existing-file-guard"
@@ -71,8 +71,7 @@ import {
   setCompletionClient,
 } from "./completion-controller"
 import { backgroundOutputTool, backgroundCancelTool, setBackgroundManager } from "./tools/background-task"
-import { globTool } from "./tools/glob"
-import { grepTool } from "./tools/grep"
+
 import { BackgroundManager } from "./features/background-manager"
 
 const log = Log.create({ service: "plugin.bob" })
@@ -133,7 +132,6 @@ const BobPlugin: PluginInstance = async (input: PluginInput) => {
     thinking_block_validator: () => createThinkingBlockValidator(config),
     todo_continuation: () => createTodoContinuationHook(config),
     token_budget: () => createTokenBudgetHook(config),
-    tool_output_truncator: () => createToolOutputTruncator(config),
     tool_pair_validator: () => createToolPairValidator(config),
     unstable_agent_babysitter: () => createUnstableAgentBabysitterHook(config),
     write_existing_file_guard: () => createWriteExistingFileGuard(config),
@@ -170,8 +168,6 @@ const BobPlugin: PluginInstance = async (input: PluginInput) => {
     session_read: sessionReadTool,
     session_search: sessionSearchTool,
     session_info: sessionInfoTool,
-    glob: globTool,
-    grep: grepTool,
     background_output: backgroundOutputTool,
     background_cancel: backgroundCancelTool,
   }
