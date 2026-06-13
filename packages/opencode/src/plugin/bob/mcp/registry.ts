@@ -19,31 +19,24 @@ export const MCP_REGISTRY: Record<
   "sequential-thinking": {
     type: "local",
     command: ["npx", "-y", "@modelcontextprotocol/server-sequential-thinking"],
-    install: "npm",
     requiredEnv: [],
     optionalEnv: [],
-    timeout: DEFAULT_MCP_TIMEOUT,
-  },
-  context7: {
-    type: "remote",
-    url: "https://mcp.context7.com/mcp",
-    install: "remote",
-    requiredEnv: [],
-    optionalEnv: ["CONTEXT7_API_KEY"],
     timeout: DEFAULT_MCP_TIMEOUT,
   },
   grep_app: {
     type: "remote",
     url: "https://mcp.grep.app",
-    install: "remote",
     requiredEnv: [],
     optionalEnv: [],
     timeout: DEFAULT_MCP_TIMEOUT,
   },
+  // NOTE: context7 was removed from the MCP registry (see bob-plan.md §F.2).
+  // Library docs lookups are now on-demand via the `context7` skill/CLI
+  // (see bob/skills/context7/SKILL.md) — no always-on MCP process.
+  //
   // NOTE: Stitch (UI gen) and MemPalace (external memory) were intentionally removed.
-  // The host runtime (OpenCode/MiMo) provides a native `memory` tool (persistent +
-  // FTS-indexed); design uses the bundled design-systems/. Do not re-add a memory
-  // MCP that competes with it.
+  // The host runtime provides a native `memory` tool (persistent + FTS-indexed);
+  // design uses the bundled design-systems/. Do not re-add a memory MCP.
 };
 
 export function getMcpConfig(
