@@ -16,7 +16,7 @@ import { createRuntimeFallback } from "./runtime-fallback";
 import { createPreemptiveCompaction } from "./preemptive-compaction";
 import { createStopContinuationGuard } from "./stop-continuation-guard";
 import { createRulesInjector } from "./rules-injector";
-import { createKeywordDetector } from "./keyword-detector";
+
 import { createDirectoryAgentsInjector } from "./directory-agents-injector";
 import { createRalphLoopHook } from "./ralph-loop";
 import { createManagerGuard } from "./manager-guard";
@@ -115,7 +115,7 @@ const ALL_NAMED_HOOK_FACTORIES: NamedHookFactory[] = [
   { name: "preemptive-compaction", factory: createPreemptiveCompaction },
   { name: "stop-continuation-guard", factory: createStopContinuationGuard },
   { name: "rules-injector", factory: createRulesInjector },
-  { name: "keyword-detector", factory: createKeywordDetector },
+
   { name: "directory-agents-injector", factory: createDirectoryAgentsInjector },
   { name: "ralph-loop", factory: createRalphLoopHook },
   { name: "manager-guard", factory: createManagerGuard },

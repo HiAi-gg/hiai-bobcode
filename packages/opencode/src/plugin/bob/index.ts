@@ -43,7 +43,7 @@ import { createContextWindowMonitor } from "./hooks/context-window-monitor"
 import { createDirectoryAgentsInjector } from "./hooks/directory-agents-injector"
 import { createEditErrorRecovery } from "./hooks/edit-error-recovery"
 import { createJsonErrorRecovery } from "./hooks/json-error-recovery"
-import { createKeywordDetector } from "./hooks/keyword-detector"
+
 import { createManagerGuard } from "./hooks/manager-guard"
 import { createModelFallbackHook } from "./hooks/model-fallback"
 import { createPreemptiveCompaction } from "./hooks/preemptive-compaction"
@@ -115,7 +115,6 @@ const BobPlugin: PluginInstance = async (input: PluginInput) => {
     directory_agents_injector: () => createDirectoryAgentsInjector(config),
     edit_error_recovery: () => createEditErrorRecovery(config),
     json_error_recovery: () => createJsonErrorRecovery(config),
-    keyword_detector: () => createKeywordDetector(config),
     manager_guard: () => createManagerGuard(config),
     model_fallback: () => createModelFallbackHook(config),
     preemptive_compaction: () => createPreemptiveCompaction(config),
