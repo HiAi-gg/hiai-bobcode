@@ -1,0 +1,1656 @@
+[
+  {
+    "slug": "agentic",
+    "category": "Themed & Unique",
+    "brand": "Agentic",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "airbnb",
+    "category": "E-Commerce & Retail",
+    "brand": "Airbnb",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "airtable",
+    "category": "Design & Creative",
+    "brand": "Airtable",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "ant",
+    "category": "Professional & Corporate",
+    "brand": "Ant",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "apple",
+    "category": "Media & Consumer",
+    "brand": "Apple",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "application",
+    "category": "Professional & Corporate",
+    "brand": "Application",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "arc",
+    "category": "Productivity & SaaS",
+    "brand": "Arc Browser",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "artistic",
+    "category": "Creative & Artistic",
+    "brand": "Artistic",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "atelier-zero",
+    "category": "Editorial · Studio",
+    "brand": "Atelier Zero",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "bento",
+    "category": "Layout & Structure",
+    "brand": "Bento",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "binance",
+    "category": "Fintech & Crypto",
+    "brand": "Binance.US",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "bmw",
+    "category": "Automotive",
+    "brand": "BMW",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "bmw-m",
+    "category": "Automotive",
+    "brand": "BMW M",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "bold",
+    "category": "Bold & Expressive",
+    "brand": "Bold",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "brutalism",
+    "category": "Bold & Expressive",
+    "brand": "Brutalism",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "bugatti",
+    "category": "Automotive",
+    "brand": "Bugatti",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "cafe",
+    "category": "Creative & Artistic",
+    "brand": "Cafe",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "cal",
+    "category": "Productivity & SaaS",
+    "brand": "Cal.com",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "canva",
+    "category": "Design & Creative",
+    "brand": "Canva",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "cisco",
+    "category": "Backend & Data",
+    "brand": "Cisco",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "claude",
+    "category": "AI & LLM",
+    "brand": "Claude (Anthropic)",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "clay",
+    "category": "Design & Creative",
+    "brand": "Clay",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "claymorphism",
+    "category": "Morphism & Effects",
+    "brand": "Claymorphism",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "clean",
+    "category": "Modern & Minimal",
+    "brand": "Clean",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "clickhouse",
+    "category": "Backend & Data",
+    "brand": "ClickHouse",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "cohere",
+    "category": "AI & LLM",
+    "brand": "Cohere",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "coinbase",
+    "category": "Fintech & Crypto",
+    "brand": "Coinbase",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "colorful",
+    "category": "Bold & Expressive",
+    "brand": "Colorful",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "composio",
+    "category": "Backend & Data",
+    "brand": "Composio",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "contemporary",
+    "category": "Modern & Minimal",
+    "brand": "Contemporary",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "corporate",
+    "category": "Professional & Corporate",
+    "brand": "Corporate",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "cosmic",
+    "category": "Creative & Artistic",
+    "brand": "Cosmic",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "creative",
+    "category": "Creative & Artistic",
+    "brand": "Creative",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "cursor",
+    "category": "Developer Tools",
+    "brand": "Cursor",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "dashboard",
+    "category": "Professional & Corporate",
+    "brand": "Dashboard",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "default",
+    "category": "Starter",
+    "brand": "Neutral Modern",
+    "files": [
+      "DESIGN.md",
+      "USAGE.md",
+      "components.html",
+      "components.manifest.json",
+      "manifest.json",
+      "preview",
+      "tokens.css"
+    ],
+    "hasManifest": true
+  },
+  {
+    "slug": "discord",
+    "category": "Productivity & SaaS",
+    "brand": "Discord",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "dithered",
+    "category": "Retro & Nostalgic",
+    "brand": "Dithered",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "doodle",
+    "category": "Creative & Artistic",
+    "brand": "Doodle",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "dramatic",
+    "category": "Bold & Expressive",
+    "brand": "Dramatic",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "duolingo",
+    "category": "Productivity & SaaS",
+    "brand": "Duolingo",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "editorial",
+    "category": "Creative & Artistic",
+    "brand": "Editorial",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "elegant",
+    "category": "Professional & Corporate",
+    "brand": "Elegant",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "elevenlabs",
+    "category": "AI & LLM",
+    "brand": "ElevenLabs",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "energetic",
+    "category": "Bold & Expressive",
+    "brand": "Energetic",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "enterprise",
+    "category": "Professional & Corporate",
+    "brand": "Enterprise",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "expo",
+    "category": "Developer Tools",
+    "brand": "Expo",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "expressive",
+    "category": "Bold & Expressive",
+    "brand": "Expressive",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "fantasy",
+    "category": "Creative & Artistic",
+    "brand": "Fantasy",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "ferrari",
+    "category": "Automotive",
+    "brand": "Ferrari",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "figma",
+    "category": "Design & Creative",
+    "brand": "Figma",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "flat",
+    "category": "Modern & Minimal",
+    "brand": "Flat",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "framer",
+    "category": "Design & Creative",
+    "brand": "Framer",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "friendly",
+    "category": "Creative & Artistic",
+    "brand": "Friendly",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "futuristic",
+    "category": "Themed & Unique",
+    "brand": "Futuristic",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "github",
+    "category": "Developer Tools",
+    "brand": "GitHub",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "glassmorphism",
+    "category": "Morphism & Effects",
+    "brand": "Glassmorphism",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "gradient",
+    "category": "Morphism & Effects",
+    "brand": "Gradient",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "hashicorp",
+    "category": "Backend & Data",
+    "brand": "HashiCorp",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "hud",
+    "category": "Themed & Unique",
+    "brand": "HUD Design System",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "huggingface",
+    "category": "AI & LLM",
+    "brand": "Hugging Face",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "ibm",
+    "category": "Media & Consumer",
+    "brand": "IBM",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "intercom",
+    "category": "Productivity & SaaS",
+    "brand": "Intercom",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "kami",
+    "category": "Editorial & Print",
+    "brand": "kami (紙 / 纸)",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "kraken",
+    "category": "Fintech & Crypto",
+    "brand": "Kraken",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "lamborghini",
+    "category": "Automotive",
+    "brand": "Lamborghini",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "levels",
+    "category": "Layout & Structure",
+    "brand": "Levels",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "linear-app",
+    "category": "Productivity & SaaS",
+    "brand": "Linear",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "lingo",
+    "category": "Creative & Artistic",
+    "brand": "Lingo",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "loom",
+    "category": "Themed & Unique",
+    "brand": "Loom Design System",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "lovable",
+    "category": "Developer Tools",
+    "brand": "Lovable",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "luxury",
+    "category": "Professional & Corporate",
+    "brand": "Luxury",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "mastercard",
+    "category": "Fintech & Crypto",
+    "brand": "Mastercard",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "material",
+    "category": "Professional & Corporate",
+    "brand": "Material",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "meta",
+    "category": "E-Commerce & Retail",
+    "brand": "Meta (Store)",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "minimal",
+    "category": "Modern & Minimal",
+    "brand": "Minimal",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "minimax",
+    "category": "AI & LLM",
+    "brand": "MiniMax",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "mintlify",
+    "category": "Productivity & SaaS",
+    "brand": "Mintlify",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "miro",
+    "category": "Design & Creative",
+    "brand": "Miro",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "mission-control",
+    "category": "Developer Tools",
+    "brand": "Mission Control Design System",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "mistral-ai",
+    "category": "AI & LLM",
+    "brand": "Mistral AI",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "modern",
+    "category": "Modern & Minimal",
+    "brand": "Modern",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "mongodb",
+    "category": "Backend & Data",
+    "brand": "MongoDB",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "mono",
+    "category": "Modern & Minimal",
+    "brand": "Mono",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "neobrutalism",
+    "category": "Bold & Expressive",
+    "brand": "Neobrutalism",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "neon",
+    "category": "Morphism & Effects",
+    "brand": "Neon",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "neumorphism",
+    "category": "Morphism & Effects",
+    "brand": "Neumorphism",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "nike",
+    "category": "E-Commerce & Retail",
+    "brand": "Nike",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "notion",
+    "category": "Productivity & SaaS",
+    "brand": "Notion",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "nvidia",
+    "category": "Media & Consumer",
+    "brand": "NVIDIA",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "ollama",
+    "category": "AI & LLM",
+    "brand": "Ollama",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "openai",
+    "category": "AI & LLM",
+    "brand": "OpenAI",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "opencode-ai",
+    "category": "AI & LLM",
+    "brand": "OpenCode",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "pacman",
+    "category": "Themed & Unique",
+    "brand": "Pacman",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "paper",
+    "category": "Retro & Nostalgic",
+    "brand": "Paper",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "perplexity",
+    "category": "AI & LLM",
+    "brand": "Perplexity AI",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "perspective",
+    "category": "Layout & Structure",
+    "brand": "Perspective",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "pinterest",
+    "category": "Media & Consumer",
+    "brand": "Pinterest",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "playstation",
+    "category": "Media & Consumer",
+    "brand": "PlayStation",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "posthog",
+    "category": "Backend & Data",
+    "brand": "PostHog",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "premium",
+    "category": "Professional & Corporate",
+    "brand": "Premium",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "professional",
+    "category": "Professional & Corporate",
+    "brand": "Professional",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "publication",
+    "category": "Creative & Artistic",
+    "brand": "Publication",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "raycast",
+    "category": "Developer Tools",
+    "brand": "Raycast",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "refined",
+    "category": "Modern & Minimal",
+    "brand": "Refined",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "renault",
+    "category": "Automotive",
+    "brand": "Renault",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "replicate",
+    "category": "AI & LLM",
+    "brand": "Replicate",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "resend",
+    "category": "Productivity & SaaS",
+    "brand": "Resend",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "retro",
+    "category": "Retro & Nostalgic",
+    "brand": "Retro",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "revolut",
+    "category": "Fintech & Crypto",
+    "brand": "Revolut",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "runwayml",
+    "category": "AI & LLM",
+    "brand": "Runway",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "sanity",
+    "category": "Backend & Data",
+    "brand": "Sanity",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "sentry",
+    "category": "Backend & Data",
+    "brand": "Sentry",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "shadcn",
+    "category": "Modern & Minimal",
+    "brand": "Shadcn",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "shopify",
+    "category": "E-Commerce & Retail",
+    "brand": "Shopify",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "simple",
+    "category": "Modern & Minimal",
+    "brand": "Simple",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "skeumorphism",
+    "category": "Morphism & Effects",
+    "brand": "Skeumorphism",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "slack",
+    "category": "Productivity & SaaS",
+    "brand": "Slack",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "sleek",
+    "category": "Modern & Minimal",
+    "brand": "Sleek",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "spacex",
+    "category": "Media & Consumer",
+    "brand": "SpaceX",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "spacious",
+    "category": "Layout & Structure",
+    "brand": "Spacious",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "spotify",
+    "category": "Media & Consumer",
+    "brand": "Spotify",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "starbucks",
+    "category": "E-Commerce & Retail",
+    "brand": "Starbucks",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "storytelling",
+    "category": "Creative & Artistic",
+    "brand": "Storytelling",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "stripe",
+    "category": "Fintech & Crypto",
+    "brand": "Stripe",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "supabase",
+    "category": "Backend & Data",
+    "brand": "Supabase",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "superhuman",
+    "category": "Developer Tools",
+    "brand": "Superhuman",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "tesla",
+    "category": "Automotive",
+    "brand": "Tesla",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "tetris",
+    "category": "Themed & Unique",
+    "brand": "Tetris",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "theverge",
+    "category": "Media & Consumer",
+    "brand": "The Verge",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "together-ai",
+    "category": "AI & LLM",
+    "brand": "Together AI",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "totality-festival",
+    "category": "Themed & Unique",
+    "brand": "Totality Festival",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "trading-terminal",
+    "category": "Themed & Unique",
+    "brand": "Trading Terminal Design System",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "uber",
+    "category": "Media & Consumer",
+    "brand": "Uber",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "urdu",
+    "category": "Editorial / Personal / Publication",
+    "brand": "Urdu Modern (Indus Script System)",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "vercel",
+    "category": "Developer Tools",
+    "brand": "Vercel",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "vibrant",
+    "category": "Bold & Expressive",
+    "brand": "Vibrant",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "vintage",
+    "category": "Retro & Nostalgic",
+    "brand": "Vintage",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "vodafone",
+    "category": "Media & Consumer",
+    "brand": "Vodafone",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "voltagent",
+    "category": "AI & LLM",
+    "brand": "VoltAgent",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "warm-editorial",
+    "category": "Starter",
+    "brand": "Warm Editorial",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "warp",
+    "category": "Developer Tools",
+    "brand": "Warp",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "webex",
+    "category": "Productivity & SaaS",
+    "brand": "Webex",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "webflow",
+    "category": "Design & Creative",
+    "brand": "Webflow",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "wechat",
+    "category": "Social & Messaging",
+    "brand": "WeChat Design System",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "wired",
+    "category": "Media & Consumer",
+    "brand": "WIRED",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "wise",
+    "category": "Fintech & Crypto",
+    "brand": "Wise",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "x-ai",
+    "category": "AI & LLM",
+    "brand": "xAI",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "xiaohongshu",
+    "category": "Media & Consumer",
+    "brand": "Xiaohongshu",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  },
+  {
+    "slug": "zapier",
+    "category": "Productivity & SaaS",
+    "brand": "Zapier",
+    "files": [
+      "DESIGN.md",
+      "components.html",
+      "tokens.css"
+    ],
+    "hasManifest": false
+  }
+]
