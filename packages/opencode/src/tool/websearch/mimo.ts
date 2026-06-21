@@ -1,7 +1,22 @@
+// =============================================================================
+// LEGACY: Xiaomi MiMo web-search backend (api.xiaomimimo.com /v1/...).
+//
+// As of the 2026-06-21 standard-provider migration the auth overlay (MimoAuthPlugin)
+// no longer registers a "xiaomi" provider. This tool is invoked only when the
+// current model resolves to providerID "xiaomi" or "hiai" (see index.ts), so
+// in practice it is unreachable unless a user explicitly wires a compatible
+// base URL + API key into their provider config.
+//
+// The URL default is preserved so manually-configured deployments continue to
+// work; new users should rely on the Web Search plugin (MCP Exa) instead.
+// =============================================================================
+
 import { Duration, Effect, Schema, Stream } from "effect"
 import { HttpClient, HttpClientRequest, HttpClientResponse } from "effect/unstable/http"
 
-const DEFAULT_BASE_URL = "https://api.xiaomimimo.com/v1"
+// DISABLED (legacy — api.xiaomimimo.com is no longer active).
+// Preserved as default only for users who manually configure a compatible base URL.
+const DEFAULT_BASE_URL = ""
 
 export const QUOTA_EXCEEDED =
   "Web search quota exhausted (free tier limit reached). Top up or manage your plan at https://platform.xiaomimimo.com/console/plugin, or use `webfetch` with a relevant URL instead."

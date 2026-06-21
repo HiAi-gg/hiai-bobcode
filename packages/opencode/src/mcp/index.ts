@@ -6,6 +6,7 @@ import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js"
 import { UnauthorizedError } from "@modelcontextprotocol/sdk/client/auth.js"
 import {
   CallToolResultSchema,
+  type CallToolResult,
   type Tool as MCPToolDef,
   ToolListChangedNotificationSchema,
 } from "@modelcontextprotocol/sdk/types.js"
@@ -152,7 +153,7 @@ function convertMcpTool(mcpTool: MCPToolDef, client: MCPClient, timeout?: number
     description: mcpTool.description ?? "",
     inputSchema: jsonSchema(schema),
     execute: async (args: unknown) => {
-      return client.callTool(
+      const result = await client.callTool(
         {
           name: mcpTool.name,
           arguments: (args || {}) as Record<string, unknown>,
@@ -160,9 +161,22 @@ function convertMcpTool(mcpTool: MCPToolDef, client: MCPClient, timeout?: number
         CallToolResultSchema,
         {
           resetTimeoutOnProgress: true,
+          // onprogress must be provided for resetTimeoutOnProgress to actually
+          // fire when the server reports progress. Without it the timeout never
+          // resets and long-running tools get killed prematurely.
+          onprogress: () => {},
           timeout,
         },
       )
+      if (result.isError) {
+        const message = (result as CallToolResult).content
+          ?.filter((c): c is { type: "text"; text: string } => c.type === "text")
+          .map((c) => c.text)
+          .join("\n")
+          .trim()
+        throw new Error(message || `MCP tool "${mcpTool.name}" failed`)
+      }
+      return result
     },
   })
 }

@@ -49,7 +49,10 @@ function isOverflow(message: string) {
 // non-standard semantics (e.g. moderation/risk-control blocks under HTTP 400),
 // so the gateway-specific handling below is scoped to these providers and leaves
 // every other provider's error flow untouched.
-const MIMO_GATEWAY_PROVIDERS = new Set(["xiaomi", "mimo"])
+//
+// `hiai` is included so standard hiai-* overlays that proxy through the same
+// gateway inherit the same error-body parsing without code duplication.
+const MIMO_GATEWAY_PROVIDERS = new Set(["xiaomi", "mimo", "hiai"])
 
 // MiMo gateway error.code values worth relabeling: moderation (421) and
 // risk-control (441) blocks arrive under a generic HTTP 400.

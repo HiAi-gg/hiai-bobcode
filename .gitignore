@@ -49,6 +49,7 @@ run-bob.local.sh
 
 # runtime logs
 packages/opencode/.logs/
+.logs/
 
 # runtime agent data (plans/memory/tasks)
 .bob/

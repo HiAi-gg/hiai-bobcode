@@ -6,7 +6,7 @@ export const iconNames = [
   "zenmux",
   "zai",
   "zai-coding-plan",
-  "xiaomi",
+  "hiai",
   "xai",
   "wandb",
   "vultr",

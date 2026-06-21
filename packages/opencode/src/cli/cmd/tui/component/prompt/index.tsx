@@ -227,8 +227,13 @@ export function Prompt(props: PromptProps) {
     }
     if (state === "finishing") return
     // Start streaming
-    const xiaomi = sync.data.provider.find((p) => p.id === "xiaomi")
-    if (!xiaomi?.key) {
+    // 2026-06-21: accept either "xiaomi" or "hiai" provider — the legacy xiaomi
+    // ID is preserved for users with existing auth entries, and "hiai" is the
+    // forward-compatible name for the same MiMo-family backend.
+    const voiceProvider =
+      sync.data.provider.find((p) => p.id === "hiai") ??
+      sync.data.provider.find((p) => p.id === "xiaomi")
+    if (!voiceProvider?.key) {
       toast.show({ message: t("tui.voice.error.no_auth"), variant: "error" })
       return
     }
@@ -236,8 +241,8 @@ export function Prompt(props: PromptProps) {
       toast.show({ message: t("tui.voice.error.no_recorder"), variant: "error" })
       return
     }
-    const apiKey = xiaomi.key
-    const baseUrl = (xiaomi.options?.baseURL as string) || "https://api.xiaomimimo.com/v1"
+    const apiKey = voiceProvider.key
+    const baseUrl = (voiceProvider.options?.baseURL as string) || ""
 
     const av: NonNullable<typeof activeVoice> = {
       handle: undefined!,

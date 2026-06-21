@@ -122,6 +122,12 @@ export interface Interface {
 export class Service extends Context.Service<Service, Interface>()("@opencode/Plugin") {}
 
 // Built-in plugins that are directly imported (not installed from npm)
+//
+// Note: MimoFreeAuthPlugin and MimoAuthPlugin are DISABLED as of 2026-06-21
+// (standard-provider migration). They still appear in this list because their
+// exported names are imported above, but each now returns an empty Hooks object
+// — no provider config / auth methods / chat.headers hooks are installed.
+// AnthropicProxyPlugin (next in the list) remains active and provider-agnostic.
 const INTERNAL_PLUGINS: PluginInstance[] = [
   MimoFreeAuthPlugin,
   MimoAuthPlugin,

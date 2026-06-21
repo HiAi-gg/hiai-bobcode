@@ -10,7 +10,6 @@ import os from "os"
 import { Config } from "../../config"
 import { Global } from "../../global"
 import { Plugin } from "../../plugin"
-import { MimoFree } from "../../plugin/mimo-free"
 import { t } from "../i18n"
 import { Instance } from "../../project/instance"
 import type { Hooks } from "@mimo-ai/plugin"
@@ -216,91 +215,26 @@ export function resolvePluginProviders(input: {
 }
 
 async function mimoFreeLogin() {
-  const spinner = prompts.spinner()
-  spinner.start(t("cli.providers.mimo_free.verifying"))
-  try {
-    const { fingerprint, exp } = await MimoFree.verify()
-    spinner.stop(t("cli.providers.mimo_free.ready"))
-    const expDate = new Date(exp).toISOString()
-    prompts.log.success(t("cli.providers.mimo_free.default_set"))
-    prompts.log.info(
-      [
-        `Endpoint:    ${MimoFree.chatBaseUrl}/chat`,
-        `Fingerprint: ${fingerprint.slice(0, 12)}…${fingerprint.slice(-4)}`,
-        `Token exp:   ${expDate}`,
-      ].join("\n"),
-    )
-    prompts.log.info(t("cli.providers.mimo_free.usage_hint"))
-    prompts.outro("Done")
-  } catch (err) {
-    spinner.stop(t("cli.providers.mimo_free.failed"), 1)
-    prompts.log.error(err instanceof Error ? err.message : String(err))
-    prompts.outro("Done")
-  }
+  // DISABLED 2026-06-21: free MiMo channel is no longer wired in. The
+  // dispatcher in the auth command below surfaces an error to the user and
+  // exits with code 1 before this function is ever reached, but the symbol is
+  // kept exported so any external caller still resolves it.
+  prompts.log.error(
+    "Bob Auto (mimo-free) is disabled. Use a standard opencode provider (openrouter, opencode-go, google, deepseek, anthropic, kimi-for-coding, etc.) instead.",
+  )
+  prompts.outro("Done")
+  process.exit(1)
 }
 
 async function mimoLogin() {
-  const hooks = await AppRuntime.runPromise(
-    Effect.gen(function* () {
-      const plugin = yield* Plugin.Service
-      return yield* plugin.list()
-    }),
+  // DISABLED 2026-06-21: Xiaomi/MiMo OAuth login overlay is no longer wired in.
+  // The dispatcher exits with code 1 before this is reached; symbol kept so
+  // external callers still resolve it.
+  prompts.log.error(
+    "Xiaomi/MiMo auth overlay is disabled. Use a standard opencode provider (openrouter, opencode-go, google, deepseek, anthropic, kimi-for-coding, etc.) instead.",
   )
-  const mimoHook = hooks.findLast((h) => h.auth?.provider === "xiaomi")
-  if (!mimoHook?.auth) {
-    prompts.log.error("MiMo auth plugin not found")
-    return
-  }
-
-  const method = mimoHook.auth.methods[0]
-  if (method.type !== "oauth") return
-
-  const authorize = await method.authorize()
-  if (authorize.method !== "auto") return
-
-  prompts.log.info(`Browser didn't open? Use the url below to sign in:\n${authorize.url}`)
-
-  const browserPromise = authorize.callback().catch(() => ({ type: "failed" as const }))
-
-  const MAX_RETRIES = 3
-  for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
-    const raceResult = await raceCallbackAndStdin(browserPromise)
-
-    if (raceResult.source === "browser") {
-      if (raceResult.data.type === "success" && "key" in raceResult.data) {
-        await put("xiaomi", {
-          type: "api",
-          key: raceResult.data.key,
-          ...(raceResult.data.metadata ? { metadata: raceResult.data.metadata } : {}),
-        })
-        prompts.log.success("Login successful")
-        prompts.outro("Done")
-        return
-      }
-      prompts.log.error("Login failed")
-      prompts.outro("Done")
-      return
-    }
-
-    const callbackResult = await authorize.callback(raceResult.input)
-    if (callbackResult.type === "success" && "key" in callbackResult) {
-      await put("xiaomi", {
-        type: "api",
-        key: callbackResult.key,
-        ...(callbackResult.metadata ? { metadata: callbackResult.metadata } : {}),
-      })
-      prompts.log.success("Login successful")
-      prompts.outro("Done")
-      return
-    }
-
-    const remaining = MAX_RETRIES - attempt - 1
-    if (remaining > 0) {
-      prompts.log.error(t("cli.providers.mimo_login.decrypt_retry", { remaining }))
-    } else {
-      prompts.log.error(t("cli.providers.mimo_login.decrypt_exhausted"))
-    }
-  }
+  prompts.outro("Done")
+  process.exit(1)
 }
 
 function raceCallbackAndStdin<T>(
@@ -517,12 +451,22 @@ export const ProvidersLoginCommand = cmd({
         ]
 
         let provider: string
-        if (args.provider === "xiaomi") {
-          await mimoLogin()
-          return
+        if (args.provider === "xiaomi" || args.provider === "hiai") {
+          // 2026-06-21: xiaomi/hiai OAuth login overlay is disabled. The user
+          // should pick a standard provider (openrouter, opencode-go, google,
+          // deepseek, anthropic, kimi-for-coding, etc.) instead.
+          prompts.log.error(
+            "Xiaomi/MiMo auth overlay is disabled. Use a standard opencode provider: openrouter, opencode-go, google, deepseek, anthropic, kimi-for-coding, etc.",
+          )
+          prompts.outro("Done")
+          process.exit(1)
         } else if (args.provider === "mimo" || args.provider === "mimo-free") {
-          await mimoFreeLogin()
-          return
+          // 2026-06-21: free MiMo channel is disabled. Same guidance as above.
+          prompts.log.error(
+            "Bob Auto (mimo-free) is disabled. Use a standard opencode provider (openrouter, opencode-go, google, deepseek, anthropic, kimi-for-coding, etc.) instead.",
+          )
+          prompts.outro("Done")
+          process.exit(1)
         } else if (args.provider) {
           const input = args.provider
           const byID = options.find((x) => x.value === input)

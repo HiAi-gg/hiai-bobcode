@@ -30,18 +30,11 @@ export function DialogMimoLogin() {
           value: "xiaomi",
           description: t("tui.dialog.login.xiaomi.desc"),
           onSelect: async () => {
-            const result = await sdk.client.provider.oauth.authorize({
-              providerID: "xiaomi",
-              method: 0,
-            })
-            if (result.error) {
-              toast.show({ message: t("tui.dialog.login.start_failed"), variant: "error" })
-              dialog.clear()
-              return
-            }
-            dialog.replace(() => (
-              <MimoOAuthFlow url={result.data!.url} instructions={result.data!.instructions} />
-            ))
+            // 2026-06-21: xiaomi auth overlay is disabled. Surface a clear
+            // error and let the user pick a standard provider instead.
+            toast.show({ message: t("tui.dialog.login.start_failed"), variant: "error" })
+            dialog.clear()
+            return
           },
         },
         {
@@ -164,24 +157,14 @@ function MimoOAuthFlow(props: { url: string; instructions: string }) {
   const toast = useToast()
   const [busy, setBusy] = createSignal(false)
 
-  async function onLoginSuccess() {
-    await sdk.client.instance.dispose()
-    await sync.bootstrap()
-    const xiaomi = sync.data.provider.find((p) => p.id === "xiaomi")
-    const defaultModel = xiaomi && "mimo-v2.5-pro" in xiaomi.models ? "mimo-v2.5-pro" : xiaomi ? Object.keys(xiaomi.models)[0] : undefined
-    if (defaultModel) {
-      local.model.set({ providerID: "xiaomi", modelID: defaultModel }, { recent: true })
-    }
-    dialog.clear()
-  }
+  // 2026-06-21: MimoOAuthFlow is unreachable from the login dialog (the parent
+  // option now short-circuits with a toast). Kept here so the export surface
+  // remains stable; on mount it clears the dialog and tells the user to use
+  // a standard provider instead.
 
   onMount(async () => {
-    const callbackResult = await sdk.client.provider.oauth.callback({
-      providerID: "xiaomi",
-      method: 0,
-    })
-    if (callbackResult.error) return
-    await onLoginSuccess()
+    toast.show({ message: t("tui.dialog.login.start_failed"), variant: "error" })
+    dialog.clear()
   })
 
   return (
@@ -204,18 +187,11 @@ function MimoOAuthFlow(props: { url: string; instructions: string }) {
       }
       onConfirm={async (value) => {
         if (!value) return
-        setBusy(true)
-        const { error: err } = await sdk.client.provider.oauth.callback({
-          providerID: "xiaomi",
-          method: 0,
-          code: value.trim(),
-        })
-        if (err) {
-          setBusy(false)
-          toast.show({ message: t("tui.dialog.login.flow.invalid_code"), variant: "error" })
-          return
-        }
-        await onLoginSuccess()
+        // 2026-06-21: xiaomi OAuth callback is disabled. Surface a clear error
+        // and close so the user is steered toward a standard provider.
+        toast.show({ message: t("tui.dialog.login.flow.invalid_code"), variant: "error" })
+        setBusy(false)
+        dialog.clear()
       }}
     />
   )

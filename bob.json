@@ -2,11 +2,11 @@
   "//": "Bob MODELS file — the ONLY place per-agent models are defined.",
   "//models": "Format: <provider>/<model>. Provider creds are NOT here — connect providers via /connect in the TUI (writes ~/.local/share/mimocode/auth.json). Skill keys (firecrawl, context7) live in bob.env.",
   "models": {
-    "bob":        { "model": "xiaomi-token-plan-sgp/mimo-v2.5-pro",                    "recommended": "high" },
+    "bob":        { "model": "openrouter/xiaomi/mimo-v2.5-pro",                       "recommended": "high" },
     "coder":      { "model": "minimax-coding-plan/MiniMax-M3",          "recommended": "high" },
     "strategist": { "model": "deepseek/deepseek-v4-pro",                "recommended": "xhigh" },
     "manager":    { "model": "opencode-go/deepseek-v4-flash",           "recommended": "middle" },
-    "critic":     { "model": "xiaomi-token-plan-sgp/mimo-v2.5-pro",     "recommended": "high" },
+    "critic":     { "model": "openrouter/xiaomi/mimo-v2.5-pro",                      "recommended": "high" },
     "designer":   { "model": "google/gemini-3.5-flash",                 "recommended": "design" },
     "researcher": { "model": "opencode-go/deepseek-v4-flash",           "recommended": "fast" },
     "writer":     { "model": "openrouter/mistralai/mistral-small-2603", "recommended": "writing" },

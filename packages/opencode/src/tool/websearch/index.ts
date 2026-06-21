@@ -9,7 +9,7 @@ import { Provider } from "@/provider"
 import DESCRIPTION from "./websearch.txt"
 
 const WEBFETCH_FALLBACK =
-  "Web search unavailable. Use `webfetch` with a relevant URL instead, or enable the Web Search plugin at https://platform.xiaomimimo.com/console/plugin."
+  "Web search unavailable. Use `webfetch` with a relevant URL instead, or enable the Web Search plugin (MCP Exa)."
 const MAX_TIMEOUT = 120 * 1000 // 2 minutes
 
 const Parameters = z.object({
@@ -63,10 +63,10 @@ export const WebSearchTool = Tool.define(
           const timeout = params.timeout === undefined ? undefined : Math.min(params.timeout * 1000, MAX_TIMEOUT)
 
           const result =
-            model?.providerID === "xiaomi"
+            model?.providerID === "xiaomi" || model?.providerID === "hiai"
               ? yield* Effect.catchCause(
                   Effect.gen(function* () {
-                    const info = yield* auth.get("xiaomi")
+                    const info = yield* auth.get(model.providerID)
                     if (!info || info.type !== "api") return undefined
                     return yield* MimoWebsearch.call(
                       http,
