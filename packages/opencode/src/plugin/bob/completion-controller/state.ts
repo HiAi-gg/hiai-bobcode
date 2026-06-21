@@ -51,6 +51,10 @@ export function recordCriticVerdict(
   if (verdict === "approved") s.uiChangedSinceReview = false
 }
 
+export function setHasIncompleteTodos(sessionID: string, hasIncomplete: boolean): void {
+  get(sessionID).hasIncompleteTodos = hasIncomplete
+}
+
 export function resetForUser(sessionID: string): void {
   const s = get(sessionID)
   s.autoContinues = 0

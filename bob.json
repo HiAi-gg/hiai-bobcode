@@ -14,6 +14,15 @@
     "sub":        { "model": "opencode-go/deepseek-v4-flash",           "recommended": "fast" }
   },
 
+  "//completion": "Completion-controller: auto-continue loop after subagent tasks. Most fields are safe defaults; tune max_auto_continues or set enabled:false to disable.",
+  "completion": {
+    "enabled": true,
+    "max_auto_continues": 25,
+    "require_critic": true,
+    "ui_globs": ["**/*.svelte", "**/*.tsx", "**/*.jsx", "**/*.vue", "**/*.css", "**/*.scss", "**/*.html", "**/*.astro"],
+    "reset_on_user_message": true
+  },
+
   "//memory": "Memory-consolidation passes. Only intervals are tunable here; the model is pinned to Bob's model automatically. auto=false disables a pass.",
   "dream":   { "auto": true, "interval_days": 7 },
   "distill": { "auto": true, "interval_days": 30 }
