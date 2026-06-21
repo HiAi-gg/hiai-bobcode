@@ -29,7 +29,7 @@
     },
     "packages/app": {
       "name": "@mimo-ai/app",
-      "version": "0.1.0",
+      "version": "0.3.0",
       "dependencies": {
         "@kobalte/core": "catalog:",
         "@mimo-ai/sdk": "workspace:*",
@@ -83,7 +83,7 @@
     },
     "packages/desktop": {
       "name": "@mimo-ai/desktop",
-      "version": "0.1.0",
+      "version": "0.3.0",
       "dependencies": {
         "drizzle-orm": "catalog:",
         "effect": "catalog:",
@@ -330,7 +330,7 @@
     },
     "packages/shared": {
       "name": "@mimo-ai/shared",
-      "version": "0.1.0",
+      "version": "0.3.0",
       "bin": {
         "opencode": "./bin/opencode",
       },
@@ -354,7 +354,7 @@
     },
     "packages/slack": {
       "name": "@mimo-ai/slack",
-      "version": "0.1.0",
+      "version": "0.3.0",
       "dependencies": {
         "@mimo-ai/sdk": "workspace:*",
         "@slack/bolt": "^3.17.1",
@@ -389,7 +389,7 @@
     },
     "packages/ui": {
       "name": "@mimo-ai/ui",
-      "version": "0.1.0",
+      "version": "0.3.0",
       "dependencies": {
         "@kobalte/core": "catalog:",
         "@mimo-ai/sdk": "workspace:*",
