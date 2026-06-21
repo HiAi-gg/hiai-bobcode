@@ -127,7 +127,7 @@
     },
     "packages/opencode": {
       "name": "@hiai-bob/cli",
-      "version": "0.1.0",
+      "version": "0.3.0",
       "bin": {
         "bob": "./bin/bob",
       },
@@ -280,7 +280,7 @@
     },
     "packages/plugin": {
       "name": "@mimo-ai/plugin",
-      "version": "0.1.0",
+      "version": "0.3.0",
       "dependencies": {
         "@mimo-ai/sdk": "workspace:*",
         "effect": "catalog:",

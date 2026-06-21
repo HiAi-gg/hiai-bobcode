@@ -9,21 +9,46 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.3.0] - 2026-06-21
 
-### Fixed
-- SECURITY.md: Updated repository references from anomalyco/opencode to vlgalib/hiai-bob
-- CONTRIBUTING.md: Updated repository and issue tracker URLs to vlgalib/hiai-bob
-- bob.env: Removed live API keys, replaced with placeholder values for security
-- bob.env.example: Consistent placeholder template matching bob.env
+### Production-Readiness Release
 
-### Security
-- packages/opencode/Dockerfile: Added non-root USER directive, pinned Alpine base image to 3.21
-- packages/opencode/.dockerignore: Created to exclude unnecessary files from build context
+**Branding:**
+- Complete rebranding from MiMo-Code/OpenCode to hiai-bob across all surfaces
+- Agent identifies as "Bob, built by hiai" in all prompts; "You are Bob" in system prompt
+- MIMOCODE_* env vars renamed to BOB_* throughout source
+- README, CONTRIBUTING.md, SECURITY.md updated for fork attribution chain
+- VS Code extension, Desktop app, Zed extension rebranded
 
-### Added
-- .github/workflows/typecheck.yml: Renamed to CI, added test and build jobs
-- CHANGELOG.md: Created this changelog
+**Hook System:**
+- Reduced from 38 hooks to 7 (kept: closure-injector, quality-gate, keyword-detector, non-interactive-env, tool-output-truncator, legal-gate, completion-controller)
+- Removed 31 dead/redundant/stub hooks (14 MiMo-native duplicates, 17 stubs)
+- Removed BackgroundManager (dead code — launch() never called)
+- Removed background-task tools
 
-### Changed
-- .github/ISSUE_TEMPLATE/bug-report.yml: Replaced OpenCode version field with hiai-bob version
-- script/raw-changelog.ts, stats.ts, close-issues.ts: Updated default repo references to vlgalib/hiai-bob
-- docs/build-release.md: Verified all URLs use vlgalib/hiai-bob (no stale references found)
+**Completion-Controller (Fixed):**
+- Fixed matcher mode — now fires for root orchestrator (was incorrectly scoped to `{mode:"peer"}`)
+- Wired todo.updated event handler for accurate hasIncompleteTodos tracking
+- Fixed user-message reset: migrated from permission.ask to chat.message hook
+- Added subagent file merging: changedFiles from subagents propagate to parent session
+- Added completion config block to bob.json (enabled, max_auto_continues, require_critic, ui_globs)
+- 26 completion-controller tests all passing
+
+**Infrastructure:**
+- Dockerfile: added non-root USER (bob), pinned Alpine 3.21, added .dockerignore
+- CI workflow (typecheck + build + test + lint)
+- Binary output renamed to hiai-bob-* (was opencode-*/mimocode-*)
+- Release/publish scripts updated for @hiai-bob/* namespace
+
+**Package Namespace:**
+- @mimo-ai/plugin renamed to @hiai-bob/plugin (package.json + imports)
+- @hiai-bob/cli is primary CLI package (was already correct)
+- Version 0.3.0 unified across all 7 monorepo packages
+
+**Security:**
+- bob.env: rotated exposed Firecrawl and Context7 API keys to placeholder values
+- source bob.env: no live keys in tracked files
+
+**Misc:**
+- docs/RUNTIME-SIGNALS.md created documenting completion-controller signals
+- Parallelism annotations added to Strategist/Manager/Bob agent prompts
+- context7 migrated from MCP to CLI+skill wrapper
+- Model IDs preserved (xiaomi/mimo/opencode-go as LLM provider brand names)
