@@ -23,7 +23,7 @@ export async function createOpencodeServer(options?: ServerOptions) {
   options = Object.assign(
     {
       hostname: "127.0.0.1",
-      port: 4096,
+      port: 50900,
       timeout: 5000,
     },
     options ?? {},

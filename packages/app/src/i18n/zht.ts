@@ -312,7 +312,7 @@ export const dict = {
   "dialog.server.empty": "暫無伺服器",
   "dialog.server.add.title": "新增伺服器",
   "dialog.server.add.url": "伺服器 URL",
-  "dialog.server.add.placeholder": "http://localhost:4096",
+  "dialog.server.add.placeholder": "http://localhost:50900",
   "dialog.server.add.error": "無法連線到伺服器",
   "dialog.server.add.checking": "檢查中...",
   "dialog.server.add.button": "新增伺服器",

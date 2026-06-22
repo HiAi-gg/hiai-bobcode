@@ -53,7 +53,8 @@ export const dict = {
   "tui.tips.background":
     "Exécutez {highlight}/background{/highlight} pour définir une image personnalisée comme fond d'écran d'accueil",
   "tui.tips.undo": "Utilisez {highlight}/undo{/highlight} pour annuler le dernier message et ses modifications",
-  "tui.tips.redo": "Utilisez {highlight}/redo{/highlight} pour rétablir des messages et modifications précédemment annulés",
+  "tui.tips.redo":
+    "Utilisez {highlight}/redo{/highlight} pour rétablir des messages et modifications précédemment annulés",
   "tui.tips.share":
     "Exécutez {highlight}/share{/highlight} pour créer un lien public vers votre conversation sur opencode.ai",
   "tui.tips.drag_drop": "Glissez-déposez des images ou PDF dans le terminal pour les ajouter au contexte",
@@ -75,12 +76,10 @@ export const dict = {
     "Exécutez {highlight}/compact{/highlight} pour résumer les longues sessions à l'approche de la limite de contexte",
   "tui.tips.export":
     "Appuyez sur {highlight}Ctrl+X X{/highlight} ou {highlight}/export{/highlight} pour enregistrer la conversation en Markdown",
-  "tui.tips.copy_last":
-    "Appuyez sur {highlight}Ctrl+X Y{/highlight} pour copier le dernier message de l'assistant",
+  "tui.tips.copy_last": "Appuyez sur {highlight}Ctrl+X Y{/highlight} pour copier le dernier message de l'assistant",
   "tui.tips.command_palette":
     "Appuyez sur {highlight}Ctrl+P{/highlight} pour voir toutes les actions et commandes disponibles",
-  "tui.tips.login":
-    "Exécutez {highlight}/login{/highlight} pour vous connecter et utiliser votre forfait de tokens",
+  "tui.tips.login": "Exécutez {highlight}/login{/highlight} pour vous connecter et utiliser votre forfait de tokens",
   "tui.tips.connect":
     "Exécutez {highlight}/connect{/highlight} pour choisir votre fournisseur LLM et ajouter des clés API",
   "tui.tips.leader":
@@ -111,10 +110,8 @@ export const dict = {
   "tui.tips.default_model": "Configurez {highlight}model{/highlight} dans la config pour définir le modèle par défaut",
   "tui.tips.keybinds":
     "Remplacez n'importe quel raccourci dans {highlight}tui.json{/highlight} via la section {highlight}keybinds{/highlight}",
-  "tui.tips.disable_keybind":
-    "Définissez un raccourci sur {highlight}none{/highlight} pour le désactiver complètement",
-  "tui.tips.mcp_config":
-    "Configurez les serveurs MCP locaux ou distants dans la section {highlight}mcp{/highlight}",
+  "tui.tips.disable_keybind": "Définissez un raccourci sur {highlight}none{/highlight} pour le désactiver complètement",
+  "tui.tips.mcp_config": "Configurez les serveurs MCP locaux ou distants dans la section {highlight}mcp{/highlight}",
   "tui.tips.mcp_oauth":
     "Bob gère automatiquement OAuth pour les serveurs MCP distants nécessitant une authentification",
   "tui.tips.custom_command":
@@ -129,10 +126,8 @@ export const dict = {
     "Configurez par agent les permissions des outils {highlight}edit{/highlight}, {highlight}bash{/highlight} et {highlight}webfetch{/highlight}",
   "tui.tips.bash_allow":
     'Utilisez des motifs comme {highlight}"git *": "allow"{/highlight} pour des permissions bash fines',
-  "tui.tips.bash_deny":
-    'Définissez {highlight}"rm -rf *": "deny"{/highlight} pour bloquer les commandes destructrices',
-  "tui.tips.bash_ask":
-    'Configurez {highlight}"git push": "ask"{/highlight} pour exiger une confirmation avant le push',
+  "tui.tips.bash_deny": 'Définissez {highlight}"rm -rf *": "deny"{/highlight} pour bloquer les commandes destructrices',
+  "tui.tips.bash_ask": 'Configurez {highlight}"git push": "ask"{/highlight} pour exiger une confirmation avant le push',
   "tui.tips.formatter": "Bob formate automatiquement les fichiers avec prettier, gofmt, ruff, etc.",
   "tui.tips.disable_formatter":
     'Définissez {highlight}"formatter": false{/highlight} dans la config pour désactiver le formatage automatique',
@@ -144,34 +139,25 @@ export const dict = {
   "tui.tips.tool_scripts": "Les définitions d'outils peuvent invoquer des scripts en Python, Go, etc.",
   "tui.tips.plugins":
     "Ajoutez des fichiers {highlight}.ts{/highlight} dans {highlight}.mimocode/plugin/{/highlight} pour des hooks d'événements",
-  "tui.tips.plugin_notify":
-    "Utilisez des plugins pour envoyer des notifications système à la fin des sessions",
-  "tui.tips.plugin_protect":
-    "Créez un plugin pour empêcher Bob de lire des fichiers sensibles",
+  "tui.tips.plugin_notify": "Utilisez des plugins pour envoyer des notifications système à la fin des sessions",
+  "tui.tips.plugin_protect": "Créez un plugin pour empêcher Bob de lire des fichiers sensibles",
   "tui.tips.run": "Utilisez {highlight}mimo run{/highlight} pour des scripts non interactifs",
   "tui.tips.continue": "Utilisez {highlight}mimo --continue{/highlight} pour reprendre la dernière session",
-  "tui.tips.attach_cli":
-    "Utilisez {highlight}mimo run -f file.ts{/highlight} pour joindre des fichiers via la CLI",
+  "tui.tips.attach_cli": "Utilisez {highlight}mimo run -f file.ts{/highlight} pour joindre des fichiers via la CLI",
   "tui.tips.format_json":
     "Utilisez {highlight}--format json{/highlight} pour une sortie lisible par machine dans les scripts",
   "tui.tips.serve": "Exécutez {highlight}mimo serve{/highlight} pour exposer l'API Bob en mode headless",
   "tui.tips.attach_server":
     "Utilisez {highlight}mimo run --attach{/highlight} pour vous connecter à un serveur en cours",
   "tui.tips.upgrade": "Exécutez {highlight}mimo upgrade{/highlight} pour passer à la dernière version",
-  "tui.tips.auth_list":
-    "Exécutez {highlight}mimo auth list{/highlight} pour voir tous les fournisseurs configurés",
-  "tui.tips.agent_create":
-    "Exécutez {highlight}mimo agent create{/highlight} pour créer un agent en mode guidé",
+  "tui.tips.auth_list": "Exécutez {highlight}mimo auth list{/highlight} pour voir tous les fournisseurs configurés",
+  "tui.tips.agent_create": "Exécutez {highlight}mimo agent create{/highlight} pour créer un agent en mode guidé",
   "tui.tips.github_trigger":
     "Utilisez {highlight}/opencode{/highlight} dans les issues/PR GitHub pour déclencher des actions IA",
-  "tui.tips.github_install":
-    "Exécutez {highlight}mimo github install{/highlight} pour configurer le workflow GitHub",
-  "tui.tips.github_oc":
-    "Commentez {highlight}/oc{/highlight} sur une ligne de PR pour une revue ciblée",
-  "tui.tips.theme_system":
-    'Utilisez {highlight}"theme": "system"{/highlight} pour suivre les couleurs du terminal',
-  "tui.tips.theme_files":
-    "Créez des fichiers de thème JSON dans le dossier {highlight}.mimocode/themes/{/highlight}",
+  "tui.tips.github_install": "Exécutez {highlight}mimo github install{/highlight} pour configurer le workflow GitHub",
+  "tui.tips.github_oc": "Commentez {highlight}/oc{/highlight} sur une ligne de PR pour une revue ciblée",
+  "tui.tips.theme_system": 'Utilisez {highlight}"theme": "system"{/highlight} pour suivre les couleurs du terminal',
+  "tui.tips.theme_files": "Créez des fichiers de thème JSON dans le dossier {highlight}.mimocode/themes/{/highlight}",
   "tui.tips.theme_variants": "Les thèmes prennent en charge des variantes claires/sombres pour les deux modes",
   "tui.tips.theme_ansi": "Référencez les couleurs ANSI 0-255 dans des thèmes personnalisés",
   "tui.tips.env_var":
@@ -180,28 +166,23 @@ export const dict = {
     "Utilisez {highlight}{file:path}{/highlight} pour inclure le contenu d'un fichier dans la config",
   "tui.tips.instructions":
     "Utilisez {highlight}instructions{/highlight} dans la config pour charger des fichiers de règles supplémentaires",
-  "tui.tips.temperature":
-    "Réglez la {highlight}temperature{/highlight} de l'agent de 0.0 (focalisé) à 1.0 (créatif)",
-  "tui.tips.steps":
-    "Configurez {highlight}steps{/highlight} pour limiter les itérations agentiques par requête",
+  "tui.tips.temperature": "Réglez la {highlight}temperature{/highlight} de l'agent de 0.0 (focalisé) à 1.0 (créatif)",
+  "tui.tips.steps": "Configurez {highlight}steps{/highlight} pour limiter les itérations agentiques par requête",
   "tui.tips.disable_tool":
     'Définissez {highlight}"tools": {"bash": false}{/highlight} pour désactiver des outils spécifiques',
   "tui.tips.disable_mcp_tools":
     'Définissez {highlight}"mcp_*": false{/highlight} pour désactiver tous les outils d\'un serveur MCP',
-  "tui.tips.tool_override":
-    "Remplacez les paramètres globaux des outils dans la configuration de chaque agent",
+  "tui.tips.tool_override": "Remplacez les paramètres globaux des outils dans la configuration de chaque agent",
   "tui.tips.share_auto":
     'Définissez {highlight}"share": "auto"{/highlight} pour partager automatiquement toutes les sessions',
   "tui.tips.share_disabled":
     'Définissez {highlight}"share": "disabled"{/highlight} pour empêcher tout partage de session',
-  "tui.tips.unshare":
-    "Exécutez {highlight}/unshare{/highlight} pour retirer une session de l'accès public",
+  "tui.tips.unshare": "Exécutez {highlight}/unshare{/highlight} pour retirer une session de l'accès public",
   "tui.tips.doom_loop":
     "La permission {highlight}doom_loop{/highlight} prévient les boucles infinies d'appels d'outils",
   "tui.tips.external_dir":
     "La permission {highlight}external_directory{/highlight} protège les fichiers en dehors du projet",
-  "tui.tips.debug_config":
-    "Exécutez {highlight}mimo debug config{/highlight} pour diagnostiquer la configuration",
+  "tui.tips.debug_config": "Exécutez {highlight}mimo debug config{/highlight} pour diagnostiquer la configuration",
   "tui.tips.print_logs":
     "Utilisez l'option {highlight}--print-logs{/highlight} pour afficher des journaux détaillés sur stderr",
   "tui.tips.timeline":
@@ -216,17 +197,14 @@ export const dict = {
     "Activez/désactivez l'affichage du nom d'utilisateur via la palette de commandes ({highlight}Ctrl+P{/highlight})",
   "tui.tips.docker":
     "Exécutez {highlight}docker run -it --rm ghcr.io/anomalyco/opencode{/highlight} pour une utilisation conteneurisée",
-  "tui.tips.zen":
-    "Utilisez {highlight}/connect{/highlight} avec Bob pour des modèles testés et sélectionnés",
+  "tui.tips.zen": "Utilisez {highlight}/connect{/highlight} avec Bob pour des modèles testés et sélectionnés",
   "tui.tips.agents_md":
     "Versionnez le fichier {highlight}AGENTS.md{/highlight} de votre projet sur Git pour le partager avec l'équipe",
   "tui.tips.review":
     "Utilisez {highlight}/review{/highlight} pour réviser les modifications non commit, branches ou PR",
-  "tui.tips.help":
-    "Exécutez {highlight}/help{/highlight} ou {highlight}Ctrl+X H{/highlight} pour ouvrir l'aide",
+  "tui.tips.help": "Exécutez {highlight}/help{/highlight} ou {highlight}Ctrl+X H{/highlight} pour ouvrir l'aide",
   "tui.tips.rename": "Utilisez {highlight}/rename{/highlight} pour renommer la session courante",
-  "tui.tips.suspend.unix":
-    "Appuyez sur {highlight}Ctrl+Z{/highlight} pour suspendre le terminal et revenir au shell",
+  "tui.tips.suspend.unix": "Appuyez sur {highlight}Ctrl+Z{/highlight} pour suspendre le terminal et revenir au shell",
   "tui.tips.suspend.win": "Appuyez sur {highlight}Ctrl+Z{/highlight} pour annuler les modifications dans l'invite",
 
   // Command palette UI
@@ -383,12 +361,13 @@ export const dict = {
   "tui.command.voice.toggle.title_off": "Saisie vocale : désactivée — cliquer pour activer",
   "tui.voice.enabled": "Saisie vocale activée (chinois/anglais) — cliquez sur [Voice] pour enregistrer",
   "tui.voice.disabled": "Saisie vocale désactivée",
-  "tui.voice.send.enabled": "Envoi vocal activé — dites「发送」ou \"send it\" pour envoyer",
+  "tui.voice.send.enabled": 'Envoi vocal activé — dites「发送」ou "send it" pour envoyer',
   "tui.voice.send.disabled": "Envoi vocal désactivé",
   "tui.command.voice.send.title": "Basculer l'envoi vocal",
   "tui.command.voice.send.title_on": "Envoi vocal : activé — cliquer pour désactiver",
   "tui.command.voice.send.title_off": "Envoi vocal : désactivé — cliquer pour activer",
-  "tui.voice.control.enabled": "Contrôle vocal activé — utilise le modèle multimodal pour l'édition intelligente (plus lent)",
+  "tui.voice.control.enabled":
+    "Contrôle vocal activé — utilise le modèle multimodal pour l'édition intelligente (plus lent)",
   "tui.voice.control.disabled": "Contrôle vocal désactivé — utilise la transcription ASR rapide",
   "tui.command.voice.control.title": "Basculer le contrôle vocal (multimodal)",
   "tui.command.voice.control.title_on": "Contrôle vocal : activé (multimodal) — cliquer pour désactiver",
@@ -408,10 +387,25 @@ export const dict = {
   "tui.command.plugins.install.title": "Installer un plugin",
 
   // Bob Auto (free) — TUI login dialog
+  "tui.dialog.login.title": "Sélectionner un fournisseur",
+  "tui.dialog.login.xiaomi": "hiai",
+  "tui.dialog.login.xiaomi.desc": "(Recommandé)",
   "tui.dialog.login.mimo_free": "Bob Auto (free)",
   "tui.dialog.login.mimo_free.desc": "Canal anonyme gratuit — aucune connexion requise",
   "tui.dialog.login.mimo_free.success": "Bob Auto (free) est prêt — modèle par défaut défini sur mimo/mimo-auto",
   "tui.dialog.login.mimo_free.unavailable": "Fournisseur Bob Auto (free) non chargé",
+  "tui.dialog.login.import_claude": "Importer depuis Claude Code",
+  "tui.dialog.login.other": "Autre fournisseur",
+  "tui.dialog.login.import_claude.no_key": "Clé API Claude Code introuvable",
+  "tui.dialog.login.import_claude.read_failed": "Échec de lecture de ~/.claude/settings.json",
+  "tui.dialog.login.import_claude.success": "Importé depuis Claude Code",
+  "tui.dialog.login.start_failed": "Échec du démarrage de la connexion",
+  "tui.dialog.login.flow.title": "Connexion Bob",
+  "tui.dialog.login.flow.placeholder": "Coller le code (ou attendre le rappel du navigateur)",
+  "tui.dialog.login.flow.busy": "Connexion...",
+  "tui.dialog.login.flow.manual_hint": "Le navigateur ne s'ouvre pas ? Visitez manuellement :",
+  "tui.dialog.login.flow.waiting": "En attente de l'autorisation du navigateur...",
+  "tui.dialog.login.flow.invalid_code": "Code invalide, veuillez réessayer",
 
   // CLI: providers command (auth login)
   "cli.providers.select": "Sélectionner un fournisseur",
@@ -424,11 +418,13 @@ export const dict = {
   "cli.providers.mimo_free.default_set": "Modèle par défaut défini sur mimo/mimo-auto (contexte 1M, gratuit)",
   "cli.providers.mimo_free.usage_hint":
     "Aucune connexion requise — exécutez simplement mimo. Pour les modèles payants/premium, choisissez plutôt la connexion navigateur Bob.",
-  "cli.providers.mimo_login.decrypt_retry": "Échec du déchiffrement, veuillez réessayer ({remaining} tentatives restantes)",
+  "cli.providers.mimo_login.decrypt_retry":
+    "Échec du déchiffrement, veuillez réessayer ({remaining} tentatives restantes)",
   "cli.providers.mimo_login.decrypt_exhausted": "Échec du déchiffrement, nombre maximal de tentatives atteint",
 
   // Question i18n — plan_exit
-  "tui.question.plan_exit.question": "Le plan {{plan}} est terminé. Voulez-vous basculer vers l'agent build pour commencer l'implémentation ?",
+  "tui.question.plan_exit.question":
+    "Le plan {{plan}} est terminé. Voulez-vous basculer vers l'agent build pour commencer l'implémentation ?",
   "tui.question.plan_exit.header": "Quitter le plan",
   "tui.question.plan_exit.option.0.label": "Oui",
   "tui.question.plan_exit.option.0.description": "Basculer vers l'agent build et commencer l'implémentation",

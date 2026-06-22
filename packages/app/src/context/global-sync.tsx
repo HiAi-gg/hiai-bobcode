@@ -290,8 +290,19 @@ function createGlobalSync() {
     return promise
   }
 
+  // Workspace-scoped listener keys look like `directory:<dir>:workspace:<ws>`.
+  // Strip the workspace suffix so the global-sync reducer sees a plain
+  // directory key and dispatches into the right child store. This is purely
+  // a routing concern — the event payload is the same.
+  const parseDirectoryKey = (name: string) => {
+    if (!name.startsWith("directory:")) return name
+    const rest = name.slice("directory:".length)
+    const idx = rest.indexOf(":workspace:")
+    return idx === -1 ? rest : rest.slice(0, idx)
+  }
+
   const unsub = globalSDK.event.listen((e) => {
-    const directory = e.name
+    const directory = parseDirectoryKey(e.name)
     const event = e.details
     const recent = bootingRoot || Date.now() - bootedAt < 1500
 

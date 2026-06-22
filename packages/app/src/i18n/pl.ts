@@ -287,7 +287,7 @@ export const dict = {
   "dialog.server.empty": "Brak serwerów",
   "dialog.server.add.title": "Dodaj serwer",
   "dialog.server.add.url": "URL serwera",
-  "dialog.server.add.placeholder": "http://localhost:4096",
+  "dialog.server.add.placeholder": "http://localhost:50900",
   "dialog.server.add.error": "Nie można połączyć się z serwerem",
   "dialog.server.add.checking": "Sprawdzanie...",
   "dialog.server.add.button": "Dodaj serwer",

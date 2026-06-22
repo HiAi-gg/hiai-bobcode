@@ -2,21 +2,31 @@ import { For } from "solid-js"
 import { useTheme } from "@tui/context/theme"
 import { useGrid } from "@tui/context/grid"
 import { useSync } from "@tui/context/sync"
-import { useRoute } from "@tui/context/route"
+import { useProject } from "@tui/context/project"
+import { useSDK } from "@tui/context/sdk"
+import { useWorkspaceClients } from "@tui/context/workspace-clients"
+import { useToast } from "@tui/ui/toast"
+import { createGridSession } from "./grid-create"
 
 /**
  * Cell tab bar for the grid view. Renders one tab per cell with the session
  * label, a mode badge (plan-only vs full), and a close button ("×"). The
- * active cell is highlighted. A "+" button at the end navigates to home so
- * the user can start a new session for the grid.
+ * active cell is highlighted. A "+" button at the end creates a fresh
+ * session via the SDK and adds it to the grid (Phase 8) instead of the
+ * pre-Phase-8 "navigate to home" behaviour.
  */
 export function GridToolbar() {
   const grid = useGrid()
   const { theme } = useTheme()
   const sync = useSync()
-  const route = useRoute()
+  const project = useProject()
+  const sdk = useSDK()
+  const workspaceClients = useWorkspaceClients()
+  const toast = useToast()
   const cells = () => grid.cells
   const activeId = () => grid.activeCellId
+
+  const addNewCell = () => void createGridSession({ grid, sdk, project, sync, workspaceClients, toast })
 
   return (
     <box
@@ -64,12 +74,10 @@ export function GridToolbar() {
         }}
       </For>
 
-      {/* "+" button to create a new cell — navigates to home session picker */}
-      <box
-        onMouseUp={() => route.navigate({ type: "home" })}
-        paddingLeft={1}
-        paddingRight={1}
-      >
+      {/* "+" button to create a new cell — Phase 8: directly create a session
+          via SDK and add it to the grid. Replaces the pre-Phase-8 behaviour of
+          navigating to home, which left the user stranded outside the grid. */}
+      <box onMouseUp={addNewCell} paddingLeft={1} paddingRight={1}>
         <text fg={theme.textMuted}>+</text>
       </box>
     </box>

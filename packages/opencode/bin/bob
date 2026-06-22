@@ -160,6 +160,36 @@ function findBinary(startDir) {
   }
 }
 
+//
+// Development fallback: if we are running from the source repo (i.e. the
+// compiled platform binary is not installed) and `src/index.ts` is present
+// next to this script's parent directory (the package root), spawn
+// `bun run --conditions=browser src/index.ts` with all passed args. This
+// lets contributors run `bin/bob` directly from a clone of the repo
+// without needing a published platform binary.
+//
+const packageRoot = dirname(scriptDir)
+
+//
+// Check for locally-built binary first (e.g. after `bun run build`).
+//
+const distDir = join(packageRoot, "dist")
+for (const name of names) {
+  const candidate = join(distDir, name, "bin", binary)
+  if (existsSync(candidate)) {
+    run(candidate)
+  }
+}
+
+const sourceEntry = join(packageRoot, "src", "index.ts")
+if (existsSync(sourceEntry)) {
+  const result = Bun.spawnSync(["bun", "run", "--conditions=browser", sourceEntry, ...process.argv.slice(2)], {
+    stdio: ["inherit", "inherit", "inherit"],
+  })
+  const code = typeof result.exitCode === "number" ? result.exitCode : 0
+  process.exit(code)
+}
+
 const resolved = findBinary(scriptDir)
 if (!resolved) {
   console.error(

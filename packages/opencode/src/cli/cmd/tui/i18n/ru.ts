@@ -52,12 +52,9 @@ export const dict = {
   "tui.tips.free_models": "Бесплатные модели доступны ограниченное время — попробуйте их сейчас!",
   "tui.tips.background":
     "Выполните {highlight}/background{/highlight}, чтобы установить произвольное изображение в качестве фона главной страницы",
-  "tui.tips.undo":
-    "Используйте {highlight}/undo{/highlight}, чтобы отменить последнее сообщение и изменения файлов",
-  "tui.tips.redo":
-    "Используйте {highlight}/redo{/highlight}, чтобы вернуть ранее отменённые сообщения и изменения",
-  "tui.tips.share":
-    "Выполните {highlight}/share{/highlight}, чтобы получить публичную ссылку на диалог на opencode.ai",
+  "tui.tips.undo": "Используйте {highlight}/undo{/highlight}, чтобы отменить последнее сообщение и изменения файлов",
+  "tui.tips.redo": "Используйте {highlight}/redo{/highlight}, чтобы вернуть ранее отменённые сообщения и изменения",
+  "tui.tips.share": "Выполните {highlight}/share{/highlight}, чтобы получить публичную ссылку на диалог на opencode.ai",
   "tui.tips.drag_drop": "Перетащите изображения или PDF в терминал, чтобы добавить их в контекст",
   "tui.tips.paste_image":
     "Нажмите {highlight}Ctrl+V{/highlight}, чтобы вставить изображение из буфера обмена в строку ввода",
@@ -73,18 +70,14 @@ export const dict = {
     "Нажмите {highlight}Ctrl+X N{/highlight} или {highlight}/new{/highlight}, чтобы начать новую сессию",
   "tui.tips.sessions":
     "Используйте {highlight}/sessions{/highlight} или {highlight}Ctrl+X L{/highlight}, чтобы просмотреть и продолжить предыдущие сессии",
-  "tui.tips.compact":
-    "Выполните {highlight}/compact{/highlight}, чтобы сжимать длинные сессии у границы контекста",
+  "tui.tips.compact": "Выполните {highlight}/compact{/highlight}, чтобы сжимать длинные сессии у границы контекста",
   "tui.tips.export":
     "Нажмите {highlight}Ctrl+X X{/highlight} или {highlight}/export{/highlight}, чтобы сохранить диалог в Markdown",
-  "tui.tips.copy_last":
-    "Нажмите {highlight}Ctrl+X Y{/highlight}, чтобы скопировать последнее сообщение ассистента",
+  "tui.tips.copy_last": "Нажмите {highlight}Ctrl+X Y{/highlight}, чтобы скопировать последнее сообщение ассистента",
   "tui.tips.command_palette":
     "Нажмите {highlight}Ctrl+P{/highlight}, чтобы посмотреть все доступные действия и команды",
-  "tui.tips.login":
-    "Выполните {highlight}/login{/highlight}, чтобы войти и использовать ваш тарифный план токенов",
-  "tui.tips.connect":
-    "Выполните {highlight}/connect{/highlight}, чтобы выбрать LLM-провайдера и добавить API-ключи",
+  "tui.tips.login": "Выполните {highlight}/login{/highlight}, чтобы войти и использовать ваш тарифный план токенов",
+  "tui.tips.connect": "Выполните {highlight}/connect{/highlight}, чтобы выбрать LLM-провайдера и добавить API-ключи",
   "tui.tips.leader":
     "Лидер-клавиша — {highlight}Ctrl+X{/highlight}; сочетайте её с другими клавишами для быстрых действий",
   "tui.tips.f2": "Нажмите {highlight}F2{/highlight}, чтобы быстро переключаться между недавно используемыми моделями",
@@ -97,10 +90,8 @@ export const dict = {
     "Нажмите {highlight}Ctrl+Alt+G{/highlight} или {highlight}End{/highlight}, чтобы перейти к последнему сообщению",
   "tui.tips.newline":
     "Нажмите {highlight}Shift+Enter{/highlight} или {highlight}Ctrl+J{/highlight}, чтобы добавить перенос строки во ввод",
-  "tui.tips.clear_input":
-    "Нажмите {highlight}Ctrl+C{/highlight} во время ввода, чтобы очистить поле ввода",
-  "tui.tips.escape":
-    "Нажмите {highlight}Escape{/highlight}, чтобы прервать ИИ во время ответа",
+  "tui.tips.clear_input": "Нажмите {highlight}Ctrl+C{/highlight} во время ввода, чтобы очистить поле ввода",
+  "tui.tips.escape": "Нажмите {highlight}Escape{/highlight}, чтобы прервать ИИ во время ответа",
   "tui.tips.plan_agent":
     "Переключитесь на агента {highlight}Plan{/highlight}, чтобы получать предложения без реальных изменений",
   "tui.tips.subagent":
@@ -111,18 +102,13 @@ export const dict = {
     "Создайте {highlight}hiai-bob.json{/highlight} для серверных настроек и {highlight}tui.json{/highlight} для настроек TUI",
   "tui.tips.global_config":
     "Поместите настройки TUI в {highlight}~/.config/mimocode/tui.json{/highlight} как глобальные",
-  "tui.tips.schema":
-    "Добавьте {highlight}$schema{/highlight} в конфиг для автодополнения в редакторе",
-  "tui.tips.default_model":
-    "Задайте {highlight}model{/highlight} в конфиге, чтобы установить модель по умолчанию",
+  "tui.tips.schema": "Добавьте {highlight}$schema{/highlight} в конфиг для автодополнения в редакторе",
+  "tui.tips.default_model": "Задайте {highlight}model{/highlight} в конфиге, чтобы установить модель по умолчанию",
   "tui.tips.keybinds":
     "Переопределяйте любые сочетания клавиш в {highlight}tui.json{/highlight} в разделе {highlight}keybinds{/highlight}",
-  "tui.tips.disable_keybind":
-    "Установите сочетание в {highlight}none{/highlight}, чтобы полностью его отключить",
-  "tui.tips.mcp_config":
-    "Настройте локальные или удалённые MCP-серверы в разделе {highlight}mcp{/highlight} конфига",
-  "tui.tips.mcp_oauth":
-    "Bob автоматически обрабатывает OAuth для удалённых MCP-серверов с авторизацией",
+  "tui.tips.disable_keybind": "Установите сочетание в {highlight}none{/highlight}, чтобы полностью его отключить",
+  "tui.tips.mcp_config": "Настройте локальные или удалённые MCP-серверы в разделе {highlight}mcp{/highlight} конфига",
+  "tui.tips.mcp_oauth": "Bob автоматически обрабатывает OAuth для удалённых MCP-серверов с авторизацией",
   "tui.tips.custom_command":
     "Добавляйте файлы {highlight}.md{/highlight} в {highlight}.mimocode/command/{/highlight} для повторно используемых пользовательских команд",
   "tui.tips.command_args":
@@ -133,59 +119,42 @@ export const dict = {
     "Добавляйте файлы {highlight}.md{/highlight} в {highlight}.mimocode/agent/{/highlight} для специализированных AI-персон",
   "tui.tips.agent_perms":
     "Настройте для каждого агента отдельные права на инструменты {highlight}edit{/highlight}, {highlight}bash{/highlight} и {highlight}webfetch{/highlight}",
-  "tui.tips.bash_allow":
-    'Используйте шаблоны вроде {highlight}"git *": "allow"{/highlight} для тонких bash-разрешений',
+  "tui.tips.bash_allow": 'Используйте шаблоны вроде {highlight}"git *": "allow"{/highlight} для тонких bash-разрешений',
   "tui.tips.bash_deny":
     'Установите {highlight}"rm -rf *": "deny"{/highlight}, чтобы блокировать разрушительные команды',
-  "tui.tips.bash_ask":
-    'Настройте {highlight}"git push": "ask"{/highlight}, чтобы запрашивать подтверждение перед push',
-  "tui.tips.formatter":
-    "Bob автоматически форматирует файлы с помощью prettier, gofmt, ruff и других инструментов",
+  "tui.tips.bash_ask": 'Настройте {highlight}"git push": "ask"{/highlight}, чтобы запрашивать подтверждение перед push',
+  "tui.tips.formatter": "Bob автоматически форматирует файлы с помощью prettier, gofmt, ruff и других инструментов",
   "tui.tips.disable_formatter":
     'Установите {highlight}"formatter": false{/highlight}, чтобы отключить всё авто-форматирование',
-  "tui.tips.custom_formatter":
-    "Определяйте собственные команды форматирования по расширениям файлов в конфиге",
+  "tui.tips.custom_formatter": "Определяйте собственные команды форматирования по расширениям файлов в конфиге",
   "tui.tips.lsp": "Bob использует LSP-серверы для интеллектуального анализа кода",
   "tui.tips.custom_tool":
     "Создавайте файлы {highlight}.ts{/highlight} в {highlight}.mimocode/tools/{/highlight}, чтобы определить новые LLM-инструменты",
-  "tui.tips.tool_scripts":
-    "Определения инструментов могут вызывать скрипты на Python, Go и других языках",
+  "tui.tips.tool_scripts": "Определения инструментов могут вызывать скрипты на Python, Go и других языках",
   "tui.tips.plugins":
     "Добавляйте файлы {highlight}.ts{/highlight} в {highlight}.mimocode/plugin/{/highlight} для подключения хуков событий",
-  "tui.tips.plugin_notify":
-    "Используйте плагины, чтобы отправлять системные уведомления при завершении сессий",
-  "tui.tips.plugin_protect":
-    "Создайте плагин, который запретит Bob читать чувствительные файлы",
-  "tui.tips.run":
-    "Используйте {highlight}mimo run{/highlight} для неинтерактивных скриптов",
-  "tui.tips.continue":
-    "Используйте {highlight}mimo --continue{/highlight}, чтобы продолжить последнюю сессию",
+  "tui.tips.plugin_notify": "Используйте плагины, чтобы отправлять системные уведомления при завершении сессий",
+  "tui.tips.plugin_protect": "Создайте плагин, который запретит Bob читать чувствительные файлы",
+  "tui.tips.run": "Используйте {highlight}mimo run{/highlight} для неинтерактивных скриптов",
+  "tui.tips.continue": "Используйте {highlight}mimo --continue{/highlight}, чтобы продолжить последнюю сессию",
   "tui.tips.attach_cli":
     "Используйте {highlight}mimo run -f file.ts{/highlight}, чтобы прикрепить файлы из командной строки",
-  "tui.tips.format_json":
-    "Используйте {highlight}--format json{/highlight} для машинно-читаемого вывода в скриптах",
-  "tui.tips.serve":
-    "Запустите {highlight}mimo serve{/highlight} для headless-доступа к API Bob",
+  "tui.tips.format_json": "Используйте {highlight}--format json{/highlight} для машинно-читаемого вывода в скриптах",
+  "tui.tips.serve": "Запустите {highlight}mimo serve{/highlight} для headless-доступа к API Bob",
   "tui.tips.attach_server":
     "Используйте {highlight}mimo run --attach{/highlight}, чтобы подключиться к запущенному серверу",
-  "tui.tips.upgrade":
-    "Выполните {highlight}mimo upgrade{/highlight}, чтобы обновиться до последней версии",
-  "tui.tips.auth_list":
-    "Выполните {highlight}mimo auth list{/highlight}, чтобы увидеть всех настроенных провайдеров",
+  "tui.tips.upgrade": "Выполните {highlight}mimo upgrade{/highlight}, чтобы обновиться до последней версии",
+  "tui.tips.auth_list": "Выполните {highlight}mimo auth list{/highlight}, чтобы увидеть всех настроенных провайдеров",
   "tui.tips.agent_create":
     "Выполните {highlight}mimo agent create{/highlight}, чтобы создать агента в пошаговом режиме",
   "tui.tips.github_trigger":
     "Используйте {highlight}/opencode{/highlight} в issue/PR на GitHub, чтобы запускать AI-действия",
-  "tui.tips.github_install":
-    "Выполните {highlight}mimo github install{/highlight}, чтобы настроить GitHub-workflow",
-  "tui.tips.github_oc":
-    "Оставьте {highlight}/oc{/highlight} в комментарии к строке PR для точечного код-ревью",
+  "tui.tips.github_install": "Выполните {highlight}mimo github install{/highlight}, чтобы настроить GitHub-workflow",
+  "tui.tips.github_oc": "Оставьте {highlight}/oc{/highlight} в комментарии к строке PR для точечного код-ревью",
   "tui.tips.theme_system":
     'Используйте {highlight}"theme": "system"{/highlight}, чтобы соответствовать цветам терминала',
-  "tui.tips.theme_files":
-    "Создавайте JSON-файлы тем в каталоге {highlight}.mimocode/themes/{/highlight}",
-  "tui.tips.theme_variants":
-    "Темы поддерживают тёмные и светлые варианты для обоих режимов",
+  "tui.tips.theme_files": "Создавайте JSON-файлы тем в каталоге {highlight}.mimocode/themes/{/highlight}",
+  "tui.tips.theme_variants": "Темы поддерживают тёмные и светлые варианты для обоих режимов",
   "tui.tips.theme_ansi": "Ссылайтесь на ANSI-цвета 0-255 в собственных темах",
   "tui.tips.env_var":
     "Используйте синтаксис {highlight}{env:VAR_NAME}{/highlight} для ссылки на переменные окружения в конфиге",
@@ -195,28 +164,23 @@ export const dict = {
     "Используйте {highlight}instructions{/highlight} в конфиге, чтобы подключать дополнительные файлы правил",
   "tui.tips.temperature":
     "Устанавливайте {highlight}temperature{/highlight} агента от 0.0 (сосредоточенно) до 1.0 (творчески)",
-  "tui.tips.steps":
-    "Настройте {highlight}steps{/highlight}, чтобы ограничить число агентских итераций на запрос",
+  "tui.tips.steps": "Настройте {highlight}steps{/highlight}, чтобы ограничить число агентских итераций на запрос",
   "tui.tips.disable_tool":
     'Установите {highlight}"tools": {"bash": false}{/highlight}, чтобы отключить отдельные инструменты',
   "tui.tips.disable_mcp_tools":
     'Установите {highlight}"mcp_*": false{/highlight}, чтобы отключить все инструменты конкретного MCP-сервера',
-  "tui.tips.tool_override":
-    "Переопределяйте глобальные настройки инструментов в конфигурации каждого агента",
+  "tui.tips.tool_override": "Переопределяйте глобальные настройки инструментов в конфигурации каждого агента",
   "tui.tips.share_auto":
     'Установите {highlight}"share": "auto"{/highlight}, чтобы автоматически делиться всеми сессиями',
   "tui.tips.share_disabled":
     'Установите {highlight}"share": "disabled"{/highlight}, чтобы запретить любой шаринг сессий',
-  "tui.tips.unshare":
-    "Выполните {highlight}/unshare{/highlight}, чтобы убрать сессию из публичного доступа",
+  "tui.tips.unshare": "Выполните {highlight}/unshare{/highlight}, чтобы убрать сессию из публичного доступа",
   "tui.tips.doom_loop":
     "Разрешение {highlight}doom_loop{/highlight} предотвращает бесконечные циклы вызова инструментов",
-  "tui.tips.external_dir":
-    "Разрешение {highlight}external_directory{/highlight} защищает файлы вне проекта",
+  "tui.tips.external_dir": "Разрешение {highlight}external_directory{/highlight} защищает файлы вне проекта",
   "tui.tips.debug_config":
     "Выполните {highlight}mimo debug config{/highlight}, чтобы диагностировать проблемы конфигурации",
-  "tui.tips.print_logs":
-    "Используйте флаг {highlight}--print-logs{/highlight}, чтобы видеть подробные логи в stderr",
+  "tui.tips.print_logs": "Используйте флаг {highlight}--print-logs{/highlight}, чтобы видеть подробные логи в stderr",
   "tui.tips.timeline":
     "Нажмите {highlight}Ctrl+X G{/highlight} или {highlight}/timeline{/highlight}, чтобы перейти к нужному сообщению",
   "tui.tips.toggle_code":
@@ -229,20 +193,14 @@ export const dict = {
     "Переключайте отображение имени пользователя через палитру команд ({highlight}Ctrl+P{/highlight})",
   "tui.tips.docker":
     "Выполните {highlight}docker run -it --rm ghcr.io/anomalyco/opencode{/highlight} для контейнерного запуска",
-  "tui.tips.zen":
-    "Используйте {highlight}/connect{/highlight} с Bob для подобранных и протестированных моделей",
+  "tui.tips.zen": "Используйте {highlight}/connect{/highlight} с Bob для подобранных и протестированных моделей",
   "tui.tips.agents_md":
     "Закоммитьте {highlight}AGENTS.md{/highlight} вашего проекта в Git для общего доступа в команде",
-  "tui.tips.review":
-    "Используйте {highlight}/review{/highlight} для ревью незакоммиченных изменений, веток или PR",
-  "tui.tips.help":
-    "Выполните {highlight}/help{/highlight} или {highlight}Ctrl+X H{/highlight}, чтобы открыть справку",
-  "tui.tips.rename":
-    "Используйте {highlight}/rename{/highlight}, чтобы переименовать текущую сессию",
-  "tui.tips.suspend.unix":
-    "Нажмите {highlight}Ctrl+Z{/highlight}, чтобы приостановить терминал и вернуться в shell",
-  "tui.tips.suspend.win":
-    "Нажмите {highlight}Ctrl+Z{/highlight}, чтобы отменить изменения в строке ввода",
+  "tui.tips.review": "Используйте {highlight}/review{/highlight} для ревью незакоммиченных изменений, веток или PR",
+  "tui.tips.help": "Выполните {highlight}/help{/highlight} или {highlight}Ctrl+X H{/highlight}, чтобы открыть справку",
+  "tui.tips.rename": "Используйте {highlight}/rename{/highlight}, чтобы переименовать текущую сессию",
+  "tui.tips.suspend.unix": "Нажмите {highlight}Ctrl+Z{/highlight}, чтобы приостановить терминал и вернуться в shell",
+  "tui.tips.suspend.win": "Нажмите {highlight}Ctrl+Z{/highlight}, чтобы отменить изменения в строке ввода",
 
   // Command palette UI
   "tui.command.palette.title": "Команды",
@@ -398,9 +356,10 @@ export const dict = {
   "tui.command.voice.toggle.title_off": "Голосовой ввод: отключён — нажмите для включения",
   "tui.voice.enabled": "Голосовой ввод включён (китайский/английский) — нажмите [Voice] для записи",
   "tui.voice.disabled": "Голосовой ввод отключён",
-  "tui.voice.send.enabled": "Голосовая отправка включена — скажите「发送」или \"send it\"",
+  "tui.voice.send.enabled": 'Голосовая отправка включена — скажите「发送」или "send it"',
   "tui.voice.send.disabled": "Голосовая отправка отключена",
-  "tui.voice.control.enabled": "Голосовое управление включено — интеллектуальное редактирование с мультимодальной моделью (медленнее)",
+  "tui.voice.control.enabled":
+    "Голосовое управление включено — интеллектуальное редактирование с мультимодальной моделью (медленнее)",
   "tui.voice.control.disabled": "Голосовое управление отключено — используется быстрая ASR транскрипция",
   "tui.command.voice.control.title": "Переключить голосовое управление (мультимодальное)",
   "tui.command.voice.control.title_on": "Голосовое управление: включено (мультимодальное) — нажмите для отключения",
@@ -420,10 +379,25 @@ export const dict = {
   "tui.command.plugins.install.title": "Установить плагин",
 
   // Bob Auto (free) — TUI login dialog
+  "tui.dialog.login.title": "Выберите провайдера",
+  "tui.dialog.login.xiaomi": "hiai",
+  "tui.dialog.login.xiaomi.desc": "(Рекомендуется)",
   "tui.dialog.login.mimo_free": "Bob Auto (free)",
   "tui.dialog.login.mimo_free.desc": "Анонимный бесплатный канал — вход не требуется",
   "tui.dialog.login.mimo_free.success": "Bob Auto (free) готов — модель по умолчанию: mimo/mimo-auto",
   "tui.dialog.login.mimo_free.unavailable": "Провайдер Bob Auto (free) не загружен",
+  "tui.dialog.login.import_claude": "Импорт из Claude Code",
+  "tui.dialog.login.other": "Другой провайдер",
+  "tui.dialog.login.import_claude.no_key": "API-ключ Claude Code не найден",
+  "tui.dialog.login.import_claude.read_failed": "Не удалось прочитать ~/.claude/settings.json",
+  "tui.dialog.login.import_claude.success": "Импортировано из Claude Code",
+  "tui.dialog.login.start_failed": "Не удалось запустить вход",
+  "tui.dialog.login.flow.title": "Вход в Bob",
+  "tui.dialog.login.flow.placeholder": "Вставьте код (или дождитесь ответа браузера)",
+  "tui.dialog.login.flow.busy": "Вход...",
+  "tui.dialog.login.flow.manual_hint": "Браузер не открылся? Перейдите вручную:",
+  "tui.dialog.login.flow.waiting": "Ожидание авторизации в браузере...",
+  "tui.dialog.login.flow.invalid_code": "Неверный код, повторите попытку",
 
   // CLI: providers command (auth login)
   "cli.providers.select": "Выберите провайдера",

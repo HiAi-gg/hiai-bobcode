@@ -425,6 +425,45 @@ export const { use: useLocal, provider: LocalProvider } = createSimpleContext({
       }
     })
 
+    // providerMode: toggles between the classic flat provider picker
+    // ("others") and the branded short-list (DialogMimoLogin). Persisted to
+    // state/provider.json — same Filesystem pattern as `model`. Default is
+    // "others" so first-launch users land in the classic picker without any
+    // extra click.
+    const providerMode = iife(() => {
+      const [mode, setMode] = createSignal<"branded" | "others">("others")
+      const filePath = path.join(Global.Path.state, "provider.json")
+      const state = { pending: false, ready: false }
+
+      function save() {
+        if (!state.ready) {
+          state.pending = true
+          return
+        }
+        state.pending = false
+        void Filesystem.writeJson(filePath, { mode: mode() })
+      }
+
+      Filesystem.readJson(filePath)
+        .then((x: any) => {
+          if (x?.mode === "branded" || x?.mode === "others") setMode(x.mode)
+        })
+        .catch(() => {})
+        .finally(() => {
+          state.ready = true
+          if (state.pending) save()
+        })
+
+      return {
+        current: mode,
+        set(value: "branded" | "others") {
+          if (mode() === value) return
+          setMode(value)
+          save()
+        },
+      }
+    })
+
     // Automatically update model when agent changes
     createEffect(() => {
       const value = agent.current()
@@ -449,6 +488,7 @@ export const { use: useLocal, provider: LocalProvider } = createSimpleContext({
       agent,
       mcp,
       neverAsk,
+      providerMode,
     }
     return result
   },

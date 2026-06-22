@@ -11,7 +11,7 @@ export const AttachCommand = cmd({
     yargs
       .positional("url", {
         type: "string",
-        describe: "http://localhost:4096",
+        describe: "http://localhost:50900",
         demandOption: true,
       })
       .option("dir", {

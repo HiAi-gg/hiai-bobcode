@@ -292,7 +292,7 @@ export const dict = {
   "dialog.server.empty": "Noch keine Server",
   "dialog.server.add.title": "Server hinzufügen",
   "dialog.server.add.url": "Server-URL",
-  "dialog.server.add.placeholder": "http://localhost:4096",
+  "dialog.server.add.placeholder": "http://localhost:50900",
   "dialog.server.add.error": "Verbindung zum Server fehlgeschlagen",
   "dialog.server.add.checking": "Prüfen...",
   "dialog.server.add.button": "Server hinzufügen",

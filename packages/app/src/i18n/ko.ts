@@ -285,7 +285,7 @@ export const dict = {
   "dialog.server.empty": "서버 없음",
   "dialog.server.add.title": "서버 추가",
   "dialog.server.add.url": "서버 URL",
-  "dialog.server.add.placeholder": "http://localhost:4096",
+  "dialog.server.add.placeholder": "http://localhost:50900",
   "dialog.server.add.error": "서버에 연결할 수 없습니다",
   "dialog.server.add.checking": "확인 중...",
   "dialog.server.add.button": "서버 추가",

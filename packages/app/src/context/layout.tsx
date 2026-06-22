@@ -55,6 +55,29 @@ export type LocalProject = Partial<Project> & { worktree: string; expanded: bool
 
 export type ReviewDiffStyle = "unified" | "split"
 
+/**
+ * Per-grid-cell record. Carries the workspace binding in addition to the
+ * session id so the cell can route SDK calls to the right workspace via
+ * the workspace client pool. Mirrors the TUI's `GridCell` shape from
+ * `grid-persistence.ts`. `mode` distinguishes cells that render the full
+ * session UI from cells that render only a plan/headless view.
+ */
+export type GridCell = {
+  id: string
+  sessionID: string
+  workspaceID: string
+  agentID?: string
+  mode: "full" | "plan-only"
+  label: string
+}
+
+/**
+ * Default workspace id used by the grid. The web UI today has a single
+ * workspace per directory so the grid defaults to that; switching cells
+ * to a different workspace requires the directory-layout browser.
+ */
+const DEFAULT_WORKSPACE_ID = ""
+
 export function ensureSessionKey(key: string, touch: (key: string) => void, seed: (key: string) => void) {
   touch(key)
   seed(key)
@@ -208,11 +231,15 @@ export const { use: useLayout, provider: LayoutProvider } = createSimpleContext(
         return next
       })()
 
+      const gridCells = value.gridCells
+      const migratedGridCells = migrateGridCells(gridCells)
+
       if (
         migratedSidebar === sidebar &&
         migratedReview === review &&
         migratedFileTree === fileTree &&
-        migratedSessionTabs === sessionTabs
+        migratedSessionTabs === sessionTabs &&
+        migratedGridCells === gridCells
       ) {
         return value
       }
@@ -223,10 +250,50 @@ export const { use: useLayout, provider: LayoutProvider } = createSimpleContext(
         review: migratedReview,
         fileTree: migratedFileTree,
         sessionTabs: migratedSessionTabs,
+        gridCells: migratedGridCells,
       }
     }
 
-    const target = Persist.global("layout", ["layout.v6"])
+    // Migrate persisted `gridCells` from the legacy `string[]` shape to the
+    // new `GridCell[]` shape that carries workspace + mode. Pre-v7 files
+    // only stored session ids; rehydrate them with the default workspace.
+    const migrateGridCells = (value: unknown) => {
+      if (!isRecord(value)) return value
+      const out: Record<string, GridCell[]> = {}
+      let changed = false
+      for (const [key, cells] of Object.entries(value)) {
+        if (!Array.isArray(cells)) return value
+        const next: GridCell[] = []
+        for (const cell of cells) {
+          if (typeof cell === "string") {
+            changed = true
+            next.push({
+              id: cell,
+              sessionID: cell,
+              workspaceID: DEFAULT_WORKSPACE_ID,
+              mode: "full",
+              label: "",
+            })
+            continue
+          }
+          if (
+            cell &&
+            typeof cell === "object" &&
+            "sessionID" in cell &&
+            typeof (cell as { sessionID: unknown }).sessionID === "string"
+          ) {
+            next.push(cell as GridCell)
+            continue
+          }
+          return value
+        }
+        out[key] = next
+      }
+      if (!changed) return value
+      return out
+    }
+
+    const target = Persist.global("layout", ["layout.v7"])
     const [store, setStore, _, ready] = persisted(
       { ...target, migrate },
       createStore({
@@ -258,7 +325,7 @@ export const { use: useLayout, provider: LayoutProvider } = createSimpleContext(
         sessionTabs: {} as Record<string, SessionTabs>,
         sessionView: {} as Record<string, SessionView>,
         gridMode: {} as Record<string, 1 | 2 | 3 | 4 | 6 | 8>,
-        gridCells: {} as Record<string, string[]>,
+        gridCells: {} as Record<string, GridCell[]>,
         gridActive: {} as Record<string, string>,
         handoff: {
           tabs: undefined as TabHandoff | undefined,
@@ -964,24 +1031,52 @@ export const { use: useLayout, provider: LayoutProvider } = createSimpleContext(
         setActive(dir: string, sessionID: string) {
           setStore("gridActive", dir, sessionID)
         },
+        // Cells now carry workspace + mode so per-cell SDK clients can route
+        // to the right workspace instance. `cellsByID` keeps the legacy
+        // `string[]` view available for components that only care about the
+        // session id (matches the prior `cells(dir)()` contract).
         cells(dir: string) {
           return () => store.gridCells[dir] ?? []
         },
-        setCells(dir: string, cells: string[]) {
+        cellsByID(dir: string) {
+          return () => (store.gridCells[dir] ?? []).map((c) => c.sessionID)
+        },
+        setCells(dir: string, cells: GridCell[]) {
           setStore("gridCells", dir, cells)
         },
-        addCell(dir: string, sessionID: string) {
+        addCell(dir: string, sessionID: string, opts?: { workspaceID?: string; label?: string }) {
           const current = store.gridCells[dir] ?? []
-          if (current.includes(sessionID)) return
-          setStore("gridCells", dir, [...current, sessionID])
+          if (current.some((c) => c.sessionID === sessionID)) return
+          const cell: GridCell = {
+            id: sessionID,
+            sessionID,
+            workspaceID: opts?.workspaceID ?? DEFAULT_WORKSPACE_ID,
+            mode: "full",
+            label: opts?.label ?? "",
+          }
+          setStore("gridCells", dir, [...current, cell])
+        },
+        // Add a fully-formed GridCell (used by "New session" where we know
+        // the workspace up front and want to keep the same shape everywhere).
+        addCellFull(dir: string, cell: GridCell) {
+          const current = store.gridCells[dir] ?? []
+          if (current.some((c) => c.id === cell.id)) return
+          setStore("gridCells", dir, [...current, cell])
         },
         removeCell(dir: string, sessionID: string) {
           const current = store.gridCells[dir] ?? []
           setStore(
             "gridCells",
             dir,
-            current.filter((id) => id !== sessionID),
+            current.filter((c) => c.sessionID !== sessionID),
           )
+        },
+        // Update an existing cell in place (e.g. workspace switch for a
+        // freshly-created session). No-op if the cell isn't present.
+        updateCell(dir: string, sessionID: string, patch: Partial<GridCell>) {
+          const current = store.gridCells[dir] ?? []
+          const next = current.map((c) => (c.sessionID === sessionID ? { ...c, ...patch } : c))
+          setStore("gridCells", dir, next)
         },
       },
     }

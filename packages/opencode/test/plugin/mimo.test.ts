@@ -35,7 +35,7 @@ const fakeInput = {
   worktree: "",
   directory: "",
   experimental_workspace: { register() {} },
-  serverUrl: new URL("http://localhost:4096"),
+  serverUrl: new URL("http://localhost:50900"),
   $: undefined,
 } as unknown as PluginInput
 

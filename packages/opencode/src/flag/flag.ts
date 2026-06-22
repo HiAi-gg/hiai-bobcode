@@ -158,6 +158,11 @@ export const Flag = {
   get MIMOCODE_PLUGIN_META_FILE() {
     return process.env["MIMOCODE_PLUGIN_META_FILE"]
   },
+  // Phase 6: when truthy, the TUI opens directly into the grid view instead of
+  // the home/session route. Equivalent to passing `--grid` on the CLI.
+  get MIMOCODE_GRID() {
+    return truthy("MIMOCODE_GRID")
+  },
   get MIMOCODE_CLIENT() {
     return process.env["MIMOCODE_CLIENT"] ?? "cli"
   },

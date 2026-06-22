@@ -311,7 +311,7 @@ export const dict = {
   "dialog.server.empty": "Ingen servere endnu",
   "dialog.server.add.title": "Tilføj en server",
   "dialog.server.add.url": "Server URL",
-  "dialog.server.add.placeholder": "http://localhost:4096",
+  "dialog.server.add.placeholder": "http://localhost:50900",
   "dialog.server.add.error": "Kunne ikke forbinde til server",
   "dialog.server.add.checking": "Tjekker...",
   "dialog.server.add.button": "Tilføj server",

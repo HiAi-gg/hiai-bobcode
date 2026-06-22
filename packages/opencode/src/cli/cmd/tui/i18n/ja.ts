@@ -77,8 +77,7 @@ export const dict = {
   "tui.tips.leader": "リーダーキーは {highlight}Ctrl+X{/highlight}。他のキーと組み合わせてクイック操作ができます",
   "tui.tips.f2": "{highlight}F2{/highlight} で最近使ったモデルを素早く切り替えます",
   "tui.tips.sidebar": "{highlight}Ctrl+X B{/highlight} でサイドバーパネルの表示/非表示を切り替えます",
-  "tui.tips.history":
-    "{highlight}PageUp{/highlight}/{highlight}PageDown{/highlight} で会話履歴を移動します",
+  "tui.tips.history": "{highlight}PageUp{/highlight}/{highlight}PageDown{/highlight} で会話履歴を移動します",
   "tui.tips.jump_first":
     "{highlight}Ctrl+G{/highlight} または {highlight}Home{/highlight} で会話の先頭にジャンプします",
   "tui.tips.jump_last":
@@ -111,8 +110,7 @@ export const dict = {
     "{highlight}.mimocode/agent/{/highlight} に {highlight}.md{/highlight} ファイルを追加して専用 AI ペルソナを作れます",
   "tui.tips.agent_perms":
     "エージェントごとに {highlight}edit{/highlight}、{highlight}bash{/highlight}、{highlight}webfetch{/highlight} ツールの権限を設定できます",
-  "tui.tips.bash_allow":
-    '{highlight}"git *": "allow"{/highlight} のようなパターンで bash 権限を細かく制御できます',
+  "tui.tips.bash_allow": '{highlight}"git *": "allow"{/highlight} のようなパターンで bash 権限を細かく制御できます',
   "tui.tips.bash_deny": '{highlight}"rm -rf *": "deny"{/highlight} を設定して破壊的なコマンドをブロックします',
   "tui.tips.bash_ask": '{highlight}"git push": "ask"{/highlight} を設定すると push 前に承認を求めます',
   "tui.tips.formatter": "Bob は prettier、gofmt、ruff などでファイルを自動整形します",
@@ -143,37 +141,31 @@ export const dict = {
   "tui.tips.theme_files": "{highlight}.mimocode/themes/{/highlight} ディレクトリに JSON テーマファイルを作成します",
   "tui.tips.theme_variants": "テーマはダーク/ライトのバリアントをサポートします",
   "tui.tips.theme_ansi": "カスタムテーマで ANSI カラー 0-255 を参照できます",
-  "tui.tips.env_var":
-    "設定で {highlight}{env:VAR_NAME}{/highlight} 構文を使うと環境変数を参照できます",
+  "tui.tips.env_var": "設定で {highlight}{env:VAR_NAME}{/highlight} 構文を使うと環境変数を参照できます",
   "tui.tips.file_var": "{highlight}{file:path}{/highlight} で設定値にファイル内容を埋め込めます",
-  "tui.tips.instructions":
-    "設定の {highlight}instructions{/highlight} で追加のルールファイルを読み込めます",
+  "tui.tips.instructions": "設定の {highlight}instructions{/highlight} で追加のルールファイルを読み込めます",
   "tui.tips.temperature":
     "エージェントの {highlight}temperature{/highlight} を 0.0（厳密）から 1.0（創造的）まで調整します",
   "tui.tips.steps": "{highlight}steps{/highlight} を設定するとリクエストごとのエージェント反復回数を制限します",
   "tui.tips.disable_tool": '{highlight}"tools": {"bash": false}{/highlight} で特定のツールを無効化できます',
-  "tui.tips.disable_mcp_tools":
-    '{highlight}"mcp_*": false{/highlight} で MCP サーバ由来のツールをすべて無効化できます',
+  "tui.tips.disable_mcp_tools": '{highlight}"mcp_*": false{/highlight} で MCP サーバ由来のツールをすべて無効化できます',
   "tui.tips.tool_override": "エージェントごとの設定でグローバルなツール設定を上書きできます",
   "tui.tips.share_auto": '{highlight}"share": "auto"{/highlight} で全セッションを自動共有します',
   "tui.tips.share_disabled": '{highlight}"share": "disabled"{/highlight} でセッション共有を完全に禁止します',
   "tui.tips.unshare": "{highlight}/unshare{/highlight} で公開アクセスからセッションを解除します",
   "tui.tips.doom_loop": "権限 {highlight}doom_loop{/highlight} がツール呼び出しの無限ループを防ぎます",
-  "tui.tips.external_dir":
-    "権限 {highlight}external_directory{/highlight} がプロジェクト外のファイルを保護します",
+  "tui.tips.external_dir": "権限 {highlight}external_directory{/highlight} がプロジェクト外のファイルを保護します",
   "tui.tips.debug_config": "{highlight}mimo debug config{/highlight} で設定の問題を調査します",
   "tui.tips.print_logs": "{highlight}--print-logs{/highlight} フラグで stderr に詳細ログを出力します",
   "tui.tips.timeline":
     "{highlight}Ctrl+X G{/highlight} または {highlight}/timeline{/highlight} で特定のメッセージにジャンプします",
   "tui.tips.toggle_code": "{highlight}Ctrl+X H{/highlight} でメッセージ内コードブロックの表示を切り替えます",
-  "tui.tips.status":
-    "{highlight}Ctrl+X S{/highlight} または {highlight}/status{/highlight} でシステム状態を表示します",
+  "tui.tips.status": "{highlight}Ctrl+X S{/highlight} または {highlight}/status{/highlight} でシステム状態を表示します",
   "tui.tips.scroll_accel":
     "{highlight}tui.json{/highlight} の {highlight}scroll_acceleration{/highlight} を有効にすると macOS 風のなめらかなスクロールになります",
   "tui.tips.username_toggle":
     "コマンドパレット（{highlight}Ctrl+P{/highlight}）でチャット内のユーザー名表示を切り替えます",
-  "tui.tips.docker":
-    "{highlight}docker run -it --rm ghcr.io/anomalyco/opencode{/highlight} でコンテナ版を実行できます",
+  "tui.tips.docker": "{highlight}docker run -it --rm ghcr.io/anomalyco/opencode{/highlight} でコンテナ版を実行できます",
   "tui.tips.zen": "Bob と組み合わせて {highlight}/connect{/highlight} で厳選されたモデルを使えます",
   "tui.tips.agents_md": "プロジェクトの {highlight}AGENTS.md{/highlight} を Git にコミットしてチームで共有します",
   "tui.tips.review": "{highlight}/review{/highlight} で未コミット変更、ブランチ、PR をレビューします",
@@ -238,7 +230,8 @@ export const dict = {
   "tui.command.theme.mode.lock": "テーマモードをロック",
   "tui.command.help.show.title": "ヘルプ",
   "tui.dialog.help.close_hint": "esc/enter",
-  "tui.dialog.help.command_list": "{{keybind}} を押すと、任意のコンテキストで利用できるすべての操作とコマンドを表示できます。",
+  "tui.dialog.help.command_list":
+    "{{keybind}} を押すと、任意のコンテキストで利用できるすべての操作とコマンドを表示できます。",
   "tui.dialog.help.ok": "OK",
   "tui.dialog.close_hint": "esc",
   "tui.dialog.ok": "OK",
@@ -335,7 +328,7 @@ export const dict = {
   "tui.command.voice.toggle.title_off": "音声入力：無効 — クリックで有効化",
   "tui.voice.enabled": "音声入力が有効になりました（中国語/英語）— [Voice] をクリックして録音",
   "tui.voice.disabled": "音声入力が無効になりました",
-  "tui.voice.send.enabled": "音声送信が有効 — 「发送」または \"send it\" で送信",
+  "tui.voice.send.enabled": '音声送信が有効 — 「发送」または "send it" で送信',
   "tui.voice.send.disabled": "音声送信が無効になりました",
   "tui.command.voice.send.title": "音声送信を切り替え",
   "tui.command.voice.send.title_on": "音声送信：有効 — クリックで無効化",
@@ -360,10 +353,25 @@ export const dict = {
   "tui.command.plugins.install.title": "プラグインをインストール",
 
   // Bob Auto (free) — TUI login dialog
+  "tui.dialog.login.title": "プロバイダーを選択",
+  "tui.dialog.login.xiaomi": "hiai",
+  "tui.dialog.login.xiaomi.desc": "（おすすめ）",
   "tui.dialog.login.mimo_free": "Bob Auto (free)",
   "tui.dialog.login.mimo_free.desc": "ログイン不要の匿名無料チャネル",
   "tui.dialog.login.mimo_free.success": "Bob Auto (free) の準備完了 — デフォルトモデルを mimo/mimo-auto に設定しました",
   "tui.dialog.login.mimo_free.unavailable": "Bob Auto (free) プロバイダーが読み込まれていません",
+  "tui.dialog.login.import_claude": "Claude Code からインポート",
+  "tui.dialog.login.other": "その他のプロバイダー",
+  "tui.dialog.login.import_claude.no_key": "Claude Code API キーが見つかりません",
+  "tui.dialog.login.import_claude.read_failed": "~/.claude/settings.json の読み込みに失敗しました",
+  "tui.dialog.login.import_claude.success": "Claude Code からインポートしました",
+  "tui.dialog.login.start_failed": "ログインを開始できませんでした",
+  "tui.dialog.login.flow.title": "Bob ログイン",
+  "tui.dialog.login.flow.placeholder": "コードを貼り付け（またはブラウザのコールバックを待機）",
+  "tui.dialog.login.flow.busy": "ログイン中...",
+  "tui.dialog.login.flow.manual_hint": "ブラウザが開きませんか？手動でアクセス：",
+  "tui.dialog.login.flow.waiting": "ブラウザでの承認を待機しています...",
+  "tui.dialog.login.flow.invalid_code": "コードが無効です、再試行してください",
 
   // CLI: providers command (auth login)
   "cli.providers.select": "プロバイダーを選択",
@@ -380,7 +388,8 @@ export const dict = {
   "cli.providers.mimo_login.decrypt_exhausted": "復号に失敗しました、最大再試行回数に達しました",
 
   // Question i18n — plan_exit
-  "tui.question.plan_exit.question": "{{plan}} の計画が完了しました。build エージェントに切り替えて実装を開始しますか？",
+  "tui.question.plan_exit.question":
+    "{{plan}} の計画が完了しました。build エージェントに切り替えて実装を開始しますか？",
   "tui.question.plan_exit.header": "計画終了",
   "tui.question.plan_exit.option.0.label": "はい",
   "tui.question.plan_exit.option.0.description": "build エージェントに切り替えて計画の実装を開始",

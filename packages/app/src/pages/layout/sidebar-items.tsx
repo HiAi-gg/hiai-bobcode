@@ -114,9 +114,17 @@ const SessionRow = (props: {
         const dir = decode64(props.slug) ?? ""
         const active = layout.grid.active(dir)()
         const cells = layout.grid.cells(dir)()
-        if (layout.grid.mode(dir)() > 1 && active && cells.includes(active) && active !== props.session.id) {
+        const ids = layout.grid.cellsByID(dir)()
+        if (layout.grid.mode(dir)() > 1 && active && ids.includes(active) && active !== props.session.id) {
           e.preventDefault()
-          layout.grid.setCells(dir, cells.map((c) => (c === active ? props.session.id : c)))
+          // Preserve the cell's workspace + mode metadata while swapping the
+          // session id. `cells` carries the full GridCell record now, so we
+          // can't just replace the id — find the active cell and rebuild it
+          // with the new session id.
+          const next = cells.map((c) =>
+            c.sessionID === active ? { ...c, id: props.session.id, sessionID: props.session.id } : c,
+          )
+          layout.grid.setCells(dir, next)
           layout.grid.setActive(dir, props.session.id)
           return
         }

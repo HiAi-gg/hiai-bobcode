@@ -286,7 +286,7 @@ export const dict = {
   "dialog.server.empty": "لا توجد خوادم بعد",
   "dialog.server.add.title": "إضافة خادم",
   "dialog.server.add.url": "عنوان URL للخادم",
-  "dialog.server.add.placeholder": "http://localhost:4096",
+  "dialog.server.add.placeholder": "http://localhost:50900",
   "dialog.server.add.error": "تعذر الاتصال بالخادم",
   "dialog.server.add.checking": "جارٍ التحقق...",
   "dialog.server.add.button": "إضافة خادم",

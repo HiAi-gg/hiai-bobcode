@@ -1,22 +1,36 @@
 import { createStore, produce, reconcile } from "solid-js/store"
 import { createEffect, createMemo, onCleanup } from "solid-js"
 import { createSimpleContext } from "./helper"
-import { defaultGridState, debouncedSave, type GridCell, type GridLayout, type GridState } from "./grid-persistence"
+import {
+  defaultGridState,
+  debouncedSave,
+  normalizeGridState,
+  type GridCell,
+  type GridLayout,
+  type GridSplitRatio,
+  type GridState,
+} from "./grid-persistence"
 
 export type AddCellInput = Omit<GridCell, "id">
 
 export const { use: useGrid, provider: GridProvider } = createSimpleContext({
   name: "Grid",
   init: (props: { initial?: GridState }) => {
-    const [store, setStore] = createStore<GridState>(props.initial ?? defaultGridState())
+    const [store, setStore] = createStore<GridState>(
+      props.initial ? normalizeGridState(props.initial) : defaultGridState(),
+    )
 
     const persist = debouncedSave(250)
     createEffect(() => {
       // Touch every tracked field so Solid registers them, then snapshot.
+      // Phase 6: include splitRatio so the splitter drag handle is durable
+      // across restarts. batched via produce-style manual snapshot to keep
+      // the persistence path cheap during rapid layout changes.
       const snapshot: GridState = {
         cells: store.cells.map((c) => ({ ...c })),
         activeCellId: store.activeCellId,
         layout: store.layout,
+        splitRatio: store.splitRatio,
       }
       persist(snapshot)
     })
@@ -36,6 +50,9 @@ export const { use: useGrid, provider: GridProvider } = createSimpleContext({
       },
       get layout() {
         return store.layout
+      },
+      get splitRatio() {
+        return store.splitRatio
       },
       activeCell: createMemo(() => store.cells.find((c) => c.id === store.activeCellId)),
       addCell(input: AddCellInput) {
@@ -69,6 +86,18 @@ export const { use: useGrid, provider: GridProvider } = createSimpleContext({
       setLayout(layout: GridLayout) {
         setStore("layout", layout)
       },
+      /**
+       * Phase 6: persist a new split ratio. The splitter drag handle clamps
+       * the value to a sane range before calling this; we still defensively
+       * guard against NaN/out-of-range values here so external callers can't
+       * poison the persisted state.
+       */
+      setSplitRatio(ratio: GridSplitRatio) {
+        if (!Number.isFinite(ratio)) return
+        const clamped = Math.max(0, Math.min(1, ratio))
+        if (clamped === store.splitRatio) return
+        setStore("splitRatio", clamped)
+      },
       toggleMode(id?: string) {
         const target = id ?? store.activeCellId
         if (!target) return
@@ -84,7 +113,7 @@ export const { use: useGrid, provider: GridProvider } = createSimpleContext({
        * Use sparingly — prefer the targeted mutators above.
        */
       hydrate(state: GridState) {
-        setStore(reconcile(state))
+        setStore(reconcile(normalizeGridState(state)))
       },
     }
   },
@@ -102,4 +131,5 @@ export const grid = {
   setActive: (ctx: GridContext, id: string) => ctx.setActive(id),
   toggleMode: (ctx: GridContext, id?: string) => ctx.toggleMode(id),
   setLayout: (ctx: GridContext, layout: GridLayout) => ctx.setLayout(layout),
+  setSplitRatio: (ctx: GridContext, ratio: GridSplitRatio) => ctx.setSplitRatio(ratio),
 }

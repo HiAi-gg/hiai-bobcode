@@ -41,11 +41,11 @@ export const dict = {
   "tui.tips.label": "提示",
   "tui.tips.plain_terminal": "建議使用 iTerm 或 VS Code 終端機",
   "tui.tips.attach_file": "輸入 {highlight}@{/highlight} 後接檔案名稱以模糊搜尋並附加檔案",
-  "tui.tips.shell_prefix": "以 {highlight}!{/highlight} 開頭可直接執行 shell 指令（例如 {highlight}!ls -la{/highlight}）",
+  "tui.tips.shell_prefix":
+    "以 {highlight}!{/highlight} 開頭可直接執行 shell 指令（例如 {highlight}!ls -la{/highlight}）",
   "tui.tips.tab_agent":
     "按 {highlight}Tab{/highlight} 或 {highlight}Shift+Tab{/highlight} 在 Build / Plan / Compose 智慧代理之間切換",
-  "tui.tips.theme_mode":
-    "執行 {highlight}/dark{/highlight} 切換深色模式，{highlight}/light{/highlight} 切換淺色模式",
+  "tui.tips.theme_mode": "執行 {highlight}/dark{/highlight} 切換深色模式，{highlight}/light{/highlight} 切換淺色模式",
   "tui.tips.doc": "執行 {highlight}/doc{/highlight} 開啟使用文件",
   "tui.tips.free_models": "限時提供免費模型中，立即體驗！",
   "tui.tips.background": "執行 {highlight}/background{/highlight} 設定自訂圖片作為主頁背景",
@@ -57,9 +57,11 @@ export const dict = {
   "tui.tips.editor": "按 {highlight}Ctrl+X E{/highlight} 或 {highlight}/editor{/highlight} 在外部編輯器中編輯訊息",
   "tui.tips.init": "執行 {highlight}/init{/highlight} 根據你的程式碼庫自動產生專案規則",
   "tui.tips.models": "執行 {highlight}/models{/highlight} 或 {highlight}Ctrl+X M{/highlight} 切換模型",
-  "tui.tips.theme": "使用 {highlight}/themes{/highlight} 或 {highlight}Ctrl+X T{/highlight} 在 {{count}} 個內建主題之間切換",
+  "tui.tips.theme":
+    "使用 {highlight}/themes{/highlight} 或 {highlight}Ctrl+X T{/highlight} 在 {{count}} 個內建主題之間切換",
   "tui.tips.new_session": "按 {highlight}Ctrl+X N{/highlight} 或 {highlight}/new{/highlight} 開啟全新工作階段",
-  "tui.tips.sessions": "使用 {highlight}/sessions{/highlight} 或 {highlight}Ctrl+X L{/highlight} 列出並繼續先前的工作階段",
+  "tui.tips.sessions":
+    "使用 {highlight}/sessions{/highlight} 或 {highlight}Ctrl+X L{/highlight} 列出並繼續先前的工作階段",
   "tui.tips.compact": "執行 {highlight}/compact{/highlight} 在接近上下文上限時壓縮長對話",
   "tui.tips.export": "按 {highlight}Ctrl+X X{/highlight} 或 {highlight}/export{/highlight} 把對話儲存為 Markdown",
   "tui.tips.copy_last": "按 {highlight}Ctrl+X Y{/highlight} 將助理最後一條訊息複製到剪貼簿",
@@ -106,8 +108,7 @@ export const dict = {
   "tui.tips.custom_tool":
     "在 {highlight}.mimocode/tools/{/highlight} 建立 {highlight}.ts{/highlight} 檔案定義新的 LLM 工具",
   "tui.tips.tool_scripts": "工具定義可呼叫 Python、Go 等指令稿",
-  "tui.tips.plugins":
-    "在 {highlight}.mimocode/plugin/{/highlight} 加入 {highlight}.ts{/highlight} 檔案掛載事件勾點",
+  "tui.tips.plugins": "在 {highlight}.mimocode/plugin/{/highlight} 加入 {highlight}.ts{/highlight} 檔案掛載事件勾點",
   "tui.tips.plugin_notify": "用外掛在工作階段完成時傳送系統通知",
   "tui.tips.plugin_protect": "撰寫一個外掛阻止 Bob 讀取敏感檔案",
   "tui.tips.run": "用 {highlight}mimo run{/highlight} 進行非互動式指令稿呼叫",
@@ -141,11 +142,9 @@ export const dict = {
   "tui.tips.external_dir": "權限 {highlight}external_directory{/highlight} 保護專案外部的檔案",
   "tui.tips.debug_config": "執行 {highlight}mimo debug config{/highlight} 排查設定問題",
   "tui.tips.print_logs": "使用 {highlight}--print-logs{/highlight} 旗標在 stderr 輸出詳細記錄",
-  "tui.tips.timeline":
-    "按 {highlight}Ctrl+X G{/highlight} 或 {highlight}/timeline{/highlight} 跳到指定訊息",
+  "tui.tips.timeline": "按 {highlight}Ctrl+X G{/highlight} 或 {highlight}/timeline{/highlight} 跳到指定訊息",
   "tui.tips.toggle_code": "按 {highlight}Ctrl+X H{/highlight} 切換訊息中程式碼區塊的顯示",
-  "tui.tips.status":
-    "按 {highlight}Ctrl+X S{/highlight} 或 {highlight}/status{/highlight} 檢視系統狀態",
+  "tui.tips.status": "按 {highlight}Ctrl+X S{/highlight} 或 {highlight}/status{/highlight} 檢視系統狀態",
   "tui.tips.scroll_accel":
     "在 {highlight}tui.json{/highlight} 中啟用 {highlight}scroll_acceleration{/highlight} 享受平滑捲動",
   "tui.tips.username_toggle": "透過指令面板（{highlight}Ctrl+P{/highlight}）切換對話中使用者名稱的顯示",
@@ -346,6 +345,27 @@ export const dict = {
   "tui.command.tips.toggle.hide": "隱藏 Tips",
   "tui.command.plugins.list.title": "外掛",
   "tui.command.plugins.install.title": "安裝外掛",
+
+  // TUI login dialog
+  "tui.dialog.login.title": "選擇服務商",
+  "tui.dialog.login.xiaomi": "hiai",
+  "tui.dialog.login.xiaomi.desc": "（推薦）",
+  "tui.dialog.login.mimo_free": "Bob Auto (free)",
+  "tui.dialog.login.mimo_free.desc": "免費匿名通道，無需登入",
+  "tui.dialog.login.mimo_free.success": "Bob Auto (free) 已就緒 — 預設模型設為 mimo/mimo-auto",
+  "tui.dialog.login.mimo_free.unavailable": "Bob Auto (free) 通道未載入",
+  "tui.dialog.login.import_claude": "從 Claude Code 匯入",
+  "tui.dialog.login.other": "其他服務商",
+  "tui.dialog.login.import_claude.no_key": "找不到 Claude Code API 金鑰",
+  "tui.dialog.login.import_claude.read_failed": "讀取 ~/.claude/settings.json 失敗",
+  "tui.dialog.login.import_claude.success": "已從 Claude Code 匯入設定",
+  "tui.dialog.login.start_failed": "啟動登入失敗",
+  "tui.dialog.login.flow.title": "Bob 登入",
+  "tui.dialog.login.flow.placeholder": "貼上 Code（或等待瀏覽器回呼）",
+  "tui.dialog.login.flow.busy": "登入中...",
+  "tui.dialog.login.flow.manual_hint": "瀏覽器未打開？手動前往：",
+  "tui.dialog.login.flow.waiting": "等待瀏覽器授權中...",
+  "tui.dialog.login.flow.invalid_code": "Code 無效，請重試",
 
   // Question i18n — plan_exit
   "tui.question.plan_exit.question": "{{plan}} 的計劃已完成。是否切換到 build 智慧代理開始實作？",

@@ -9,6 +9,7 @@ import { SDKProvider } from "@/context/sdk"
 import { SyncProvider, useSync } from "@/context/sync"
 import { decode64 } from "@/utils/base64"
 import { SessionGrid } from "@/components/session"
+import { WorkspaceBrowser } from "@/components/session/workspace-browser"
 
 function DirectoryDataProvider(props: ParentProps<{ directory: string }>) {
   const location = useLocation()
@@ -36,7 +37,14 @@ function DirectoryDataProvider(props: ParentProps<{ directory: string }>) {
       onNavigateToSession={(sessionID: string) => navigate(`/${slug()}/session/${sessionID}`)}
       onSessionHref={(sessionID: string) => `/${slug()}/session/${sessionID}`}
     >
-      <LocalProvider>{props.children}</LocalProvider>
+      <LocalProvider>
+        {/* Workspace browser lives at the directory level — it lists every
+            workspace the server knows about for this directory and lets the
+            user drill into one. Cells then bind their session context to
+            the chosen workspace via SessionScopeProvider. */}
+        <WorkspaceBrowser directory={props.directory} />
+        {props.children}
+      </LocalProvider>
     </DataProvider>
   )
 }

@@ -17,7 +17,7 @@ In the project directory, you can run:
 ### `npm run dev` or `npm start`
 
 Runs the app in the development mode.<br>
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+Open [http://localhost:50902](http://localhost:50902) to view it in the browser.
 
 The page will reload if you make edits.<br>
 
@@ -31,7 +31,7 @@ Your app is ready to be deployed!
 
 ## E2E Testing
 
-Playwright starts the Vite dev server automatically via `webServer`, and UI tests expect an opencode backend at `localhost:4096` by default.
+Playwright starts the Vite dev server automatically via `webServer`, and UI tests expect an opencode backend at `localhost:50900` by default.
 
 ```bash
 bunx playwright install chromium
@@ -41,8 +41,8 @@ bun run test:e2e:local -- --grep "settings"
 
 Environment options:
 
-- `PLAYWRIGHT_SERVER_HOST` / `PLAYWRIGHT_SERVER_PORT` (backend address, default: `localhost:4096`)
-- `PLAYWRIGHT_PORT` (Vite dev server port, default: `3000`)
+- `PLAYWRIGHT_SERVER_HOST` / `PLAYWRIGHT_SERVER_PORT` (backend address, default: `localhost:50900`)
+- `PLAYWRIGHT_PORT` (Vite dev server port, default: `50902`)
 - `PLAYWRIGHT_BASE_URL` (override base URL, default: `http://localhost:<PLAYWRIGHT_PORT>`)
 
 ## Deployment

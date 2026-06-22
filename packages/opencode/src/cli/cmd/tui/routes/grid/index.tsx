@@ -1,24 +1,44 @@
-import { For, Match, Switch, Show, createMemo, onMount, ErrorBoundary } from "solid-js"
+import { Match, Switch, Show, createMemo, createSignal, onCleanup, onMount, ErrorBoundary } from "solid-js"
 import { useKeyboard, useTerminalDimensions } from "@opentui/solid"
-import { useRoute } from "@tui/context/route"
+import { useRoute, useRouteData } from "@tui/context/route"
 import { useKeybind } from "@tui/context/keybind"
 import { useTheme } from "@tui/context/theme"
 import { useToast } from "@tui/ui/toast"
+import { useDialog } from "@tui/ui/dialog"
 import { GridProvider, useGrid } from "@tui/context/grid"
 import { load, type GridCell } from "@tui/context/grid-persistence"
+import { useSDK } from "@tui/context/sdk"
+import { useProject } from "@tui/context/project"
+import { useSync } from "@tui/context/sync"
+import { useWorkspaceClients } from "@tui/context/workspace-clients"
 import { SessionCell } from "./session-cell"
 import { PlanCell } from "./plan-cell"
 import { GridToolbar } from "./toolbar"
 import { Sidebar } from "./sidebar"
 import { CellErrorOverlay } from "@tui/component/cell-error-overlay"
+import { Splitter, splitCellWidth } from "./splitter"
+import { GridKeyboardHelp } from "./keyboard-help"
+import { createGridSession } from "./grid-create"
 
 /**
- * GridView — root grid layout component for Phase 2.1.
+ * GridView — root grid layout component for Phase 6.
  *
  * Wraps the session/plan cells in a GridProvider, renders a toolbar (cell
  * tabs), the active cell body, and a management sidebar. Layout modes —
  * single, split-h, split-v — control how cells are arranged. Each cell
- * is wrapped in its own ErrorBoundary.
+ * is wrapped in its own ErrorBoundary. Split layouts insert a draggable
+ * splitter bar between cells so users can resize the dragged cell's share
+ * (persisted to `~/.mimocode/grid-layout.json`).
+ *
+ * Phase 6 additions:
+ * - `--grid` / `MIMOCODE_GRID` boot path. The flag launches the TUI straight
+ *   into the grid route and restores the persisted layout on mount.
+ * - Splitter drag handle + persisted split ratio.
+ * - Per-cell shortcut keybinds (`<leader>1`..`<leader>9`, `<leader>0`).
+ * - Render virtualization for split-h/split-v when more than two cells
+ *   exist: only the active cell + the first sibling stay mounted.
+ * - Resize recalculation throttle so dragging the splitter does not
+ *   thrash Yoga relayouts on every frame.
  */
 export function GridView() {
   return (
@@ -28,18 +48,78 @@ export function GridView() {
   )
 }
 
+/**
+ * Phase 6: render-only flag — when `true`, the layout hides every cell
+ * except the active one (plus, in split mode, one sibling). Cells beyond
+ * the visible window are detached from the DOM so their scrollbox +
+ * workspace-synced state cannot trigger work while the user is focused on
+ * another cell. The threshold is intentionally generous: most users keep
+ * <= 2 cells in a split, so we only start virtualizing past that.
+ */
+const VIRTUALIZE_THRESHOLD = 2
+
 function GridInner() {
   const grid = useGrid()
   const route = useRoute()
+  const routeData = useRouteData("grid")
   const keybind = useKeybind()
+  const dialog = useDialog()
   const { theme } = useTheme()
   const dimensions = useTerminalDimensions()
   const toast = useToast()
+  const sdk = useSDK()
+  const project = useProject()
+  const sync = useSync()
+  const workspaceClients = useWorkspaceClients()
+
+  /**
+   * Phase 8: create a fresh session via the workspace-aware SDK and add it
+   * to the grid as the new active cell. Shared with the toolbar "+" button
+   * through `./grid-create.ts`. Replaces the old "navigate to home" behaviour
+   * so the keybind actually opens a new grid cell instead of teleporting
+   * the user out of the grid.
+   */
+  const createSessionInCell = () => createGridSession({ grid, sdk, project, sync, workspaceClients, toast })
 
   // Load persisted grid state on mount so the layout survives restarts.
+  // Phase 6: this also drives the `--grid` boot path — when the user
+  // launches with `--grid` and a stale layout exists, we restore it before
+  // seeding any single-cell defaults below.
   onMount(async () => {
     const persisted = await load()
-    if (persisted) grid.hydrate(persisted)
+    if (persisted && persisted.cells.length > 0) {
+      grid.hydrate(persisted)
+      return
+    }
+    // Phase 8: hydrate from route.data.cells when the grid was opened via a
+    // navigation that pre-seeded cells (e.g. from home with a session list).
+    // Skip entries that already exist in the grid store — this keeps the
+    // restored layout intact when both persistence and route data are present.
+    const seeded = routeData.cells
+    if (!seeded?.length) return
+    for (const entry of seeded) {
+      if (!entry.sessionID) continue
+      if (grid.cells.some((c) => c.sessionID === entry.sessionID)) continue
+      await createGridSession({ grid, sdk, project, sync, workspaceClients, toast })
+    }
+  })
+
+  // Phase 6: throttle the splitter-driven resize recalculation. Yoga
+  // relayout is expensive enough that a 60-fps drag tick would tank the
+  // render loop. We capture the dragged ratio locally in <Splitter/> and
+  // apply it to the store on mouse-up; this throttle covers any other
+  // resize-trigger (terminal SIGWINCH, sidebar toggle, etc.).
+  const [tick, setTick] = createSignal(0)
+  let resizeTimer: ReturnType<typeof setTimeout> | undefined
+  const scheduleResize = () => {
+    if (resizeTimer) clearTimeout(resizeTimer)
+    resizeTimer = setTimeout(() => {
+      resizeTimer = undefined
+      setTick((x) => x + 1)
+    }, 32)
+  }
+  onCleanup(() => {
+    if (resizeTimer) clearTimeout(resizeTimer)
   })
 
   // Grid-level keyboard navigation
@@ -69,13 +149,56 @@ function GridInner() {
 
     if (keybind.match("grid_create", evt)) {
       evt.preventDefault()
-      route.navigate({ type: "home" })
-      toast.show({
-        message: "Start a new session to add it to the grid",
-        variant: "info",
-      })
+      void createSessionInCell()
+      return
+    }
+
+    if (keybind.match("grid_single", evt)) {
+      evt.preventDefault()
+      grid.setLayout("single")
+      return
+    }
+
+    if (keybind.match("grid_layout_toggle", evt)) {
+      evt.preventDefault()
+      const next = grid.layout === "single" ? "split-h" : grid.layout === "split-h" ? "split-v" : "single"
+      grid.setLayout(next)
+      return
+    }
+
+    // Phase 6: direct cell switching via leader + number. Indices are
+    // 1-based to match the on-screen tab labels; we wrap if the user
+    // presses a key higher than the cell count rather than swallowing it.
+    for (let n = 1; n <= 9; n++) {
+      if (!keybind.match(`grid_cell_${n}` as const, evt)) continue
+      evt.preventDefault()
+      const idx = (n - 1) % cells.length
+      const target = cells[idx]
+      if (target) grid.setActive(target.id)
+      return
+    }
+
+    if (keybind.match("grid_help", evt)) {
+      evt.preventDefault()
+      dialog.setSize("large")
+      dialog.replace(() => <GridKeyboardHelp />)
+      return
     }
   })
+
+  // Phase 6: drive `scheduleResize` from the dimension signal so terminal
+  // SIGWINCH coalesces into a single layout pass. The `tick` signal is
+  // touched only when the throttle fires, which keeps Solid from
+  // re-running every downstream memo on every pixel of a fast resize burst.
+  const onResize = () => {
+    scheduleResize()
+  }
+  createMemo(() => {
+    dimensions().width
+    dimensions().height
+    onResize()
+  })
+  tick() // dependency anchor so the splitter ratio read below stays live
 
   const width = () => dimensions().width
   const sidebarWidth = 28
@@ -86,27 +209,41 @@ function GridInner() {
   const empty = () => grid.cells.length === 0
   const activeCell = () => grid.activeCell()
 
-  // Max 2 visible cells for split layouts
-  const visibleCells = createMemo(() => grid.cells.slice(0, 2))
-  const splitCellWidth = createMemo(() => {
-    const count = Math.min(grid.cells.length, 2)
-    return count > 0 ? contentWidth() / count : contentWidth()
+  // Phase 6: virtualize the visible cell window. In single mode only the
+  // active cell renders; in split modes we show the active cell plus the
+  // next sibling. Everything else is detached so its scrollbox, sync
+  // listeners, and SSE fan-out won't fire.
+  const visibleCells = createMemo(() => {
+    const all = grid.cells
+    if (all.length === 0) return []
+    if (layout() === "single") {
+      return activeCell() ? [activeCell()!] : []
+    }
+    const activeIdx = all.findIndex((c) => c.id === grid.activeCellId)
+    if (activeIdx < 0) return all.slice(0, 2)
+    // Active cell first, then the cell immediately after it. Falls back to
+    // the first cell when the active is at the tail.
+    const primary = all[activeIdx]
+    const sibling = all[(activeIdx + 1) % all.length]
+    return primary ? (sibling && sibling.id !== primary.id ? [primary, sibling] : [primary]) : []
+  })
+
+  // Split layouts always render at most two cells; non-virtualized renders
+  // are still useful while cell count <= VIRTUALIZE_THRESHOLD.
+  const useVirtualization = createMemo(() => grid.cells.length > VIRTUALIZE_THRESHOLD)
+
+  const splitCellArea = createMemo(() => {
+    // The dragged cell's width is governed by the persisted split ratio.
+    // splitCellWidth clamps to MIN_CELL_COLS at both ends of the bar.
+    return splitCellWidth(contentWidth(), grid.splitRatio, 1)
   })
 
   return (
-    <box
-      flexDirection="row"
-      width={width()}
-      height={dimensions().height}
-      backgroundColor={theme.background}
-    >
+    <box flexDirection="row" width={width()} height={dimensions().height} backgroundColor={theme.background}>
       {/* Main area: toolbar + cells */}
       <box flexDirection="column" flexGrow={1} height="100%">
         <GridToolbar />
-        <Show
-          when={!empty()}
-          fallback={<GridEmptyState />}
-        >
+        <Show when={!empty()} fallback={<GridEmptyState />}>
           <box flexDirection="column" flexGrow={1} height={cellAreaHeight()}>
             <Switch>
               {/* Single: only the active cell, full width */}
@@ -120,40 +257,72 @@ function GridInner() {
                 </Show>
               </Match>
 
-              {/* Split-h: up to 2 cells side by side */}
+              {/* Split-h: dragged cell + sibling, separated by a draggable bar */}
               <Match when={layout() === "split-h"}>
                 <box flexDirection="row" flexGrow={1}>
-                  <For each={visibleCells()}>
+                  <Show when={visibleCells()[0]}>
                     {(cell) => (
-                      <ErrorBoundary fallback={(err) => <CellError error={err} cell={cell} />}>
+                      <ErrorBoundary fallback={(err) => <CellError error={err} cell={cell()} />}>
+                        <CellRenderer cell={cell()} active={cell().id === grid.activeCellId} width={splitCellArea()} />
+                      </ErrorBoundary>
+                    )}
+                  </Show>
+                  <Splitter layout="split-h" total={contentWidth()} />
+                  <Show when={visibleCells()[1]}>
+                    {(cell) => (
+                      <ErrorBoundary fallback={(err) => <CellError error={err} cell={cell()} />}>
                         <CellRenderer
-                          cell={cell}
-                          active={cell.id === grid.activeCellId}
-                          width={splitCellWidth()}
+                          cell={cell()}
+                          active={cell().id === grid.activeCellId}
+                          width={Math.max(40, contentWidth() - splitCellArea() - 1)}
                         />
                       </ErrorBoundary>
                     )}
-                  </For>
+                  </Show>
                 </box>
               </Match>
 
-              {/* Split-v: up to 2 cells stacked */}
+              {/* Split-v: same as split-h but stacked. The splitter drives the
+                  row split the same way it drives the column split. */}
               <Match when={layout() === "split-v"}>
                 <box flexDirection="column" flexGrow={1}>
-                  <For each={visibleCells()}>
+                  <Show when={visibleCells()[0]}>
                     {(cell) => (
-                      <ErrorBoundary fallback={(err) => <CellError error={err} cell={cell} />}>
+                      <ErrorBoundary fallback={(err) => <CellError error={err} cell={cell()} />}>
                         <CellRenderer
-                          cell={cell}
-                          active={cell.id === grid.activeCellId}
+                          cell={cell()}
+                          active={cell().id === grid.activeCellId}
                           width={contentWidth()}
+                          height={Math.max(6, Math.round(cellAreaHeight() * grid.splitRatio))}
                         />
                       </ErrorBoundary>
                     )}
-                  </For>
+                  </Show>
+                  <Splitter layout="split-v" total={cellAreaHeight()} />
+                  <Show when={visibleCells()[1]}>
+                    {(cell) => (
+                      <ErrorBoundary fallback={(err) => <CellError error={err} cell={cell()} />}>
+                        <CellRenderer
+                          cell={cell()}
+                          active={cell().id === grid.activeCellId}
+                          width={contentWidth()}
+                          height={Math.max(6, cellAreaHeight() - Math.round(cellAreaHeight() * grid.splitRatio) - 1)}
+                        />
+                      </ErrorBoundary>
+                    )}
+                  </Show>
                 </box>
               </Match>
             </Switch>
+
+            {/* Hidden detail block: shows the active cell index for diagnostics
+                when virtualization is engaged. Pure UI surface — no side
+                effects. */}
+            <Show when={useVirtualization()}>
+              <text fg={theme.textMuted} selectable={false}>
+                {`virtualized: ${visibleCells().length}/${grid.cells.length}`}
+              </text>
+            </Show>
           </box>
         </Show>
       </box>
@@ -167,14 +336,14 @@ function GridInner() {
 /**
  * Dispatches to the correct cell component based on cell.mode.
  */
-function CellRenderer(props: { cell: GridCell; active: boolean; width: number }) {
+function CellRenderer(props: { cell: GridCell; active: boolean; width: number; height?: number }) {
   return (
     <Switch>
       <Match when={props.cell.mode === "plan-only"}>
         <PlanCell cell={props.cell} />
       </Match>
       <Match when={true}>
-        <SessionCell cell={props.cell} active={props.active} wide={props.width > 120} />
+        <SessionCell cell={props.cell} active={props.active} wide={props.width > 120} height={props.height} />
       </Match>
     </Switch>
   )
@@ -197,17 +366,10 @@ function GridEmptyState() {
   const { theme } = useTheme()
   const keybind = useKeybind()
   return (
-    <box
-      flexDirection="column"
-      alignItems="center"
-      justifyContent="center"
-      flexGrow={1}
-      gap={1}
-    >
+    <box flexDirection="column" alignItems="center" justifyContent="center" flexGrow={1} gap={1}>
       <text fg={theme.text}>Grid View</text>
-      <text fg={theme.textMuted}>
-        {keybind.print("grid_create")} to add a session
-      </text>
+      <text fg={theme.textMuted}>{keybind.print("grid_create")} to add a session</text>
+      <text fg={theme.textMuted}>{keybind.print("grid_help")} for keyboard help</text>
     </box>
   )
 }

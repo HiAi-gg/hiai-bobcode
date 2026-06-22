@@ -28,7 +28,7 @@ function fakeInput(projectID: ProjectID): PluginInput {
     directory: "",
     worktree: "",
     experimental_workspace: { register() {} },
-    serverUrl: new URL("http://localhost:4096"),
+    serverUrl: new URL("http://localhost:50900"),
     $: undefined,
   } as unknown as PluginInput
 }

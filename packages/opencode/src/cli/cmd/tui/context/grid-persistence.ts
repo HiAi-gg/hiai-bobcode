@@ -13,10 +13,31 @@ export type GridCell = {
 
 export type GridLayout = "single" | "split-h" | "split-v"
 
+/**
+ * Phase 6: ratio (0-1) of the left/top cell's share when in a split layout.
+ * Default 0.6 (60/40). The splitter drag handle clamps this value to a range
+ * that keeps both cells at >= `MIN_CELL_COLS` columns wide.
+ */
+export type GridSplitRatio = number
+
+/**
+ * Minimum width (in terminal columns) either side of the split must keep.
+ * Below this the dragged cell would be unreadable, so the splitter clamps.
+ */
+export const MIN_CELL_COLS = 40
+
+/**
+ * Default split ratio when entering a split layout for the first time.
+ * 0.6 → 60/40 split (left/top cell is the larger one).
+ */
+export const DEFAULT_SPLIT_RATIO: GridSplitRatio = 0.6
+
 export type GridState = {
   cells: GridCell[]
   activeCellId: string
   layout: GridLayout
+  /** Phase 6: persisted split ratio; only meaningful for split-h/split-v. */
+  splitRatio: GridSplitRatio
 }
 
 // Project-local mimocode dir under the user's home — explicit per spec.
@@ -29,6 +50,7 @@ export function defaultGridState(): GridState {
     cells: [],
     activeCellId: "",
     layout: "single",
+    splitRatio: DEFAULT_SPLIT_RATIO,
   }
 }
 
@@ -49,12 +71,30 @@ function isGridLayout(value: unknown): value is GridLayout {
   return value === "single" || value === "split-h" || value === "split-v"
 }
 
+function isGridSplitRatio(value: unknown): value is GridSplitRatio {
+  return typeof value === "number" && Number.isFinite(value) && value >= 0 && value <= 1
+}
+
 export function isGridState(value: unknown): value is GridState {
   if (typeof value !== "object" || value === null) return false
   const v = value as Record<string, unknown>
   return (
-    Array.isArray(v.cells) && v.cells.every(isGridCell) && typeof v.activeCellId === "string" && isGridLayout(v.layout)
+    Array.isArray(v.cells) &&
+    v.cells.every(isGridCell) &&
+    typeof v.activeCellId === "string" &&
+    isGridLayout(v.layout) &&
+    // Persisted files written before Phase 6 lack splitRatio; default it.
+    (v.splitRatio === undefined || isGridSplitRatio(v.splitRatio))
   )
+}
+
+/**
+ * Normalize a persisted state to fill in any fields added after the file was
+ * last written. Currently just injects `splitRatio` for pre-Phase-6 files.
+ */
+export function normalizeGridState(state: GridState): GridState {
+  if (isGridSplitRatio(state.splitRatio)) return state
+  return { ...state, splitRatio: DEFAULT_SPLIT_RATIO }
 }
 
 async function ensureParent(p: string): Promise<void> {

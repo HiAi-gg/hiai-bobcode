@@ -106,6 +106,12 @@ export const TuiThreadCommand = cmd({
         describe:
           "start in never-ask mode — never prompt you; pick the best option autonomously (toggle at runtime with /never-ask-questions)",
         default: false,
+      })
+      .option("grid", {
+        alias: ["g"],
+        type: "boolean",
+        describe: "start in grid view (restores ~/.mimocode/grid-layout.json)",
+        default: false,
       }),
   handler: async (args) => {
     // Keep ENABLE_PROCESSED_INPUT cleared even if other code flips it.
@@ -232,6 +238,7 @@ export const TuiThreadCommand = cmd({
             prompt,
             fork: args.fork,
             neverAsk: args["never-ask-questions"],
+            grid: args.grid,
           },
         })
       } finally {

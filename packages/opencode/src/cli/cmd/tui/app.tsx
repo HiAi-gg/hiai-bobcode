@@ -9,6 +9,7 @@ import { Flag } from "@/flag/flag"
 import semver from "semver"
 import { DialogProvider, useDialog } from "@tui/ui/dialog"
 import { DialogMimoLogin } from "@tui/component/dialog-mimo-login"
+import { DialogProvider as DialogProviderPicker } from "@tui/component/dialog-provider"
 import { ErrorComponent } from "@tui/component/error-component"
 import { PluginRouteMissing } from "@tui/component/plugin-route-missing"
 import { ProjectProvider } from "@tui/context/project"
@@ -161,12 +162,21 @@ export function tui(input: {
                     <ToastProvider>
                       <RouteProvider
                         initialRoute={
-                          input.args.continue
+                          // Phase 6: boot directly into the grid when
+                          // `--grid` / `MIMOCODE_GRID` is set, unless the
+                          // caller also asked for a specific session
+                          // (which becomes the seed cell).
+                          input.args.grid || Flag.MIMOCODE_GRID
                             ? {
-                                type: "session",
-                                sessionID: "dummy",
+                                type: "grid",
+                                ...(input.args.sessionID ? { cells: [{ sessionID: input.args.sessionID }] } : {}),
                               }
-                            : undefined
+                            : input.args.continue
+                              ? {
+                                  type: "session",
+                                  sessionID: "dummy",
+                                }
+                              : undefined
                         }
                       >
                         <TuiConfigProvider config={input.config}>
@@ -178,8 +188,8 @@ export function tui(input: {
                             events={input.events}
                           >
                             <ProjectProvider>
-                              <SyncProvider>
-                                <WorkspaceClientsProvider>
+                              <WorkspaceClientsProvider>
+                                <SyncProvider>
                                   <CellEventBusProvider>
                                     <ThemeProvider mode={mode} plain={plainTerminal}>
                                       <LocalProvider>
@@ -201,8 +211,8 @@ export function tui(input: {
                                       </LocalProvider>
                                     </ThemeProvider>
                                   </CellEventBusProvider>
-                                </WorkspaceClientsProvider>
-                              </SyncProvider>
+                                </SyncProvider>
+                              </WorkspaceClientsProvider>
                             </ProjectProvider>
                           </SDKProvider>
                         </TuiConfigProvider>
@@ -339,12 +349,18 @@ function App(props: { onSnapshot?: () => Promise<string[]> }) {
       }
 
       const title = session.title.length > 40 ? session.title.slice(0, 37) + "..." : session.title
-      renderer.setTerminalTitle(`MC | ${title}`)
+      renderer.setTerminalTitle(`HiAi Bob | ${title}`)
       return
     }
 
     if (route.data.type === "plugin") {
-      renderer.setTerminalTitle(`OC | ${route.data.id}`)
+      renderer.setTerminalTitle(`HiAi Bob | ${route.data.id}`)
+      return
+    }
+
+    if (route.data.type === "grid") {
+      renderer.setTerminalTitle("HiAi Bob | Grid")
+      return
     }
   })
 
@@ -361,6 +377,16 @@ function App(props: { onSnapshot?: () => Promise<string[]> }) {
             duration: 3000,
           })
         local.model.set({ providerID, modelID }, { recent: true })
+      }
+      // Phase 6: `--grid` / `MIMOCODE_GRID` boot path. When set, the TUI
+      // launches straight into the grid view. The grid component restores
+      // the persisted layout from `~/.mimocode/grid-layout.json` on mount,
+      // so a launch with no `--session` / `--continue` lands the user on
+      // their previous grid state. With `--session` we seed a single cell.
+      if (args.grid || Flag.MIMOCODE_GRID) {
+        const seedSessionID = args.sessionID
+        route.navigate(seedSessionID ? { type: "grid", cells: [{ sessionID: seedSessionID }] } : { type: "grid" })
+        return
       }
       if (args.sessionID && !args.fork) {
         route.navigate({
@@ -608,6 +634,13 @@ function App(props: { onSnapshot?: () => Promise<string[]> }) {
         name: "login",
       },
       onSelect: () => {
+        // 2026-06-22: route by providerMode preference — "others" skips the
+        // branded short-list (DialogMimoLogin) and jumps straight to the
+        // classic flat provider picker. Default is "others".
+        if (local.providerMode.current() === "others") {
+          dialog.replace(() => <DialogProviderPicker />)
+          return
+        }
         dialog.replace(() => <DialogMimoLogin />)
       },
       category: "provider",
@@ -620,6 +653,11 @@ function App(props: { onSnapshot?: () => Promise<string[]> }) {
         name: "connect",
       },
       onSelect: () => {
+        // Same providerMode routing as provider.login — see note above.
+        if (local.providerMode.current() === "others") {
+          dialog.replace(() => <DialogProviderPicker />)
+          return
+        }
         dialog.replace(() => <DialogMimoLogin />)
       },
       category: "provider",

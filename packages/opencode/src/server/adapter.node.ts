@@ -30,7 +30,7 @@ export const adapter: Adapter = {
             server.listen(port, opts.hostname)
           })
 
-        const server = opts.port === 0 ? await start(4096).catch(() => start(0)) : await start(opts.port)
+        const server = opts.port === 0 ? await start(50900).catch(() => start(0)) : await start(opts.port)
         const addr = server.address()
         if (!addr || typeof addr === "string") {
           throw new Error(`Failed to resolve server address for port ${opts.port}`)

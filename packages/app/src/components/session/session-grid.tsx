@@ -1,5 +1,5 @@
 import { createMemo, For, Show } from "solid-js"
-import { useLayout } from "@/context/layout"
+import { useLayout, type GridCell } from "@/context/layout"
 import Page from "@/pages/session"
 import { SessionProviders } from "@/components/session/session-providers"
 import { CellSessionPicker } from "@/components/session/cell-session-picker"
@@ -26,13 +26,9 @@ const GRID_ROWS: Record<number, string> = {
 
 // Each cell gets its own session context stack (Terminal/File/Prompt/Comments)
 // so parallel sessions have independent state and useFile() etc. resolve.
-function Cell(props: {
-  dir: string
-  sessionID?: string
-  active: boolean
-  onActivate?: () => void
-  onRemove?: () => void
-}) {
+// The cell record carries its `workspaceID` and `mode` so workspace-aware
+// SDK clients can route calls to the right workspace instance.
+function Cell(props: { dir: string; cell: GridCell; active: boolean; onActivate?: () => void; onRemove?: () => void }) {
   return (
     <div
       class="relative overflow-hidden rounded-md border bg-background-stronger"
@@ -55,11 +51,13 @@ function Cell(props: {
       </Show>
       {/* Bind this cell's whole subtree to its own session so the session
           contexts (prompt/comments/file/terminal) resolve to it, not the route.
-          Only the ACTIVE cell renders "full" (its header chrome) — others render
-          "cell" so the top controls aren't duplicated. */}
-      <SessionScopeProvider dir={props.dir} id={props.sessionID}>
+          The cell's workspaceID flows through SessionScope so consumers can
+          pick the right workspace-scoped SDK client without re-deriving it
+          from the cell record. Only the ACTIVE cell renders "full" (its header
+          chrome) — others render "cell" so the top controls aren't duplicated. */}
+      <SessionScopeProvider dir={props.dir} id={props.cell.sessionID} workspaceID={props.cell.workspaceID}>
         <SessionProviders>
-          <Page sessionID={props.sessionID} mode={props.active ? "full" : "cell"} />
+          <Page sessionID={props.cell.sessionID} mode={props.active ? "full" : "cell"} />
         </SessionProviders>
       </SessionScopeProvider>
     </div>
@@ -75,11 +73,22 @@ export function SessionGrid(props: { dir: string; primaryId?: string }) {
   // Grid toggle. Extra cells fill the remaining grid slots.
   const extraCells = createMemo(() => cells().slice(0, Math.max(0, mode() - 1)))
   const emptyCount = createMemo(() => Math.max(0, mode() - 1 - extraCells().length))
-  // Active cell (last clicked) — defaults to the primary. Only it renders "full".
+  // Active cell (by last click) — defaults to the primary. Only it renders "full".
   const activeId = createMemo(() => layout.grid.active(props.dir)() ?? props.primaryId)
   // SessionScope wants `dir` in the SAME form as the route param (base64). The
   // grid store keeps using the decoded props.dir for its keys.
   const scopeDir = createMemo(() => base64Encode(props.dir))
+
+  // Primary cell carries the primary session. If the primary session isn't
+  // in the grid yet, synthesize an ephemeral cell so the cell chrome still
+  // works (it'll be persisted once the user adds the session via the picker).
+  const primaryCell = createMemo<GridCell>(() => ({
+    id: props.primaryId ?? "primary",
+    sessionID: props.primaryId ?? "",
+    workspaceID: "",
+    mode: "full",
+    label: "",
+  }))
 
   return (
     <Show
@@ -104,18 +113,18 @@ export function SessionGrid(props: { dir: string; primaryId?: string }) {
             reachable (you can change the grid mode from cell 0). */}
         <Cell
           dir={scopeDir()}
-          sessionID={props.primaryId}
+          cell={primaryCell()}
           active={activeId() === props.primaryId}
           onActivate={() => props.primaryId && layout.grid.setActive(props.dir, props.primaryId)}
         />
         <For each={extraCells()}>
-          {(id) => (
+          {(cell) => (
             <Cell
               dir={scopeDir()}
-              sessionID={id}
-              active={activeId() === id}
-              onActivate={() => layout.grid.setActive(props.dir, id)}
-              onRemove={() => layout.grid.removeCell(props.dir, id)}
+              cell={cell}
+              active={activeId() === cell.sessionID}
+              onActivate={() => layout.grid.setActive(props.dir, cell.sessionID)}
+              onRemove={() => layout.grid.removeCell(props.dir, cell.sessionID)}
             />
           )}
         </For>

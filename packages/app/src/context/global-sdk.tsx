@@ -1,4 +1,4 @@
-import type { Event } from "@mimo-ai/sdk/v2/client"
+import type { Event, OpencodeClient } from "@mimo-ai/sdk/v2/client"
 import { createSimpleContext } from "@mimo-ai/ui/context"
 import { createGlobalEmitter } from "@solid-primitives/event-bus"
 import { makeEventListener } from "@solid-primitives/event-listener"
@@ -44,7 +44,7 @@ export const { use: useGlobalSDK, provider: GlobalSDKProvider } = createSimpleCo
       [key: string]: Event
     }>()
 
-    type Queued = { directory: string; payload: Event }
+    type Queued = { directory: string; workspace: string; payload: Event }
     const FLUSH_FRAME_MS = 16
     const STREAM_YIELD_MS = 8
     const RECONNECT_DELAY_MS = 250
@@ -58,12 +58,20 @@ export const { use: useGlobalSDK, provider: GlobalSDKProvider } = createSimpleCo
 
     const deltaKey = (directory: string, messageID: string, partID: string) => `${directory}:${messageID}:${partID}`
 
-    const key = (directory: string, payload: Event) => {
-      if (payload.type === "session.status") return `session.status:${directory}:${payload.properties.sessionID}`
-      if (payload.type === "lsp.updated") return `lsp.updated:${directory}`
+    // Compose the listener key: directory-only when no workspace is set
+    // (covers global/legacy consumers), `directory:<dir>:workspace:<ws>` when
+    // the envelope carries a workspace id. Cells subscribe via the workspace
+    // key so their sync store only sees events for the workspace they own.
+    const eventKey = (directory: string, workspace: string) =>
+      workspace ? `directory:${directory}:workspace:${workspace}` : directory
+
+    const key = (directory: string, workspace: string, payload: Event) => {
+      if (payload.type === "session.status")
+        return `session.status:${directory}:${workspace}:${payload.properties.sessionID}`
+      if (payload.type === "lsp.updated") return `lsp.updated:${directory}:${workspace}`
       if (payload.type === "message.part.updated") {
         const part = payload.properties.part
-        return `message.part.updated:${directory}:${part.messageID}:${part.id}`
+        return `message.part.updated:${directory}:${workspace}:${part.messageID}:${part.id}`
       }
     }
 
@@ -88,7 +96,13 @@ export const { use: useGlobalSDK, provider: GlobalSDKProvider } = createSimpleCo
             const props = event.payload.properties
             if (skip.has(deltaKey(event.directory, props.messageID, props.partID))) continue
           }
-          emitter.emit(event.directory, event.payload)
+          // Emit under the workspace key (so workspace-scoped cells can listen)
+          // AND the legacy directory key (so directory-only consumers keep
+          // working without a per-workspace subscription). The server fills
+          // both the directory and workspace fields on the envelope so
+          // workspace-less events still route to the directory bucket.
+          emitter.emit(eventKey(event.directory, event.workspace), event.payload)
+          if (event.workspace) emitter.emit(event.directory, event.payload)
         }
       })
 
@@ -156,17 +170,18 @@ export const { use: useGlobalSDK, provider: GlobalSDKProvider } = createSimpleCo
               resetHeartbeat()
               streamErrorLogged = false
               const directory = event.directory ?? "global"
+              const workspace = event.workspace ?? ""
               if (event.payload.type === "sync") {
                 continue
               }
 
               const payload = event.payload as Event
 
-              const k = key(directory, payload)
+              const k = key(directory, workspace, payload)
               if (k) {
                 const i = coalesced.get(k)
                 if (i !== undefined) {
-                  queue[i] = { directory, payload }
+                  queue[i] = { directory, workspace, payload }
                   if (payload.type === "message.part.updated") {
                     const part = payload.properties.part
                     staleDeltas.add(deltaKey(directory, part.messageID, part.id))
@@ -175,7 +190,7 @@ export const { use: useGlobalSDK, provider: GlobalSDKProvider } = createSimpleCo
                 }
                 coalesced.set(k, queue.length)
               }
-              queue.push({ directory, payload })
+              queue.push({ directory, workspace, payload })
               schedule()
 
               if (Date.now() - yielded < STREAM_YIELD_MS) continue
@@ -234,6 +249,33 @@ export const { use: useGlobalSDK, provider: GlobalSDKProvider } = createSimpleCo
       throwOnError: true,
     })
 
+    // Per-workspace SDK client cache. Keyed by workspaceID so cells viewing
+    // the same workspace share a single client (and a single event stream).
+    // Mirrors the TUI's `WorkspaceClientPool` semantics: `clientForWorkspace`
+    // creates on first access, `cleanupWorkspaceClient` flushes on last
+    // release. Callers must pair them via refcounting — the
+    // `WorkspaceClientPool` in `workspace-clients.ts` owns that.
+    const workspaceClients = new Map<string, OpencodeClient>()
+
+    const clientForWorkspace = (workspaceID: string) => {
+      const existing = workspaceClients.get(workspaceID)
+      if (existing) return existing
+      const s = server.current
+      if (!s) throw new Error(language.t("error.globalSDK.serverNotAvailable"))
+      const client = createSdkForServer({
+        server: s.http,
+        fetch: platform.fetch,
+        throwOnError: true,
+        experimental_workspaceID: workspaceID,
+      })
+      workspaceClients.set(workspaceID, client)
+      return client
+    }
+
+    const cleanupWorkspaceClient = (workspaceID: string) => {
+      workspaceClients.delete(workspaceID)
+    }
+
     return {
       url: currentServer.http.url,
       client: sdk,
@@ -251,6 +293,8 @@ export const { use: useGlobalSDK, provider: GlobalSDKProvider } = createSimpleCo
           ...opts,
         })
       },
+      clientForWorkspace,
+      cleanupWorkspaceClient,
     }
   },
 })

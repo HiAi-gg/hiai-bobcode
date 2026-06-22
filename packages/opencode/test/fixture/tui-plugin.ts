@@ -115,7 +115,7 @@ export function createTuiPluginApi(opts: Opts = {}): HostPluginApi {
   const count = opts.count
   const ctrl = new AbortController()
   const own = createOpencodeClient({
-    baseUrl: "http://localhost:4096",
+    baseUrl: "http://localhost:50900",
   })
   const fallback = () => own
   const read =

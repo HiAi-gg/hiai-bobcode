@@ -51,5 +51,11 @@ run-bob.local.sh
 packages/opencode/.logs/
 .logs/
 
+# Internal planning / audit files (not for open-source)
+todo.md
+AGENTS.md
+AGENTS.md.bak
+todo.md.bak
+
 # runtime agent data (plans/memory/tasks)
 .bob/

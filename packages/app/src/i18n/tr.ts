@@ -317,7 +317,7 @@ export const dict = {
   "dialog.server.empty": "Henüz sunucu yok",
   "dialog.server.add.title": "Sunucu ekle",
   "dialog.server.add.url": "Sunucu URL'si",
-  "dialog.server.add.placeholder": "http://localhost:4096",
+  "dialog.server.add.placeholder": "http://localhost:50900",
   "dialog.server.add.error": "Sunucuya bağlanılamadı",
   "dialog.server.add.checking": "Kontrol ediliyor...",
   "dialog.server.add.button": "Sunucu ekle",

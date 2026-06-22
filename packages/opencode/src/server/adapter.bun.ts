@@ -21,7 +21,7 @@ export const adapter: Adapter = {
             return
           }
         }
-        const server = opts.port === 0 ? (start(4096) ?? start(0)) : start(opts.port)
+        const server = opts.port === 0 ? (start(50900) ?? start(0)) : start(opts.port)
         if (!server) {
           throw new Error(`Failed to start server on port ${opts.port}`)
         }

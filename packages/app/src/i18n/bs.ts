@@ -313,7 +313,7 @@ export const dict = {
   "dialog.server.empty": "Još nema servera",
   "dialog.server.add.title": "Dodaj server",
   "dialog.server.add.url": "URL servera",
-  "dialog.server.add.placeholder": "http://localhost:4096",
+  "dialog.server.add.placeholder": "http://localhost:50900",
   "dialog.server.add.error": "Nije moguće povezati se na server",
   "dialog.server.add.checking": "Provjera...",
   "dialog.server.add.button": "Dodaj server",

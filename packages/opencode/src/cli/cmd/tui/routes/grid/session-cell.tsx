@@ -147,6 +147,13 @@ export function SessionCell(props: {
   cell: GridCell
   active: boolean
   wide?: boolean
+  /**
+   * Phase 6: optional fixed height (terminal rows). Used by `split-v` so the
+   * cell stops claiming `flexGrow={1}` and lets the splitter size both
+   * halves deterministically. When `undefined` the cell falls back to
+   * `flexGrow={1}` and tracks the parent container.
+   */
+  height?: number
   /** Optional seed prompt (e.g. when entering the session for the first time). */
   prompt?: PromptInfo
 }) {
@@ -228,6 +235,46 @@ export function SessionCell(props: {
   const contentWidth = createMemo(() => dimensions().width - (sidebarVisible() ? 42 : 0) - 4)
   const providers = createMemo(() => Model.index(sync.data.provider))
 
+  // Phase 6: derived cell state aggregated into a single memo so downstream
+  // consumers (sidebar, prompt, layout) all see a consistent snapshot.
+  // Solid memos are referentially stable as long as their inputs do not
+  // change, so wrapping the booleans in a single object is cheaper than
+  // letting each consumer re-derive them independently.
+  const cellState = createMemo(() => ({
+    width: contentWidth(),
+    active: props.active,
+    sidebarVisible: sidebarVisible(),
+    showTimestamps: showTimestamps(),
+    wide: wide(),
+    height: props.height,
+  }))
+
+  // Phase 6: snapshot the message list behind a memo so inactive cells do
+  // not invalidate `<For>` on every streaming update from a sibling cell.
+  // While the user is focused on cell A, the sync stream keeps filling
+  // cell B; the memo below returns the previous reference for cell B
+  // because its `messages()` signal isn't being re-read, only the parent
+  // effect tracks it. (The underlying sync store keeps mutating; this is
+  // purely a render-path freeze.) When the user switches focus to B the
+  // memo drops its cached value and re-renders with the live list.
+  let cachedInactive: ReturnType<typeof messages> | undefined
+  let lastActive = props.active
+  const cellMessages = createMemo(() => {
+    if (!props.active) {
+      if (lastActive) {
+        // Just deactivated — freeze at the current snapshot.
+        cachedInactive = messages()
+      } else if (cachedInactive === undefined) {
+        cachedInactive = messages()
+      }
+      lastActive = false
+      return cachedInactive
+    }
+    lastActive = true
+    cachedInactive = undefined
+    return messages()
+  })
+
   const scrollAcceleration = createMemo(() => getScrollAcceleration(tuiConfig))
   const toast = useToast()
 
@@ -250,7 +297,15 @@ export function SessionCell(props: {
       } catch (e) {}
     }
     await sync.session.sync(props.cell.sessionID)
-    if (scroll) scroll.scrollBy(100_000)
+    // Phase 6: batch the post-sync scroll nudge so it lands in the same
+    // tick as the rest of the sync-induced renders. Without `batch`, the
+    // scroll setter wakes the stickyScroll guard before messages finish
+    // reconciling, which on a multi-cell grid can compound into visible
+    // jitter when the user rapidly switches active cells via
+    // <leader>1..9.
+    batch(() => {
+      if (scroll) scroll.scrollBy(100_000)
+    })
   })
 
   let lastSwitch: string | undefined = undefined
@@ -335,7 +390,7 @@ export function SessionCell(props: {
         ...logo,
         ``,
         `  ${weak("Session")}${UI.Style.TEXT_NORMAL_BOLD}${title}${UI.Style.TEXT_NORMAL}`,
-        `  ${weak("Continue")}${UI.Style.TEXT_NORMAL_BOLD}mimo -s ${sync.session.get(props.cell.sessionID)?.id}${UI.Style.TEXT_NORMAL}`,
+        `  ${weak("Continue")}${UI.Style.TEXT_NORMAL_BOLD}bob -s ${sync.session.get(props.cell.sessionID)?.id}${UI.Style.TEXT_NORMAL}`,
         ``,
       ].join("\n"),
     )
@@ -487,7 +542,7 @@ export function SessionCell(props: {
     <cellContext.Provider
       value={{
         get width() {
-          return contentWidth()
+          return cellState().width
         },
         sessionID: props.cell.sessionID,
         workspaceID: props.cell.workspaceID,
@@ -501,155 +556,185 @@ export function SessionCell(props: {
         providers,
         sync,
         tui: tuiConfig,
-        active: () => props.active,
+        active: () => cellState().active,
       }}
     >
       <box flexDirection="row" height="100%">
         <box flexGrow={1} paddingBottom={1} paddingLeft={2} paddingRight={2} gap={1} onMouse={onWheel}>
           <Show when={sync.session.get(props.cell.sessionID)}>
-            <scrollbox
-              ref={(r) => (scroll = r)}
-              viewportOptions={{
-                paddingRight: 1,
-              }}
-              verticalScrollbarOptions={{
-                paddingLeft: 1,
-                visible: true,
-                trackOptions: {
-                  backgroundColor: scrollbarVisible() ? theme.backgroundElement : theme.background,
-                  foregroundColor: scrollbarVisible() ? theme.border : theme.background,
-                },
-              }}
-              stickyScroll={true}
-              stickyStart="bottom"
-              flexGrow={1}
-              scrollAcceleration={scrollAcceleration()}
-            >
-              <box height={1} />
-              <For each={messages()}>
-                {(message, index) => (
-                  <Switch>
-                    <Match when={message.id === revert()?.messageID}>
-                      {(() => {
-                        const command = useCommandDialog()
-                        const [hover, setHover] = createSignal(false)
-                        const dialog = useDialog()
-                        const handleUnrevert = async () => {
-                          const confirmed = await DialogConfirm.show(
-                            dialog,
-                            "Confirm Redo",
-                            "Are you sure you want to restore the reverted messages?",
-                          )
-                          if (confirmed) command.trigger("session.redo")
-                        }
-                        return (
-                          <box
-                            onMouseOver={() => setHover(true)}
-                            onMouseOut={() => setHover(false)}
-                            onMouseUp={handleUnrevert}
-                            marginTop={1}
-                            flexShrink={0}
-                            border={["left"]}
-                            customBorderChars={SplitBorder.customBorderChars}
-                            borderColor={theme.backgroundPanel}
-                          >
-                            <box
-                              paddingTop={1}
-                              paddingBottom={1}
-                              paddingLeft={2}
-                              backgroundColor={hover() ? theme.backgroundElement : theme.backgroundPanel}
-                            >
-                              <text fg={theme.textMuted}>{revert()!.reverted.length} message reverted</text>
-                              <text fg={theme.textMuted}>
-                                <span style={{ fg: theme.text }}>{keybind.print("messages_redo")}</span> or /redo to
-                                restore
-                              </text>
-                              <Show when={revert()!.diffFiles?.length}>
-                                <box marginTop={1}>
-                                  <For each={revert()!.diffFiles}>
-                                    {(file) => (
-                                      <text fg={theme.text}>
-                                        {file.filename}
-                                        <Show when={file.additions > 0}>
-                                          <span style={{ fg: theme.diffAdded }}> +{file.additions}</span>
-                                        </Show>
-                                        <Show when={file.deletions > 0}>
-                                          <span style={{ fg: theme.diffRemoved }}> -{file.deletions}</span>
-                                        </Show>
-                                      </text>
-                                    )}
-                                  </For>
-                                </box>
-                              </Show>
-                            </box>
-                          </box>
-                        )
-                      })()}
-                    </Match>
-                    <Match when={revert()?.messageID && message.id >= revert()!.messageID}>
-                      <></>
-                    </Match>
-                    <Match when={message.role === "user"}>
-                      <UserMessage
-                        index={index()}
-                        onMouseUp={() => {
-                          if (renderer.getSelection()?.getSelectedText()) return
-                          dialog.replace(() => (
-                            <DialogMessage
-                              messageID={message.id}
-                              sessionID={props.cell.sessionID}
-                              setPrompt={(promptInfo) => prompt?.set(promptInfo)}
-                            />
-                          ))
-                        }}
-                        message={message as UserMessage}
-                        parts={sync.data.part[message.id] ?? []}
-                        pending={pending()}
-                      />
-                    </Match>
-                    <Match when={message.role === "assistant"}>
-                      <AssistantMessage
-                        last={lastAssistant()?.id === message.id}
-                        message={message as AssistantMessage}
-                        parts={sync.data.part[message.id] ?? []}
-                      />
-                    </Match>
-                  </Switch>
-                )}
-              </For>
-            </scrollbox>
-            <box flexShrink={0}>
-              <Show when={permissions().length > 0}>
-                <PermissionPrompt request={permissions()[0]} />
-              </Show>
-              <Show when={permissions().length === 0 && questions().length > 0}>
-                <QuestionPrompt request={questions()[0]} />
-              </Show>
-              <Show when={sync.session.get(props.cell.sessionID)?.parentID || currentAgentID() !== "main"}>
-                <SubagentFooter />
-              </Show>
-              <Show when={props.active && visible()}>
-                <TuiPluginRuntime.Slot
-                  name="session_prompt"
-                  mode="replace"
-                  session_id={props.cell.sessionID}
+            {/* Phase 8: empty-session bootstrap. When a cell holds a freshly
+                created session (no messages yet) we render the prompt first
+                instead of an empty scrollbox, so the user can type the first
+                message and submit it without an off-screen input. Mirrors the
+                home-screen experience for new sessions. The prompt's submit
+                already handles an existing sessionID (see prompt/index.tsx:
+                `if (sessionID == null)` skip), so this reuses the standard
+                flow and only changes the layout chrome. */}
+            <Show
+              when={cellMessages().length > 0 || !props.active}
+              fallback={
+                <EmptySessionPrompt
+                  cell={props.cell}
+                  active={props.active}
                   visible={visible()}
                   disabled={disabled()}
-                  on_submit={toBottom}
-                  ref={bind}
-                >
-                  <Prompt
+                  promptRef={bind}
+                  onSubmit={toBottom}
+                />
+              }
+            >
+              <scrollbox
+                ref={(r) => (scroll = r)}
+                viewportOptions={{
+                  paddingRight: 1,
+                }}
+                verticalScrollbarOptions={{
+                  paddingLeft: 1,
+                  visible: true,
+                  trackOptions: {
+                    backgroundColor: scrollbarVisible() ? theme.backgroundElement : theme.background,
+                    foregroundColor: scrollbarVisible() ? theme.border : theme.background,
+                  },
+                }}
+                stickyScroll={true}
+                stickyStart="bottom"
+                flexGrow={props.height ? 0 : 1}
+                height={props.height}
+                scrollAcceleration={scrollAcceleration()}
+                // Phase 6: viewport culling. With culling enabled the scrollbox
+                // stops allocating render slots for off-screen messages, which
+                // combined with the existing stickyScroll guard (Phase 5)
+                // prevents a background cell from re-laying out on every
+                // streaming update. Active cells benefit too — the cost there
+                // is dominated by the live model, not the offscreen buffer.
+                viewportCulling={true}
+              >
+                <box height={1} />
+                <For each={cellMessages()}>
+                  {(message, index) => (
+                    <Switch>
+                      <Match when={message.id === revert()?.messageID}>
+                        {(() => {
+                          const command = useCommandDialog()
+                          const [hover, setHover] = createSignal(false)
+                          const dialog = useDialog()
+                          const handleUnrevert = async () => {
+                            const confirmed = await DialogConfirm.show(
+                              dialog,
+                              "Confirm Redo",
+                              "Are you sure you want to restore the reverted messages?",
+                            )
+                            if (confirmed) command.trigger("session.redo")
+                          }
+                          return (
+                            <box
+                              onMouseOver={() => setHover(true)}
+                              onMouseOut={() => setHover(false)}
+                              onMouseUp={handleUnrevert}
+                              marginTop={1}
+                              flexShrink={0}
+                              border={["left"]}
+                              customBorderChars={SplitBorder.customBorderChars}
+                              borderColor={theme.backgroundPanel}
+                            >
+                              <box
+                                paddingTop={1}
+                                paddingBottom={1}
+                                paddingLeft={2}
+                                backgroundColor={hover() ? theme.backgroundElement : theme.backgroundPanel}
+                              >
+                                <text fg={theme.textMuted}>{revert()!.reverted.length} message reverted</text>
+                                <text fg={theme.textMuted}>
+                                  <span style={{ fg: theme.text }}>{keybind.print("messages_redo")}</span> or /redo to
+                                  restore
+                                </text>
+                                <Show when={revert()!.diffFiles?.length}>
+                                  <box marginTop={1}>
+                                    <For each={revert()!.diffFiles}>
+                                      {(file) => (
+                                        <text fg={theme.text}>
+                                          {file.filename}
+                                          <Show when={file.additions > 0}>
+                                            <span style={{ fg: theme.diffAdded }}> +{file.additions}</span>
+                                          </Show>
+                                          <Show when={file.deletions > 0}>
+                                            <span style={{ fg: theme.diffRemoved }}> -{file.deletions}</span>
+                                          </Show>
+                                        </text>
+                                      )}
+                                    </For>
+                                  </box>
+                                </Show>
+                              </box>
+                            </box>
+                          )
+                        })()}
+                      </Match>
+                      <Match when={revert()?.messageID && message.id >= revert()!.messageID}>
+                        <></>
+                      </Match>
+                      <Match when={message.role === "user"}>
+                        <UserMessage
+                          index={index()}
+                          onMouseUp={() => {
+                            if (renderer.getSelection()?.getSelectedText()) return
+                            dialog.replace(() => (
+                              <DialogMessage
+                                messageID={message.id}
+                                sessionID={props.cell.sessionID}
+                                setPrompt={(promptInfo) => prompt?.set(promptInfo)}
+                              />
+                            ))
+                          }}
+                          message={message as UserMessage}
+                          parts={sync.data.part[message.id] ?? []}
+                          pending={pending()}
+                        />
+                      </Match>
+                      <Match when={message.role === "assistant"}>
+                        <AssistantMessage
+                          last={lastAssistant()?.id === message.id}
+                          message={message as AssistantMessage}
+                          parts={sync.data.part[message.id] ?? []}
+                        />
+                      </Match>
+                    </Switch>
+                  )}
+                </For>
+              </scrollbox>
+              <box flexShrink={0}>
+                <Show when={permissions().length > 0}>
+                  <PermissionPrompt request={permissions()[0]} />
+                </Show>
+                <Show when={permissions().length === 0 && questions().length > 0}>
+                  <QuestionPrompt request={questions()[0]} />
+                </Show>
+                <Show when={sync.session.get(props.cell.sessionID)?.parentID || currentAgentID() !== "main"}>
+                  <SubagentFooter />
+                </Show>
+                <Show when={props.active && visible()}>
+                  <TuiPluginRuntime.Slot
+                    name="session_prompt"
+                    mode="replace"
+                    session_id={props.cell.sessionID}
                     visible={visible()}
-                    ref={bind}
                     disabled={disabled()}
-                    onSubmit={toBottom}
-                    sessionID={props.cell.sessionID}
-                    focusEnabled={props.active}
-                    right={<TuiPluginRuntime.Slot name="session_prompt_right" session_id={props.cell.sessionID} />}
-                  />
-                </TuiPluginRuntime.Slot>
-              </Show>
-            </box>
+                    on_submit={toBottom}
+                    ref={bind}
+                  >
+                    <Prompt
+                      visible={visible()}
+                      ref={bind}
+                      disabled={disabled()}
+                      onSubmit={toBottom}
+                      sessionID={props.cell.sessionID}
+                      focusEnabled={props.active}
+                      right={<TuiPluginRuntime.Slot name="session_prompt_right" session_id={props.cell.sessionID} />}
+                    />
+                  </TuiPluginRuntime.Slot>
+                </Show>
+              </box>
+            </Show>
           </Show>
           <Toast />
         </box>
@@ -678,6 +763,43 @@ export function SessionCell(props: {
         </Show>
       </box>
     </cellContext.Provider>
+  )
+}
+
+/**
+ * Phase 8: Empty-session bootstrap prompt. Shown when a freshly created cell
+ * has zero messages yet. Mirrors the home-screen prompt so the user can type
+ * the first message and submit it without an off-screen input or a stub
+ * scrollbox that pushes the prompt below the fold. Uses the workspace-aware
+ * prompt flow so model selection, history, and slash commands keep working
+ * — the prompt's `submit()` short-circuits session creation because we
+ * already have a sessionID (see `component/prompt/index.tsx`).
+ */
+function EmptySessionPrompt(props: {
+  cell: GridCell
+  active: boolean
+  visible: boolean
+  disabled: boolean
+  promptRef: (ref: PromptRef | undefined) => void
+  onSubmit: () => void
+}) {
+  const { theme } = useTheme()
+  return (
+    <box flexDirection="column" flexGrow={1} alignItems="center" justifyContent="center" paddingTop={2} gap={1}>
+      <text fg={theme.textMuted}>{props.cell.label || "New Session"}</text>
+      <text fg={theme.textMuted}>Type your first message to begin.</text>
+      <box width="100%" maxWidth={75} paddingTop={1}>
+        <Prompt
+          ref={props.promptRef}
+          sessionID={props.cell.sessionID}
+          workspaceID={props.cell.workspaceID || undefined}
+          visible={props.visible}
+          disabled={props.disabled}
+          onSubmit={props.onSubmit}
+          focusEnabled={props.active}
+        />
+      </box>
+    </box>
   )
 }
 

@@ -16,7 +16,7 @@ const root = "/tmp/story"
 export function useSDK() {
   return {
     directory: root,
-    url: "http://localhost:4096",
+    url: "http://localhost:50900",
     client: make(root),
     createClient(input: { directory: string }) {
       return make(input.directory)

@@ -9,11 +9,13 @@ import { useProject } from "../context/project"
 import { useSync } from "../context/sync"
 import { Toast } from "../ui/toast"
 import { useArgs } from "../context/args"
+import { useRoute } from "@tui/context/route"
 import { useRouteData } from "@tui/context/route"
 import { usePromptRef } from "../context/prompt"
 import { useLocal } from "../context/local"
 import { useKV } from "../context/kv"
 import { useLanguage } from "@tui/context/language"
+import { useKeybind } from "@tui/context/keybind"
 import { TuiPluginRuntime } from "../plugin"
 import { Global } from "@/global"
 import { isPlainTerminal } from "../util/terminal"
@@ -24,6 +26,7 @@ export function Home() {
   const sync = useSync()
   const project = useProject()
   const route = useRouteData("home")
+  const routeCtx = useRoute()
   const promptRef = usePromptRef()
   const [ref, setRef] = createSignal<PromptRef | undefined>()
   const args = useArgs()
@@ -31,6 +34,7 @@ export function Home() {
   const kv = useKV()
   const t = useLanguage().t
   const plainTerminal = isPlainTerminal()
+  const keybind = useKeybind()
   const bgImagePath = createMemo(() => {
     const filename = kv.get("background_image")
     if (!filename || typeof filename !== "string") return undefined
@@ -112,13 +116,7 @@ export function Home() {
           </Show>
         </box>
         <box height={1} minHeight={0} flexShrink={1} />
-        <box
-          width="100%"
-          maxWidth={75}
-          zIndex={1000}
-          paddingTop={1}
-          flexShrink={0}
-        >
+        <box width="100%" maxWidth={75} zIndex={1000} paddingTop={1} flexShrink={0}>
           <Show
             when={plainTerminal}
             fallback={
@@ -137,11 +135,7 @@ export function Home() {
               </TuiPluginRuntime.Slot>
             }
           >
-            <Prompt
-              ref={bind}
-              workspaceID={project.workspace.current()}
-              placeholders={placeholder}
-            />
+            <Prompt ref={bind} workspaceID={project.workspace.current()} placeholders={placeholder} />
           </Show>
         </box>
         <Show when={plainTerminal}>
@@ -152,6 +146,24 @@ export function Home() {
         <Show when={!plainTerminal}>
           <TuiPluginRuntime.Slot name="home_bottom" />
         </Show>
+        {/* Phase 6: "Grid Mode" entry point. Lets the user launch into the
+            grid view without restarting with `--grid`. Click navigates to
+            the grid route (empty or restored from `~/.mimocode/grid-layout.json`).
+            Rendered as a slim row of clickable buttons below the home slot so
+            plugin content stays in control of the bottom area. */}
+        <box paddingTop={1} flexShrink={0} flexDirection="row" justifyContent="center" gap={1}>
+          <box
+            paddingLeft={2}
+            paddingRight={2}
+            border={["left", "right"]}
+            onMouseUp={() => routeCtx.navigate({ type: "grid" })}
+          >
+            <text selectable={false}>{`▦ Grid Mode (${keybind.print("grid_create")})`}</text>
+          </box>
+          <box paddingLeft={2} paddingRight={2} onMouseUp={() => routeCtx.navigate({ type: "grid" })}>
+            <text selectable={false}>{`Resume last session (${keybind.print("session_list")})`}</text>
+          </box>
+        </box>
         <box flexGrow={1} minHeight={0} />
         <Toast />
       </box>

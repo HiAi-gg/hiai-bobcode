@@ -102,7 +102,7 @@ To start the OpenCode headless API server:
 bun dev serve
 ```
 
-This starts the headless server on port 4096 by default. You can specify a different port:
+This starts the headless server on port 50900 by default. You can specify a different port:
 
 ```bash
 bun dev serve --port 8080
@@ -167,8 +167,8 @@ Caveats:
 - If you want to run the OpenCode TUI and have breakpoints triggered in the server code, you might need to run `bun dev spawn` instead of
   the usual `bun dev`. This is because `bun dev` runs the server in a worker thread and breakpoints might not work there.
 - If `spawn` does not work for you, you can debug the server separately:
-  - Debug server: `bun run --inspect=ws://localhost:6499/ --cwd packages/opencode ./src/index.ts serve --port 4096`,
-    then attach TUI with `opencode attach http://localhost:4096`
+  - Debug server: `bun run --inspect=ws://localhost:6499/ --cwd packages/opencode ./src/index.ts serve --port 50900`,
+    then attach TUI with `opencode attach http://localhost:50900`
   - Debug TUI: `bun run --inspect=ws://localhost:6499/ --cwd packages/opencode --conditions=browser ./src/index.ts`
 
 Other tips and tricks:

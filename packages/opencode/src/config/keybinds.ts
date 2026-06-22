@@ -126,6 +126,20 @@ const KeybindsSchema = Schema.Struct({
   grid_prev: keybind("<leader>left", "Previous grid cell"),
   grid_plan_mode: keybind("<leader>p", "Toggle plan-only mode"),
   grid_layout_toggle: keybind("<leader>k", "Toggle grid layout"),
+  // Phase 6: direct cell-switch + single-cell mode keybinds. Numbers 1-9
+  // jump to the cell at that position (cycling if needed); 0 collapses the
+  // grid to single-cell mode regardless of current layout.
+  grid_cell_1: keybind("<leader>1", "Switch to cell 1"),
+  grid_cell_2: keybind("<leader>2", "Switch to cell 2"),
+  grid_cell_3: keybind("<leader>3", "Switch to cell 3"),
+  grid_cell_4: keybind("<leader>4", "Switch to cell 4"),
+  grid_cell_5: keybind("<leader>5", "Switch to cell 5"),
+  grid_cell_6: keybind("<leader>6", "Switch to cell 6"),
+  grid_cell_7: keybind("<leader>7", "Switch to cell 7"),
+  grid_cell_8: keybind("<leader>8", "Switch to cell 8"),
+  grid_cell_9: keybind("<leader>9", "Switch to cell 9"),
+  grid_single: keybind("<leader>0", "Single cell mode"),
+  grid_help: keybind("<leader>?", "Show grid keyboard help"),
 }).annotate({ identifier: "KeybindsConfig" })
 
 export type Keybinds = Schema.Schema.Type<typeof KeybindsSchema>

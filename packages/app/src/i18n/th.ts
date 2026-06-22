@@ -312,7 +312,7 @@ export const dict = {
   "dialog.server.empty": "ยังไม่มีเซิร์ฟเวอร์",
   "dialog.server.add.title": "เพิ่มเซิร์ฟเวอร์",
   "dialog.server.add.url": "URL เซิร์ฟเวอร์",
-  "dialog.server.add.placeholder": "http://localhost:4096",
+  "dialog.server.add.placeholder": "http://localhost:50900",
   "dialog.server.add.error": "ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์",
   "dialog.server.add.checking": "กำลังตรวจสอบ...",
   "dialog.server.add.button": "เพิ่มเซิร์ฟเวอร์",
