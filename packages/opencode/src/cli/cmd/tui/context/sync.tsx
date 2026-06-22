@@ -19,10 +19,10 @@ import type {
   ProviderAuthMethod,
   VcsInfo,
 } from "@mimo-ai/sdk/v2"
-import { createStore, produce, reconcile } from "solid-js/store"
+import { createStore, produce, reconcile, type SetStoreFunction } from "solid-js/store"
 import { useProject } from "@tui/context/project"
-import { useEvent } from "@tui/context/event"
 import { useSDK } from "@tui/context/sdk"
+import { useWorkspaceClients, asWorkspaceID } from "./workspace-clients"
 import { Binary } from "@mimo-ai/shared/util/binary"
 import { createSimpleContext } from "./helper"
 import type { Snapshot } from "@/snapshot"
@@ -111,9 +111,7 @@ function actorStatusFromEvent(
   return "unknown"
 }
 
-export function bucketMessages<M extends { agentID?: string | null }>(
-  msgs: M[],
-): Record<string, M[]> {
+export function bucketMessages<M extends { agentID?: string | null }>(msgs: M[]): Record<string, M[]> {
   const out: Record<string, M[]> = {}
   for (const m of msgs) {
     const k = m.agentID ?? "main"
@@ -123,111 +121,154 @@ export function bucketMessages<M extends { agentID?: string | null }>(
   return out
 }
 
+/**
+ * Per-workspace sync state. One bucket is created per workspaceID on first
+ * access; the bucket's `status` field drives the overall `SyncProvider`
+ * readiness. Mirrors the previous flat store so consumers (event handlers,
+ * components) keep working on a single store keyed by the current workspace.
+ */
+type SyncState = {
+  status: "loading" | "partial" | "complete"
+  provider: Provider[]
+  provider_default: Record<string, string>
+  provider_next: ProviderListResponse
+  console_state: ConsoleState
+  provider_auth: Record<string, ProviderAuthMethod[]>
+  agent: Agent[]
+  command: Command[]
+  permission: {
+    [sessionID: string]: PermissionRequest[]
+  }
+  question: {
+    [sessionID: string]: QuestionRequest[]
+  }
+  config: Config
+  session: Session[]
+  session_status: {
+    [sessionID: string]: SessionStatus
+  }
+  session_goal: {
+    [sessionID: string]: SessionGoal
+  }
+  session_diff: {
+    [sessionID: string]: Snapshot.FileDiff[]
+  }
+  session_cwd: {
+    [sessionID: string]: string
+  }
+  todo: {
+    [sessionID: string]: Todo[]
+  }
+  task: {
+    [sessionID: string]: Task[]
+  }
+  message: {
+    [sessionID: string]: {
+      [agentID: string]: Message[]
+    }
+  }
+  part: {
+    [messageID: string]: Part[]
+  }
+  lsp: LspStatus[]
+  mcp: {
+    [key: string]: McpStatus
+  }
+  mcp_resource: {
+    [key: string]: McpResource
+  }
+  instructions: string[]
+  formatter: FormatterStatus[]
+  vcs: VcsInfo | undefined
+  actor: {
+    [sessionID: string]: ActorEntry[]
+  }
+  workflow: {
+    [runID: string]: WorkflowRun
+  }
+}
+
+function emptySyncState(): SyncState {
+  return {
+    provider_next: {
+      all: [],
+      default: {},
+      connected: [],
+    },
+    console_state: emptyConsoleState,
+    provider_auth: {},
+    config: {},
+    status: "loading",
+    agent: [],
+    permission: {},
+    question: {},
+    command: [],
+    provider: [],
+    provider_default: {},
+    session: [],
+    session_status: {},
+    session_goal: {},
+    session_diff: {},
+    session_cwd: {},
+    todo: {},
+    task: {},
+    message: {},
+    part: {},
+    lsp: [],
+    mcp: {},
+    mcp_resource: {},
+    instructions: [],
+    formatter: [],
+    vcs: undefined,
+    actor: {},
+    workflow: {},
+  }
+}
+
 export const { use: useSync, provider: SyncProvider } = createSimpleContext({
   name: "Sync",
   init: () => {
-    const [store, setStore] = createStore<{
-      status: "loading" | "partial" | "complete"
-      provider: Provider[]
-      provider_default: Record<string, string>
-      provider_next: ProviderListResponse
-      console_state: ConsoleState
-      provider_auth: Record<string, ProviderAuthMethod[]>
-      agent: Agent[]
-      command: Command[]
-      permission: {
-        [sessionID: string]: PermissionRequest[]
-      }
-      question: {
-        [sessionID: string]: QuestionRequest[]
-      }
-      config: Config
-      session: Session[]
-      session_status: {
-        [sessionID: string]: SessionStatus
-      }
-      session_goal: {
-        [sessionID: string]: SessionGoal
-      }
-      session_diff: {
-        [sessionID: string]: Snapshot.FileDiff[]
-      }
-      session_cwd: {
-        [sessionID: string]: string
-      }
-      todo: {
-        [sessionID: string]: Todo[]
-      }
-      task: {
-        [sessionID: string]: Task[]
-      }
-      message: {
-        [sessionID: string]: {
-          [agentID: string]: Message[]
-        }
-      }
-      part: {
-        [messageID: string]: Part[]
-      }
-      lsp: LspStatus[]
-      mcp: {
-        [key: string]: McpStatus
-      }
-      mcp_resource: {
-        [key: string]: McpResource
-      }
-      instructions: string[]
-      formatter: FormatterStatus[]
-      vcs: VcsInfo | undefined
-      actor: {
-        [sessionID: string]: ActorEntry[]
-      }
-      workflow: {
-        [runID: string]: WorkflowRun
-      }
-    }>({
-      provider_next: {
-        all: [],
-        default: {},
-        connected: [],
-      },
-      console_state: emptyConsoleState,
-      provider_auth: {},
-      config: {},
-      status: "loading",
-      agent: [],
-      permission: {},
-      question: {},
-      command: [],
-      provider: [],
-      provider_default: {},
-      session: [],
-      session_status: {},
-      session_goal: {},
-      session_diff: {},
-      session_cwd: {},
-      todo: {},
-      task: {},
-      message: {},
-      part: {},
-      lsp: [],
-      mcp: {},
-      mcp_resource: {},
-      instructions: [],
-      formatter: [],
-      vcs: undefined,
-      actor: {},
-      workflow: {},
-    })
+    // Per-workspace store buckets. Keyed by workspaceID; `undefined` holds the
+    // "no current workspace" bucket (the bootstrap pre-workspace state).
+    // Each entry is a [state, setStore] pair from `createStore`. Solid's
+    // createStore returns a reactive proxy we expose through `getStore`.
+    const buckets = new Map<string | undefined, { state: SyncState; set: SetStoreFunction<SyncState> }>()
 
-    const event = useEvent()
+    const ensureBucket = (workspaceID: string | undefined) => {
+      const existing = buckets.get(workspaceID)
+      if (existing) return existing
+      const [state, set] = createStore<SyncState>(emptySyncState())
+      const entry = { state, set }
+      buckets.set(workspaceID, entry)
+      return entry
+    }
+
+    // Active bucket = the one matching the current workspace (or `undefined`
+    // before any workspace is selected). The legacy `store` / `setStore`
+    // references in this module continue to read/write this active bucket so
+    // existing event handlers and bootstrap logic don't need to thread a
+    // workspaceID through every call.
     const project = useProject()
     const sdk = useSDK()
+    const workspaceClients = useWorkspaceClients()
 
     const fullSyncedSessions = new Set<string>()
     let syncedWorkspace = project.workspace.current()
 
-    event.subscribe((event) => {
+    // Subscribe directly to the SDK bus (envelope, not payload) so we can
+    // route events to the right workspace bucket. `useEvent()` filters to
+    // the current workspace only — fine for single-workspace views, but
+    // Phase 1.3 needs the TUI to track every active workspace's events.
+    sdk.event.on("event", (envelope) => {
+      if (envelope.payload.type === "sync") return
+      // Global envelope events (workspace:"", directory:"global") belong to
+      // the no-workspace bucket — they affect all workspaces symmetrically.
+      const workspaceID = envelope.workspace || undefined
+      const bucket = ensureBucket(workspaceID)
+      const store = bucket.state
+      const setStore = bucket.set
+      const event = envelope.payload
+
       switch (event.type) {
         case "server.instance.disposed":
           void bootstrap()
@@ -576,7 +617,11 @@ export const { use: useSync, provider: SyncProvider } = createSimpleContext({
             turn_count: 0,
             last_turn_time: null,
           }
-          setStore("actor", sid, [...list, entry].toSorted((a, b) => a.time_created - b.time_created))
+          setStore(
+            "actor",
+            sid,
+            [...list, entry].toSorted((a, b) => a.time_created - b.time_created),
+          )
           break
         }
 
@@ -586,10 +631,7 @@ export const { use: useSync, provider: SyncProvider } = createSimpleContext({
           const idx = list.findIndex((a) => a.actor_id === event.properties.actorID)
           if (idx === -1) break
           setStore("actor", sid, idx, {
-            status: actorStatusFromEvent(
-              event.properties.status,
-              event.properties.lastOutcome,
-            ),
+            status: actorStatusFromEvent(event.properties.status, event.properties.lastOutcome),
             turn_count: event.properties.turnCount,
             last_turn_time: event.properties.lastTurnTime,
             time_updated: Date.now(),
@@ -629,27 +671,38 @@ export const { use: useSync, provider: SyncProvider } = createSimpleContext({
     const exit = useExit()
     const args = useArgs()
 
-    async function bootstrap(input: { fatal?: boolean } = {}) {
+    /**
+     * Bootstrap a single workspace's bucket from the server. Centralized so
+     * the initial `current` bootstrap and any later `bootstrapWorkspace(id)`
+     * call share the exact same wire contract.
+     */
+    async function bootstrapWorkspace(workspaceID: string | undefined, input: { fatal?: boolean } = {}) {
       const fatal = input.fatal ?? true
-      const workspace = project.workspace.current()
-      if (workspace !== syncedWorkspace) {
-        fullSyncedSessions.clear()
-        syncedWorkspace = workspace
-      }
+      const bucket = ensureBucket(workspaceID)
+      const store = bucket.state
+      const setStore = bucket.set
+      // Per-workspace SDK client carries the `x-mimocode-workspace` header so
+      // the server routes calls to the right bus. Acquired through the
+      // refcounted pool so cells that share a workspace hit a single cached
+      // client (and a single SSE subscription), and so the underlying handle
+      // is released when the last consumer drops its reference. The
+      // `undefined` workspaceID falls back to the SDK's default client.
+      const client = workspaceID ? workspaceClients.clientFor(asWorkspaceID(workspaceID)) : sdk.client
+
       const start = Date.now() - 30 * 24 * 60 * 60 * 1000
-      const sessionListPromise = sdk.client.session
+      const sessionListPromise = client.session
         .list({ start: start })
         .then((x) => (x.data ?? []).toSorted((a, b) => a.id.localeCompare(b.id)))
 
       // blocking - include session.list when continuing a session
-      const providersPromise = sdk.client.config.providers({ workspace }, { throwOnError: true })
-      const providerListPromise = sdk.client.provider.list({ workspace }, { throwOnError: true })
-      const consoleStatePromise = sdk.client.experimental.console
-        .get({ workspace }, { throwOnError: true })
+      const providersPromise = client.config.providers({ workspace: workspaceID }, { throwOnError: true })
+      const providerListPromise = client.provider.list({ workspace: workspaceID }, { throwOnError: true })
+      const consoleStatePromise = client.experimental.console
+        .get({ workspace: workspaceID }, { throwOnError: true })
         .then((x) => x.data)
         .catch(() => emptyConsoleState)
-      const agentsPromise = sdk.client.app.agents({ workspace }, { throwOnError: true })
-      const configPromise = sdk.client.config.get({ workspace }, { throwOnError: true })
+      const agentsPromise = client.app.agents({ workspace: workspaceID }, { throwOnError: true })
+      const configPromise = client.config.get({ workspace: workspaceID }, { throwOnError: true })
       const projectPromise = project.sync()
       const blockingRequests: Promise<unknown>[] = [
         providersPromise,
@@ -701,18 +754,22 @@ export const { use: useSync, provider: SyncProvider } = createSimpleContext({
           void Promise.all([
             ...(args.continue ? [] : [sessionListPromise.then((sessions) => setStore("session", reconcile(sessions)))]),
             consoleStatePromise.then((consoleState) => setStore("console_state", reconcile(consoleState))),
-            sdk.client.command.list({ workspace }).then((x) => setStore("command", reconcile(x.data ?? []))),
-            sdk.client.lsp.status({ workspace }).then((x) => setStore("lsp", reconcile(x.data ?? []))),
-            sdk.client.mcp.status({ workspace }).then((x) => setStore("mcp", reconcile(x.data ?? {}))),
-            sdk.client.experimental.resource
-              .list({ workspace })
+            client.command.list({ workspace: workspaceID }).then((x) => setStore("command", reconcile(x.data ?? []))),
+            client.lsp.status({ workspace: workspaceID }).then((x) => setStore("lsp", reconcile(x.data ?? []))),
+            client.mcp.status({ workspace: workspaceID }).then((x) => setStore("mcp", reconcile(x.data ?? {}))),
+            client.experimental.resource
+              .list({ workspace: workspaceID })
               .then((x) => setStore("mcp_resource", reconcile(x.data ?? {}))),
-            sdk.client.formatter.status({ workspace }).then((x) => setStore("formatter", reconcile(x.data ?? []))),
-            sdk.client.session.status({ workspace }).then((x) => {
+            client.formatter
+              .status({ workspace: workspaceID })
+              .then((x) => setStore("formatter", reconcile(x.data ?? []))),
+            client.session.status({ workspace: workspaceID }).then((x) => {
               setStore("session_status", reconcile(x.data ?? {}))
             }),
-            sdk.client.provider.auth({ workspace }).then((x) => setStore("provider_auth", reconcile(x.data ?? {}))),
-            sdk.client.vcs.get({ workspace }).then((x) => setStore("vcs", reconcile(x.data))),
+            client.provider
+              .auth({ workspace: workspaceID })
+              .then((x) => setStore("provider_auth", reconcile(x.data ?? {}))),
+            client.vcs.get({ workspace: workspaceID }).then((x) => setStore("vcs", reconcile(x.data))),
             project.workspace.sync(),
           ]).then(() => {
             setStore("status", "complete")
@@ -723,6 +780,7 @@ export const { use: useSync, provider: SyncProvider } = createSimpleContext({
             error: e instanceof Error ? e.message : String(e),
             name: e instanceof Error ? e.name : undefined,
             stack: e instanceof Error ? e.stack : undefined,
+            workspace: workspaceID,
           })
           if (fatal) {
             await exit(e)
@@ -732,27 +790,70 @@ export const { use: useSync, provider: SyncProvider } = createSimpleContext({
         })
     }
 
+    /**
+     * Bootstrap the current workspace. Kept on the public API (was the only
+     * entry point pre-Phase-1.3) so existing callers don't need to track
+     * workspace IDs.
+     */
+    async function bootstrap(input: { fatal?: boolean } = {}) {
+      const fatal = input.fatal ?? true
+      const workspace = project.workspace.current()
+      if (workspace !== syncedWorkspace) {
+        fullSyncedSessions.clear()
+        syncedWorkspace = workspace
+      }
+      return bootstrapWorkspace(workspace, { fatal })
+    }
+
     onMount(() => {
       void bootstrap()
     })
 
+    // Read the active bucket's reactive store. Backward-compatible: returns
+    // the *current* workspace's store when called without arguments.
+    const getStore = (workspaceID?: string): SyncState => ensureBucket(workspaceID ?? project.workspace.current()).state
+    const setStoreFor = (workspaceID: string | undefined) =>
+      ensureBucket(workspaceID ?? project.workspace.current()).set
+
     const result = {
-      data: store,
-      set: setStore,
+      // Legacy single-store view: keeps the current workspace's reactive state.
+      // New code should prefer `getStore(workspaceID)` for explicit scoping.
+      get data() {
+        return getStore()
+      },
+      // Legacy setStore: targets the current workspace's bucket. Forwards
+      // arguments through to Solid's typed setter; consumers can keep using
+      // `setStore("path", value)` or `setStore(produce(...))` unchanged.
+      set: ((...args: unknown[]) =>
+        (setStoreFor(project.workspace.current()) as (...a: unknown[]) => void)(
+          ...args,
+        )) as SetStoreFunction<SyncState>,
+      // Return the reactive state proxy for a specific workspace. Useful for
+      // components that need to render data from a non-active workspace.
+      getStore,
+      // Tear down a workspace's bucket and its cached SDK client. Called by
+      // workspace eviction flows so the TUI doesn't leak file handles /
+      // signal listeners. Goes through the pool's evict so the refcount is
+      // cleared even when cells still hold a reference — callers must reset
+      // their cached clients after invoking this.
+      evictWorkspace(workspaceID: string) {
+        buckets.delete(workspaceID)
+        workspaceClients.pool.evict(asWorkspaceID(workspaceID))
+      },
       get status() {
-        return store.status
+        return getStore().status
       },
       get ready() {
         if (process.env.MIMOCODE_FAST_BOOT) return true
-        return store.status !== "loading"
+        return getStore().status !== "loading"
       },
       get path() {
         return project.instance.path()
       },
       session: {
         get(sessionID: string) {
-          const match = Binary.search(store.session, sessionID, (s) => s.id)
-          if (match.found) return store.session[match.index]
+          const match = Binary.search(getStore().session, sessionID, (s) => s.id)
+          if (match.found) return getStore().session[match.index]
           return undefined
         },
         async refresh() {
@@ -760,13 +861,13 @@ export const { use: useSync, provider: SyncProvider } = createSimpleContext({
           const list = await sdk.client.session
             .list({ start })
             .then((x) => (x.data ?? []).toSorted((a, b) => a.id.localeCompare(b.id)))
-          setStore("session", reconcile(list))
+          setStoreFor(undefined)("session", reconcile(list))
         },
         status(sessionID: string) {
           const session = result.session.get(sessionID)
           if (!session) return "idle"
           if (session.time.compacting) return "compacting"
-          const messages = store.message[sessionID]?.["main"] ?? []
+          const messages = getStore().message[sessionID]?.["main"] ?? []
           const last = messages.at(-1)
           if (!last) return "idle"
           if (last.role === "user") return "working"
@@ -782,7 +883,7 @@ export const { use: useSync, provider: SyncProvider } = createSimpleContext({
             sdk.client.session.actors({ sessionID }),
             sdk.client.session.task({ sessionID }),
           ])
-          setStore(
+          setStoreFor(undefined)(
             produce((draft) => {
               const match = Binary.search(draft.session, sessionID, (s) => s.id)
               if (match.found) draft.session[match.index] = session.data!
@@ -795,28 +896,32 @@ export const { use: useSync, provider: SyncProvider } = createSimpleContext({
                 draft.part[message.info.id] = message.parts
               }
               draft.session_diff[sessionID] = diff.data ?? []
-              draft.actor[sessionID] = ((actors.data ?? []) as any[]).map((row): ActorEntry => ({
-                actor_id: row.actorID,
-                session_id: row.sessionID,
-                mode: row.mode,
-                status: actorStatusFromEvent(row.status, row.lastOutcome),
-                agent: row.agent,
-                description: row.description,
-                parent_actor_id: row.parentActorID ?? null,
-                time_created: row.time?.created ?? Date.now(),
-                time_updated: row.time?.updated ?? Date.now(),
-                turn_count: row.turnCount ?? 0,
-                last_turn_time: row.lastTurnTime ?? null,
-              }))
+              draft.actor[sessionID] = ((actors.data ?? []) as any[]).map(
+                (row): ActorEntry => ({
+                  actor_id: row.actorID,
+                  session_id: row.sessionID,
+                  mode: row.mode,
+                  status: actorStatusFromEvent(row.status, row.lastOutcome),
+                  agent: row.agent,
+                  description: row.description,
+                  parent_actor_id: row.parentActorID ?? null,
+                  time_created: row.time?.created ?? Date.now(),
+                  time_updated: row.time?.updated ?? Date.now(),
+                  turn_count: row.turnCount ?? 0,
+                  last_turn_time: row.lastTurnTime ?? null,
+                }),
+              )
             }),
           )
           fullSyncedSessions.add(sessionID)
         },
       },
       bootstrap,
+      bootstrapWorkspace,
       loadWorkflows(sessionID: string) {
         void sdk.client.workflow.list({ sessionID }).then((res) => {
-          for (const run of (res.data ?? []) as WorkflowRun[]) setStore("workflow", run.runID, reconcile(run))
+          for (const run of (res.data ?? []) as WorkflowRun[])
+            setStoreFor(undefined)("workflow", run.runID, reconcile(run))
         })
       },
       resumeWorkflow(runID: string) {

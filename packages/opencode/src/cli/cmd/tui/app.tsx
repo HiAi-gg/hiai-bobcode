@@ -3,17 +3,7 @@ import * as Clipboard from "@tui/util/clipboard"
 import * as Selection from "@tui/util/selection"
 import { createCliRenderer, MouseButton, type CliRendererConfig } from "@opentui/core"
 import { RouteProvider, useRoute } from "@tui/context/route"
-import {
-  Switch,
-  Match,
-  createEffect,
-  createMemo,
-  ErrorBoundary,
-  createSignal,
-  onMount,
-  batch,
-  Show,
-} from "solid-js"
+import { Switch, Match, createEffect, createMemo, ErrorBoundary, createSignal, onMount, batch, Show } from "solid-js"
 import { win32DisableProcessedInput, win32InstallCtrlCGuard } from "./win32"
 import { Flag } from "@/flag/flag"
 import semver from "semver"
@@ -24,6 +14,8 @@ import { PluginRouteMissing } from "@tui/component/plugin-route-missing"
 import { ProjectProvider } from "@tui/context/project"
 import { useEvent } from "@tui/context/event"
 import { SDKProvider, useSDK } from "@tui/context/sdk"
+import { WorkspaceClientsProvider } from "@tui/context/workspace-clients"
+import { CellEventBusProvider } from "@tui/routes/grid/cell-event-bus"
 import { StartupLoading } from "@tui/component/startup-loading"
 import { SyncProvider, useSync } from "@tui/context/sync"
 import { LocalProvider, useLocal } from "@tui/context/local"
@@ -44,6 +36,7 @@ import { KeybindProvider, useKeybind } from "@tui/context/keybind"
 import { ThemeProvider, useTheme } from "@tui/context/theme"
 import { Home } from "@tui/routes/home"
 import { Session } from "@tui/routes/session"
+import { GridView } from "@tui/routes/grid"
 import { PromptHistoryProvider } from "./component/prompt/history"
 import { FrecencyProvider } from "./component/prompt/frecency"
 import { PromptStashProvider } from "./component/prompt/stash"
@@ -165,52 +158,56 @@ export function tui(input: {
               <KVProvider>
                 <LanguageProvider>
                   <UiI18nBridge>
-                <ToastProvider>
-                  <RouteProvider
-                    initialRoute={
-                      input.args.continue
-                        ? {
-                            type: "session",
-                            sessionID: "dummy",
-                          }
-                        : undefined
-                    }
-                  >
-                    <TuiConfigProvider config={input.config}>
-                      <SDKProvider
-                        url={input.url}
-                        directory={input.directory}
-                        fetch={input.fetch}
-                        headers={input.headers}
-                        events={input.events}
+                    <ToastProvider>
+                      <RouteProvider
+                        initialRoute={
+                          input.args.continue
+                            ? {
+                                type: "session",
+                                sessionID: "dummy",
+                              }
+                            : undefined
+                        }
                       >
-                        <ProjectProvider>
-                          <SyncProvider>
-                            <ThemeProvider mode={mode} plain={plainTerminal}>
-                              <LocalProvider>
-                                <KeybindProvider>
-                                  <PromptStashProvider>
-                                    <DialogProvider>
-                                      <CommandProvider>
-                                        <FrecencyProvider>
-                                          <PromptHistoryProvider>
-                                            <PromptRefProvider>
-                                              <App onSnapshot={input.onSnapshot} />
-                                            </PromptRefProvider>
-                                          </PromptHistoryProvider>
-                                        </FrecencyProvider>
-                                      </CommandProvider>
-                                    </DialogProvider>
-                                  </PromptStashProvider>
-                                </KeybindProvider>
-                              </LocalProvider>
-                            </ThemeProvider>
-                          </SyncProvider>
-                        </ProjectProvider>
-                      </SDKProvider>
-                    </TuiConfigProvider>
-                  </RouteProvider>
-                </ToastProvider>
+                        <TuiConfigProvider config={input.config}>
+                          <SDKProvider
+                            url={input.url}
+                            directory={input.directory}
+                            fetch={input.fetch}
+                            headers={input.headers}
+                            events={input.events}
+                          >
+                            <ProjectProvider>
+                              <SyncProvider>
+                                <WorkspaceClientsProvider>
+                                  <CellEventBusProvider>
+                                    <ThemeProvider mode={mode} plain={plainTerminal}>
+                                      <LocalProvider>
+                                        <KeybindProvider>
+                                          <PromptStashProvider>
+                                            <DialogProvider>
+                                              <CommandProvider>
+                                                <FrecencyProvider>
+                                                  <PromptHistoryProvider>
+                                                    <PromptRefProvider>
+                                                      <App onSnapshot={input.onSnapshot} />
+                                                    </PromptRefProvider>
+                                                  </PromptHistoryProvider>
+                                                </FrecencyProvider>
+                                              </CommandProvider>
+                                            </DialogProvider>
+                                          </PromptStashProvider>
+                                        </KeybindProvider>
+                                      </LocalProvider>
+                                    </ThemeProvider>
+                                  </CellEventBusProvider>
+                                </WorkspaceClientsProvider>
+                              </SyncProvider>
+                            </ProjectProvider>
+                          </SDKProvider>
+                        </TuiConfigProvider>
+                      </RouteProvider>
+                    </ToastProvider>
                   </UiI18nBridge>
                 </LanguageProvider>
               </KVProvider>
@@ -413,7 +410,6 @@ function App(props: { onSnapshot?: () => Promise<string[]> }) {
     })
   })
 
-
   const connected = useConnected()
 
   // Seed never-ask from the launch flag once connected (the server starts with
@@ -535,9 +531,7 @@ function App(props: { onSnapshot?: () => Promise<string[]> }) {
       },
     },
     {
-      title: local.neverAsk.current()
-        ? t("tui.command.never_ask.title_on")
-        : t("tui.command.never_ask.title_off"),
+      title: local.neverAsk.current() ? t("tui.command.never_ask.title_on") : t("tui.command.never_ask.title_off"),
       value: "question.never_ask.toggle",
       category: "agent",
       slash: {
@@ -1119,6 +1113,9 @@ function App(props: { onSnapshot?: () => Promise<string[]> }) {
           </Match>
           <Match when={route.data.type === "session"}>
             <Session />
+          </Match>
+          <Match when={route.data.type === "grid"}>
+            <GridView />
           </Match>
         </Switch>
       </Show>

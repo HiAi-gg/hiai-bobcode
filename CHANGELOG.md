@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.3.0] - 2026-06-21
+## [0.0.1] - 2026-06-21
 
 ### Production-Readiness Release
 
@@ -41,7 +41,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 **Package Namespace:**
 - @mimo-ai/plugin renamed to @hiai-bob/plugin (package.json + imports)
 - @hiai-bob/cli is primary CLI package (was already correct)
-- Version 0.3.0 unified across all 7 monorepo packages
+- Version 0.0.1 unified across all 7 monorepo packages
 
 **Security:**
 - bob.env: rotated exposed Firecrawl and Context7 API keys to placeholder values

@@ -22,18 +22,27 @@ export const { use: useSDK, provider: SDKProvider } = createSimpleContext({
     let sse: AbortController | undefined
 
     let currentDirectory = props.directory
+    let currentWorkspace: string | undefined
 
-    function createSDK(directory?: string) {
+    function createSDK(directory?: string, experimental_workspaceID?: string) {
       return createOpencodeClient({
         baseUrl: props.url,
         signal: abort.signal,
         directory,
+        experimental_workspaceID,
         fetch: props.fetch,
         headers: props.headers,
       })
     }
 
-    let sdk = createSDK(currentDirectory)
+    let sdk = createSDK(currentDirectory, currentWorkspace)
+
+    // Per-workspace client cache. Workspace-aware SDK clients (Phase 1.3) carry the
+    // `x-mimocode-workspace` header so the server routes traffic to the right bus.
+    // The "default" client (no workspaceID) is keyed under `undefined` and is the
+    // one returned by the existing `client` getter for backward compatibility.
+    const clients = new Map<string | undefined, ReturnType<typeof createOpencodeClient>>()
+    clients.set(currentWorkspace, sdk)
 
     const emitter = createGlobalEmitter<{
       event: GlobalEvent
@@ -140,7 +149,34 @@ export const { use: useSDK, provider: SDKProvider } = createSimpleContext({
       },
       switchDirectory(next: string) {
         currentDirectory = next
-        sdk = createSDK(next)
+        const nextClient = createSDK(next, currentWorkspace)
+        sdk = nextClient
+        clients.set(currentWorkspace, nextClient)
+      },
+      // Return a SDK client scoped to a specific workspace. Cached per workspaceID
+      // so repeat calls reuse the same client (and its underlying signal/fetch).
+      // `undefined` workspaceID resolves to the default (current) client.
+      getClient(workspaceID?: string) {
+        const key = workspaceID
+        const existing = clients.get(key)
+        if (existing) return existing
+        const next = createSDK(currentDirectory, key)
+        clients.set(key, next)
+        return next
+      },
+      // Drop a workspace's cached client. Called by sync.tsx when a workspace is
+      // evicted so we don't leak file handles or signal listeners.
+      cleanupClient(workspaceID?: string) {
+        const key = workspaceID
+        const cached = clients.get(key)
+        if (!cached) return
+        clients.delete(key)
+        if (sdk === cached) {
+          // If we just evicted the active client, fall back to the default (no workspace).
+          const fallback = clients.get(undefined) ?? createSDK(currentDirectory)
+          sdk = fallback
+          clients.set(undefined, fallback)
+        }
       },
       event: emitter,
       fetch: props.fetch ?? fetch,

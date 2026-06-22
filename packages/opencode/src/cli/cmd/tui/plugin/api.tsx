@@ -95,11 +95,14 @@ function routeCurrent(route: ReturnType<typeof useRoute>): TuiPluginApi["route"]
       },
     }
   }
-
-  return {
-    name: route.data.id,
-    params: route.data.data,
+  if (route.data.type === "plugin") {
+    return {
+      name: route.data.id,
+      params: route.data.data,
+    }
   }
+  // GridRoute and any future non-plugin route — no plugin view.
+  return { name: "home" }
 }
 
 function mapOption<Value>(item: TuiDialogSelectOption<Value>): SelectOption<Value> {

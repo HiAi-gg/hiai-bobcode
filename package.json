@@ -1,7 +1,7 @@
 {
   "$schema": "https://json.schemastore.org/package.json",
   "name": "hiai-bob",
-  "version": "0.3.0",
+  "version": "0.0.1",
   "description": "Bob — autonomous AI coding agent monorepo (rebranded from MiMoCode)",
   "private": true,
   "type": "module",

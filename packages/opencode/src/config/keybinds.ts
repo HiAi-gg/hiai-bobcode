@@ -115,6 +115,17 @@ const KeybindsSchema = Schema.Struct({
   tips_toggle: keybind("<leader>h", "Toggle tips on home screen"),
   plugin_manager: keybind("none", "Open plugin manager dialog"),
   display_thinking: keybind("none", "Toggle thinking blocks visibility"),
+  // hiai-bob Grid v0.0.1 — Phase 1.4
+  // `grid_create` and `grid_layout_toggle` were originally `<leader>n` and
+  // `<leader>l`, but those keys are already bound to `session_new` and
+  // `session_list`. Remapped to `<leader>o` and `<leader>k` to avoid
+  // conflicts while keeping the leader-key convention.
+  grid_create: keybind("<leader>o", "Create new grid cell"),
+  grid_close: keybind("<leader>w", "Close active grid cell"),
+  grid_next: keybind("<leader>right", "Next grid cell"),
+  grid_prev: keybind("<leader>left", "Previous grid cell"),
+  grid_plan_mode: keybind("<leader>p", "Toggle plan-only mode"),
+  grid_layout_toggle: keybind("<leader>k", "Toggle grid layout"),
 }).annotate({ identifier: "KeybindsConfig" })
 
 export type Keybinds = Schema.Schema.Type<typeof KeybindsSchema>

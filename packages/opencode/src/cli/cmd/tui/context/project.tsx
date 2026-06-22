@@ -101,6 +101,16 @@ export const { use: useProject, provider: ProjectProvider } = createSimpleContex
         statuses() {
           return store.workspace.status
         },
+        // Register a workspace in the project context. Triggers a list refresh
+        // from the server so the new entry picks up its metadata + status; the
+        // list store is reactive, so consumers using `workspace.list()` will
+        // re-render automatically when the reconcile completes. Returns the
+        // resolved Workspace entry (or undefined if the server doesn't yet
+        // know about the id — the caller can poll `sync` again).
+        async add(workspaceID: string) {
+          await syncWorkspace()
+          return store.workspace.list.find((item) => item.id === workspaceID)
+        },
         sync: syncWorkspace,
       },
       sync,

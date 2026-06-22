@@ -59,6 +59,13 @@ export type PromptProps = {
     normal?: string[]
     shell?: string[]
   }
+  /**
+   * Phase 5 focus-steal guard. When `false`, the prompt will not auto-focus
+   * itself in effects — used by grid cells that are not currently active so
+   * keystrokes from the active cell are not silently routed into the
+   * background cell. Defaults to `true` for the legacy single-session route.
+   */
+  focusEnabled?: boolean
 }
 
 export type PromptRef = {
@@ -811,9 +818,25 @@ export function Prompt(props: PromptProps) {
       return
     }
 
+    // Phase 5: skip the focus reclaim entirely when focus is suppressed
+    // (e.g. inactive grid cell). This prevents a background cell from
+    // stealing focus the moment its effect re-runs after a dialog closes.
+    if (props.focusEnabled === false) return
+
     // Slot/plugin updates can remount the background prompt while a dialog is open.
     // Keep focus with the dialog and let the prompt reclaim it after the dialog closes.
-    if (!input.focused) input.focus()
+    if (!input.focused) {
+      // Defer the actual focus call to the next microtask so we never race the
+      // dialog's own focus recovery. The previous `setTimeout(1)` heuristic was
+      // chosen ad-hoc; `queueMicrotask` is the right primitive — same tick, no
+      // macrotask overhead.
+      queueMicrotask(() => {
+        if (!input || input.isDestroyed) return
+        if (props.focusEnabled === false) return
+        if (dialog.stack.length > 0) return
+        if (!input.focused) input.focus()
+      })
+    }
   })
 
   createEffect(() => {

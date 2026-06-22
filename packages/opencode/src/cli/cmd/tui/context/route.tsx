@@ -21,7 +21,12 @@ export type PluginRoute = {
   data?: Record<string, unknown>
 }
 
-export type Route = HomeRoute | SessionRoute | PluginRoute
+export type GridRoute = {
+  type: "grid"
+  cells?: { sessionID: string; workspaceID?: string }[]
+}
+
+export type Route = HomeRoute | SessionRoute | PluginRoute | GridRoute
 
 export const { use: useRoute, provider: RouteProvider } = createSimpleContext({
   name: "Route",
@@ -55,7 +60,5 @@ export function useRouteData<T extends Route["type"]>(type: T) {
 
 export function useCurrentAgentID(): Accessor<string> {
   const route = useRoute()
-  return createMemo(() =>
-    route.data.type === "session" ? (route.data.agentID ?? "main") : "main",
-  )
+  return createMemo(() => (route.data.type === "session" ? (route.data.agentID ?? "main") : "main"))
 }
