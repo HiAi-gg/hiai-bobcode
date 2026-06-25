@@ -424,11 +424,21 @@ export const McpLogoutCommand = cmd({
 })
 
 async function resolveConfigPath(baseDir: string, global = false) {
-  // Check for existing config files (prefer .jsonc over .json, check .mimocode/ subdirectory too)
-  const candidates = [path.join(baseDir, "mimocode.json"), path.join(baseDir, "mimocode.jsonc")]
+  // Check for existing config files (prefer bob over mimocode, .jsonc over .json, check subdirectories too)
+  const candidates = [
+    path.join(baseDir, "bob.jsonc"),
+    path.join(baseDir, "bob.json"),
+    path.join(baseDir, "mimocode.jsonc"),
+    path.join(baseDir, "mimocode.json"),
+  ]
 
   if (!global) {
-    candidates.push(path.join(baseDir, ".mimocode", "mimocode.json"), path.join(baseDir, ".mimocode", "mimocode.jsonc"))
+    candidates.push(
+      path.join(baseDir, ".bob", "bob.jsonc"),
+      path.join(baseDir, ".bob", "bob.json"),
+      path.join(baseDir, ".mimocode", "mimocode.jsonc"),
+      path.join(baseDir, ".mimocode", "mimocode.json"),
+    )
   }
 
   for (const candidate of candidates) {
@@ -437,7 +447,7 @@ async function resolveConfigPath(baseDir: string, global = false) {
     }
   }
 
-  // Default to mimocode.json if none exist
+  // Default to bob.jsonc if none exist
   return candidates[0]
 }
 

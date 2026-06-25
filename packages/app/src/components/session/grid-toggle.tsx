@@ -44,6 +44,22 @@ export function GridToggle(props: { dir: string }) {
               </DropdownMenu.Item>
             ))}
           </DropdownMenu.Group>
+          <DropdownMenu.Separator />
+          <DropdownMenu.Item
+            onSelect={() => {
+              const active = layout.grid.active(props.dir)()
+              const cells = layout.grid.cells(props.dir)()
+              const isExtra = active && cells.some((c) => c.sessionID === active)
+              if (isExtra) {
+                layout.grid.removeCell(props.dir, active)
+              } else {
+                layout.grid.setMode(props.dir, 1)
+              }
+              setOpen(false)
+            }}
+          >
+            <DropdownMenu.ItemLabel>Close session</DropdownMenu.ItemLabel>
+          </DropdownMenu.Item>
         </DropdownMenu.Content>
       </DropdownMenu.Portal>
     </DropdownMenu>

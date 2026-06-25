@@ -1,13 +1,13 @@
 # hiai-bob — DEVELOPMENT.md
 
-> Developer guide for the **hiai-bob v0.0.2** monorepo (autonomous AI coding agent, forked from Xiaomi MiMo-Code / opencode-ai@1.17.4).
+> Developer guide for the **hiai-bob v0.0.2** monorepo (autonomous AI coding agent, built as a fork of Xiaomi's MiMo-Code, which is itself a fork of opencode-ai@1.17.4).
 
 ## Project Overview
 
-**hiai-bob** is the orchestrator agent of the HiAi ecosystem — a rebrand of MiMo-Code that layers the `BobPlugin` workflow engine on top of the upstream opencode-ai fork. It exposes a Bun-native backend (REST + WebSocket on port `50900`) and a Svelte/Vite web UI (port `50902`) for managing sessions, providers, sessions grid, completion controller, and the port-scanner.
+**hiai-bob** is the orchestrator agent of the HiAi ecosystem. It is a rebrand of **MiMo-Code** that layers the `BobPlugin` workflow engine on top of the upstream **opencode-ai** (OpenCode) codebase. It inherits all core capabilities (multiple LLM providers, TUI, LSP, MCP, plugins, persistent memory, subagents) and exposes a Bun-native backend (REST + WebSocket on port `50900`) and a Svelte/Vite web UI (port `50901`) optimized for managing agentic sessions, providers, session grids, completion controllers, and port-scanning.
 
-- **Repo root:** `/mnt/ai_data/projects/hiai-bob`
-- **Engine:** TypeScript + Bun (fork of opencode-ai@1.17.4 with `BobPlugin`)
+- **Repo root:** `/home/hiai/projects/hiai-bobcode`
+- **Engine:** TypeScript + Bun (fork of MiMo-Code/opencode-ai@1.17.4 with `BobPlugin`)
 - **Frontend (Web UI):** Svelte 5 + Vite (`packages/app`)
 - **Headless runtime:** Bun 1.3.14+ (Node.js is only needed for a handful of tooling scripts; primary runtime is Bun)
 - **Default branch:** `dev` (local `main` may not exist)
@@ -33,16 +33,19 @@ rg --version
 ## Quick Start
 
 ```bash
+# 0. Start required infrastructure (PostgreSQL + Redis)
+cd infra && make up
+
 # 1. Install all workspace dependencies (Bun workspaces + turbo)
 bun install
 
 # 2. Start the backend server (REST + WebSocket)
-cd packages/opencode && bun run src/index.ts serve --port 50900
+cd packages/opencode && bun run --conditions=browser ./src/index.ts serve --port 50900
 
 # 3. In a second terminal, start the Web UI dev server
-cd packages/app && bun dev -- --port 50902
+cd packages/app && bun dev -- --port 50901
 
-# 4. Open http://localhost:50902 in your browser
+# 4. Open http://localhost:50901 in your browser
 #    The UI expects the backend at http://localhost:50900
 ```
 
@@ -52,10 +55,11 @@ The `run-bob.sh` wrapper at the repo root handles env loading from `bob.env` and
 
 | Command | Description |
 |---|---|
-| `cd packages/opencode && bun run src/index.ts serve --port 50900` | Start backend server (REST API + WebSocket) |
-| `cd packages/app && bun dev -- --port 50902` | Start Web UI dev server (Vite + HMR) |
+| `cd infra && make up` | Start infrastructure (PostgreSQL + Redis) |
+| `cd packages/opencode && bun run --conditions=browser ./src/index.ts serve --port 50900` | Start backend server (REST API + WebSocket) |
+| `cd packages/app && bun dev -- --port 50901` | Start Web UI dev server (Vite + HMR) |
 | `bun run --filter '*' lint` | Lint all packages (oxlint) |
-| `bun run --filter '*' typecheck` | Typecheck all packages (tsc) |
+| `cd packages/opencode && bun run typecheck` | Typecheck opencode backend |
 | `cd packages/opencode && bun test` | Run opencode backend tests |
 | `cd packages/app && bun run test:unit` | Run app (Web UI) unit tests |
 | `cd packages/sdk/js && ./script/build.ts` | Regenerate JavaScript SDK from OpenAPI spec |
@@ -78,7 +82,7 @@ The `run-bob.sh` wrapper at the repo root handles env loading from `bob.env` and
 | Service | Port |
 |---|---|
 | Backend API / WebSocket | `50900` |
-| Web UI dev server | `50902` |
+| Web UI dev server | `50901` |
 | Frontend docs dev | `50901` |
 
 The BobPlugin port-scanner uses these ports to detect live instances. If any are taken, the scanner tries `5090x + N` until it finds a free slot.
@@ -130,7 +134,7 @@ If the build still fails, run `bun run --cwd packages/opencode fix-node-pty` man
 ### Web UI loads but cannot reach the backend
 
 - Confirm the backend is on `50900`: `curl -fsS http://localhost:50900/health`.
-- CORS: the backend allows `http://localhost:50902` by default. If you started the UI on a different port, set `ALLOWED_ORIGINS` in `bob.env`.
+- CORS: the backend allows `http://localhost:50901` by default. If you started the UI on a different port, set `ALLOWED_ORIGINS` in `bob.env`.
 - WebSocket upgrade fails? Check that no reverse proxy is stripping `Upgrade` / `Connection` headers.
 
 ### `bun run --filter '*' typecheck` is slow
@@ -175,6 +179,7 @@ Local `main` may not exist — always diff against `origin/dev`.
 ## Additional Resources
 
 - `AGENTS.md` — operational rules for autonomous agents
+- `docs/getting-started.md` — new user setup guide
 - `MIMO-FORK-INTEGRATION.md` — fork integration map (upstream ↔ BobPlugin)
 - `bob-plan.md` — product roadmap
 - `todo.md` — live task tracker

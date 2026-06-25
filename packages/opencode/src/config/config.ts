@@ -59,11 +59,41 @@ function normalizeLoadedConfig(data: unknown, source: string) {
   if (!isRecord(data)) return data
   const copy = { ...data }
   const hadLegacy = "theme" in copy || "keybinds" in copy || "tui" in copy
-  if (!hadLegacy) return copy
-  delete copy.theme
-  delete copy.keybinds
-  delete copy.tui
-  log.warn("tui keys in mimocode config are deprecated; move them to tui.json", { path: source })
+  if (hadLegacy) {
+    delete copy.theme
+    delete copy.keybinds
+    delete copy.tui
+    log.warn("tui keys in mimocode config are deprecated; move them to tui.json", { path: source })
+  }
+
+  // Transform bob.json `models` key into proper `agent` config entries.
+  // bob.json uses: { "models": { "bob": { "model": "provider/model" }, ... } }
+  // Agent service expects: { "agent": { "bob": { "model": "provider/model" }, ... } }
+  if ("models" in copy && isRecord(copy.models)) {
+    const models = copy.models as Record<string, unknown>
+    const agent = (isRecord(copy.agent) ? { ...(copy.agent as Record<string, unknown>) } : {}) as Record<string, unknown>
+    for (const [name, value] of Object.entries(models)) {
+      if (!isRecord(value)) continue
+      const entry = value as Record<string, unknown>
+      if (typeof entry.model === "string") {
+        // Merge into existing agent config or create new
+        const existing = isRecord(agent[name]) ? { ...(agent[name] as Record<string, unknown>) } : {}
+        // Only set model if not already explicitly set in agent config
+        if (!existing.model) {
+          existing.model = entry.model
+        }
+        agent[name] = existing
+      }
+    }
+    copy.agent = agent
+    delete copy.models
+  }
+
+  // Strip comments (keys starting with "//") that bob.json uses for documentation
+  for (const key of Object.keys(copy)) {
+    if (key.startsWith("//")) delete copy[key]
+  }
+
   return copy
 }
 
@@ -462,7 +492,7 @@ export interface Interface {
 export class Service extends Context.Service<Service, Interface>()("@opencode/Config") {}
 
 function globalConfigFile() {
-  const candidates = ["mimocode.jsonc", "mimocode.json", "config.json"].map((file) =>
+  const candidates = ["bob.jsonc", "bob.json", "mimocode.jsonc", "mimocode.json", "config.json"].map((file) =>
     path.join(Global.Path.config, file),
   )
   for (const file of candidates) {
@@ -557,6 +587,8 @@ export const layer = Layer.effect(
         mergeDeep(yield* loadFile(path.join(Global.Path.config, "config.json"))),
         mergeDeep(yield* loadFile(path.join(Global.Path.config, "mimocode.json"))),
         mergeDeep(yield* loadFile(path.join(Global.Path.config, "mimocode.jsonc"))),
+        mergeDeep(yield* loadFile(path.join(Global.Path.config, "bob.json"))),
+        mergeDeep(yield* loadFile(path.join(Global.Path.config, "bob.jsonc"))),
       )
 
       const legacy = path.join(Global.Path.config, "config")
@@ -736,8 +768,10 @@ export const layer = Layer.effect(
         }
 
         if (!Flag.MIMOCODE_DISABLE_PROJECT_CONFIG) {
-          for (const file of yield* ConfigPaths.files("mimocode", ctx.directory, ctx.worktree).pipe(Effect.orDie)) {
-            yield* merge(file, yield* loadFile(file), "local")
+          for (const name of ["mimocode", "bob"]) {
+            for (const file of yield* ConfigPaths.files(name, ctx.directory, ctx.worktree).pipe(Effect.orDie)) {
+              yield* merge(file, yield* loadFile(file), "local")
+            }
           }
         }
 
@@ -753,14 +787,19 @@ export const layer = Layer.effect(
 
         const deps: Fiber.Fiber<void, never>[] = []
 
-        // Load Claude Code commands first so .mimocode commands override on name collision.
+        // Load Claude Code commands first so .mimocode/.bob commands override on name collision.
         for (const dir of yield* ConfigPaths.claudeCommandDirectories(ctx.directory, ctx.worktree)) {
           result.command = mergeDeep(result.command ?? {}, yield* Effect.promise(() => ConfigCommand.load(dir)))
         }
 
         for (const dir of directories) {
-          if (dir.endsWith(".mimocode") || dir === Flag.MIMOCODE_CONFIG_DIR) {
-            for (const file of ["mimocode.json", "mimocode.jsonc"]) {
+          if (dir.endsWith(".mimocode") || dir.endsWith(".bob") || dir === Flag.MIMOCODE_CONFIG_DIR) {
+            const filesToLoad = dir.endsWith(".bob")
+              ? ["bob.json", "bob.jsonc"]
+              : dir.endsWith(".mimocode")
+                ? ["mimocode.json", "mimocode.jsonc"]
+                : ["mimocode.json", "mimocode.jsonc", "bob.json", "bob.jsonc"]
+            for (const file of filesToLoad) {
               const source = path.join(dir, file)
               log.debug(`loading config from ${source}`)
               yield* merge(source, yield* loadFile(source))
@@ -859,7 +898,7 @@ export const layer = Layer.effect(
 
         const managedDir = ConfigManaged.managedConfigDir()
         if (existsSync(managedDir)) {
-          for (const file of ["mimocode.json", "mimocode.jsonc"]) {
+          for (const file of ["mimocode.json", "mimocode.jsonc", "bob.json", "bob.jsonc"]) {
             const source = path.join(managedDir, file)
             yield* merge(source, yield* loadFile(source), "global")
           }

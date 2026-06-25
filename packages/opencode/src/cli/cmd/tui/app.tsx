@@ -830,6 +830,17 @@ function App(props: { onSnapshot?: () => Promise<string[]> }) {
       },
     },
     {
+      title: "Grid Mode",
+      value: "grid.open",
+      keybind: "grid_create",
+      category: "system",
+      enabled: route.data.type !== "grid",
+      onSelect: () => {
+        route.navigate({ type: "grid" })
+        dialog.clear()
+      },
+    },
+    {
       title: t("tui.command.app.console.title"),
       category: "system",
       value: "app.console",

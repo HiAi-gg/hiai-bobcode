@@ -44,6 +44,7 @@ export function Splitter(props: SplitterProps): JSX.Element {
   const { theme } = useTheme()
 
   const thickness = () => props.thickness ?? 1
+  const horizontal = () => props.layout === "split-h"
 
   // Local mirror of the persisted ratio so dragging stays smooth. We sync
   // from the grid store on mount but write back only on mouse-up so the
@@ -54,17 +55,17 @@ export function Splitter(props: SplitterProps): JSX.Element {
   const inner = () => Math.max(1, props.total - thickness())
   const minRatio = createMemo(() => {
     if (inner() <= 0) return 0
-    return Math.min(1, MIN_CELL_COLS / inner())
+    const limit = horizontal() ? MIN_CELL_COLS : 6
+    return Math.min(1, limit / inner())
   })
   const maxRatio = createMemo(() => {
     if (inner() <= 0) return 1
-    return Math.max(0, 1 - MIN_CELL_COLS / inner())
+    const limit = horizontal() ? MIN_CELL_COLS : 6
+    return Math.max(0, 1 - limit / inner())
   })
 
   let origin: number | undefined
   let startRatio: number | undefined
-
-  const horizontal = () => props.layout === "split-h"
 
   const onMouseDown = (evt: { button: number; x?: number; y?: number }) => {
     if (evt.button !== 0) return
@@ -159,19 +160,20 @@ export function Splitter(props: SplitterProps): JSX.Element {
  */
 export function splitCellWidth(total: number, ratio: number, thickness = 1): number {
   const inner = Math.max(1, total - thickness)
-  const clamped = clampRatio(ratio, inner)
+  const clamped = clampRatio(ratio, inner, true)
   return Math.max(MIN_CELL_COLS, Math.round(inner * clamped))
 }
 
 export function splitCellHeight(total: number, ratio: number, thickness = 1): number {
   const inner = Math.max(1, total - thickness)
-  const clamped = clampRatio(ratio, inner)
-  return Math.max(MIN_CELL_COLS, Math.round(inner * clamped))
+  const clamped = clampRatio(ratio, inner, false)
+  return Math.max(6, Math.round(inner * clamped))
 }
 
-function clampRatio(ratio: number, inner: number): number {
+function clampRatio(ratio: number, inner: number, horizontal: boolean): number {
   if (inner <= 0) return ratio
-  const lo = Math.min(1, MIN_CELL_COLS / inner)
-  const hi = Math.max(0, 1 - MIN_CELL_COLS / inner)
+  const limit = horizontal ? MIN_CELL_COLS : 6
+  const lo = Math.min(1, limit / inner)
+  const hi = Math.max(0, 1 - limit / inner)
   return Math.max(lo, Math.min(hi, ratio))
 }

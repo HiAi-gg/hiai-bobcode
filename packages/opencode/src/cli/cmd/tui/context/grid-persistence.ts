@@ -11,7 +11,7 @@ export type GridCell = {
   label: string
 }
 
-export type GridLayout = "single" | "split-h" | "split-v"
+export type GridLayout = "single" | "split-h" | "split-v" | "2x2"
 
 /**
  * Phase 6: ratio (0-1) of the left/top cell's share when in a split layout.
@@ -68,7 +68,7 @@ function isGridCell(value: unknown): value is GridCell {
 }
 
 function isGridLayout(value: unknown): value is GridLayout {
-  return value === "single" || value === "split-h" || value === "split-v"
+  return value === "single" || value === "split-h" || value === "split-v" || value === "2x2"
 }
 
 function isGridSplitRatio(value: unknown): value is GridSplitRatio {

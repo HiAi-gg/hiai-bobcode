@@ -1,6 +1,6 @@
 # 构建与发布
 
-本项目在内部 GitLab 开发，推送到 GitHub (`https://github.com/vlgalib/hiai-bob`) 时代码经过裁剪，因此**构建和发布在本地完成**，不使用 GitHub Actions CI 构建。
+本项目在内部 GitLab 开发，推送到 GitHub (`https://github.com/HiAi-gg/hiai-bobcode`) 时代码经过裁剪，因此**构建 and 发布在本地完成**，不使用 GitHub Actions CI 构建.
 
 ---
 

@@ -2,6 +2,7 @@ import { batch, createMemo } from "solid-js"
 import { createStore, produce, reconcile } from "solid-js/store"
 import { Binary } from "@mimo-ai/shared/util/binary"
 import { retry } from "@mimo-ai/shared/util/retry"
+import { showToast } from "@mimo-ai/ui/toast"
 import { createSimpleContext } from "@mimo-ai/ui/context"
 import {
   clearSessionPrefetch,
@@ -472,6 +473,25 @@ export const { use: useSync, provider: SyncProvider } = createSimpleContext({
                     if (!tracked(directory, sessionID)) return
                     const data = session.data
                     if (!data) return
+                    if (data.directory && data.directory !== directory) {
+                      console.warn(
+                        `Session ${sessionID} belongs to directory "${data.directory}" ` +
+                          `but SDK client uses directory "${directory}"`,
+                      )
+                      // Also register in the session's actual project store
+                      const [, actualSetStore] = globalSync.child(data.directory, { bootstrap: false })
+                      actualSetStore(
+                        "session",
+                        produce((draft) => {
+                          const match = Binary.search(draft, sessionID, (s) => s.id)
+                          if (match.found) {
+                            draft[match.index] = data
+                            return
+                          }
+                          draft.splice(match.index, 0, data)
+                        }),
+                      )
+                    }
                     setStore(
                       "session",
                       produce((draft) => {
@@ -494,6 +514,14 @@ export const { use: useSync, provider: SyncProvider } = createSimpleContext({
                     setStore,
                     sessionID,
                     limit,
+                  }).catch((err) => {
+                    if (!tracked(directory, sessionID)) return
+                    console.error(`Failed to load messages for session ${sessionID}:`, err)
+                    showToast({
+                      title: "Failed to load messages",
+                      description: String(err),
+                      variant: "error",
+                    })
                   })
 
             await Promise.all([sessionReq, messagesReq])

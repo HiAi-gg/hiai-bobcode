@@ -1,4 +1,4 @@
-import { Match, Switch, Show, createMemo, createSignal, onCleanup, onMount, ErrorBoundary } from "solid-js"
+import { Match, Switch, Show, createMemo, createSignal, createEffect, onCleanup, onMount, ErrorBoundary } from "solid-js"
 import { useKeyboard, useTerminalDimensions } from "@opentui/solid"
 import { useRoute, useRouteData } from "@tui/context/route"
 import { useKeybind } from "@tui/context/keybind"
@@ -16,7 +16,7 @@ import { PlanCell } from "./plan-cell"
 import { GridToolbar } from "./toolbar"
 import { Sidebar } from "./sidebar"
 import { CellErrorOverlay } from "@tui/component/cell-error-overlay"
-import { Splitter, splitCellWidth } from "./splitter"
+import { Splitter, splitCellWidth, splitCellHeight } from "./splitter"
 import { GridKeyboardHelp } from "./keyboard-help"
 import { createGridSession } from "./grid-create"
 
@@ -86,9 +86,7 @@ function GridInner() {
   // launches with `--grid` and a stale layout exists, we restore it before
   // seeding any single-cell defaults below.
   onMount(async () => {
-    const persisted = await load()
-    if (persisted && persisted.cells.length > 0) {
-      grid.hydrate(persisted)
+    if (grid.cells.length > 0) {
       return
     }
     // Phase 8: hydrate from route.data.cells when the grid was opened via a
@@ -104,20 +102,25 @@ function GridInner() {
     }
   })
 
-  // Phase 6: throttle the splitter-driven resize recalculation. Yoga
-  // relayout is expensive enough that a 60-fps drag tick would tank the
+  // Phase 6: throttle the splitter-driven resize recalculation and terminal SIGWINCH.
+  // Yoga relayout is expensive enough that a 60-fps drag tick would tank the
   // render loop. We capture the dragged ratio locally in <Splitter/> and
   // apply it to the store on mouse-up; this throttle covers any other
   // resize-trigger (terminal SIGWINCH, sidebar toggle, etc.).
-  const [tick, setTick] = createSignal(0)
+  const [throttledDimensions, setThrottledDimensions] = createSignal({
+    width: dimensions().width,
+    height: dimensions().height,
+  })
   let resizeTimer: ReturnType<typeof setTimeout> | undefined
-  const scheduleResize = () => {
+  createEffect(() => {
+    const w = dimensions().width
+    const h = dimensions().height
     if (resizeTimer) clearTimeout(resizeTimer)
     resizeTimer = setTimeout(() => {
       resizeTimer = undefined
-      setTick((x) => x + 1)
+      setThrottledDimensions({ width: w, height: h })
     }, 32)
-  }
+  })
   onCleanup(() => {
     if (resizeTimer) clearTimeout(resizeTimer)
   })
@@ -161,7 +164,7 @@ function GridInner() {
 
     if (keybind.match("grid_layout_toggle", evt)) {
       evt.preventDefault()
-      const next = grid.layout === "single" ? "split-h" : grid.layout === "split-h" ? "split-v" : "single"
+      const next = grid.layout === "single" ? "split-h" : grid.layout === "split-h" ? "split-v" : grid.layout === "split-v" ? "2x2" : "single"
       grid.setLayout(next)
       return
     }
@@ -186,25 +189,11 @@ function GridInner() {
     }
   })
 
-  // Phase 6: drive `scheduleResize` from the dimension signal so terminal
-  // SIGWINCH coalesces into a single layout pass. The `tick` signal is
-  // touched only when the throttle fires, which keeps Solid from
-  // re-running every downstream memo on every pixel of a fast resize burst.
-  const onResize = () => {
-    scheduleResize()
-  }
-  createMemo(() => {
-    dimensions().width
-    dimensions().height
-    onResize()
-  })
-  tick() // dependency anchor so the splitter ratio read below stays live
-
-  const width = () => dimensions().width
+  const width = () => Math.max(80, throttledDimensions().width)
   const sidebarWidth = 28
-  const contentWidth = () => width() - sidebarWidth - 2
+  const contentWidth = () => Math.max(40, width() - sidebarWidth - 2)
   // Reserve 4 lines for toolbar + border
-  const cellAreaHeight = () => dimensions().height - 4
+  const cellAreaHeight = () => Math.max(6, throttledDimensions().height - 4)
   const layout = () => grid.layout
   const empty = () => grid.cells.length === 0
   const activeCell = () => grid.activeCell()
@@ -219,6 +208,12 @@ function GridInner() {
     if (layout() === "single") {
       return activeCell() ? [activeCell()!] : []
     }
+    if (layout() === "2x2") {
+      const activeIdx = all.findIndex((c) => c.id === grid.activeCellId)
+      if (activeIdx < 0) return all.slice(0, 4)
+      const chunkIdx = Math.floor(activeIdx / 4) * 4
+      return all.slice(chunkIdx, chunkIdx + 4)
+    }
     const activeIdx = all.findIndex((c) => c.id === grid.activeCellId)
     if (activeIdx < 0) return all.slice(0, 2)
     // Active cell first, then the cell immediately after it. Falls back to
@@ -230,7 +225,10 @@ function GridInner() {
 
   // Split layouts always render at most two cells; non-virtualized renders
   // are still useful while cell count <= VIRTUALIZE_THRESHOLD.
-  const useVirtualization = createMemo(() => grid.cells.length > VIRTUALIZE_THRESHOLD)
+  const useVirtualization = createMemo(() => {
+    const limit = layout() === "2x2" ? 4 : VIRTUALIZE_THRESHOLD
+    return grid.cells.length > limit
+  })
 
   const splitCellArea = createMemo(() => {
     // The dragged cell's width is governed by the persisted split ratio.
@@ -238,8 +236,12 @@ function GridInner() {
     return splitCellWidth(contentWidth(), grid.splitRatio, 1)
   })
 
+  const splitCellAreaHeight = createMemo(() => {
+    return splitCellHeight(cellAreaHeight(), grid.splitRatio, 1)
+  })
+
   return (
-    <box flexDirection="row" width={width()} height={dimensions().height} backgroundColor={theme.background}>
+    <box flexDirection="row" width={width()} height={Math.max(10, throttledDimensions().height)} backgroundColor={theme.background}>
       {/* Main area: toolbar + cells */}
       <box flexDirection="column" flexGrow={1} height="100%">
         <GridToolbar />
@@ -248,10 +250,10 @@ function GridInner() {
             <Switch>
               {/* Single: only the active cell, full width */}
               <Match when={layout() === "single"}>
-                <Show when={activeCell()}>
+                <Show when={activeCell()} keyed>
                   {(cell) => (
-                    <ErrorBoundary fallback={(err) => <CellError error={err} cell={cell()} />}>
-                      <CellRenderer cell={cell()} active={true} width={contentWidth()} />
+                    <ErrorBoundary fallback={(err) => <CellError error={err} cell={cell} />}>
+                      <CellRenderer cell={cell} active={true} width={contentWidth()} />
                     </ErrorBoundary>
                   )}
                 </Show>
@@ -260,20 +262,20 @@ function GridInner() {
               {/* Split-h: dragged cell + sibling, separated by a draggable bar */}
               <Match when={layout() === "split-h"}>
                 <box flexDirection="row" flexGrow={1}>
-                  <Show when={visibleCells()[0]}>
+                  <Show when={visibleCells()[0]} keyed>
                     {(cell) => (
-                      <ErrorBoundary fallback={(err) => <CellError error={err} cell={cell()} />}>
-                        <CellRenderer cell={cell()} active={cell().id === grid.activeCellId} width={splitCellArea()} />
+                      <ErrorBoundary fallback={(err) => <CellError error={err} cell={cell} />}>
+                        <CellRenderer cell={cell} active={cell.id === grid.activeCellId} width={splitCellArea()} />
                       </ErrorBoundary>
                     )}
                   </Show>
                   <Splitter layout="split-h" total={contentWidth()} />
-                  <Show when={visibleCells()[1]}>
+                  <Show when={visibleCells()[1]} keyed>
                     {(cell) => (
-                      <ErrorBoundary fallback={(err) => <CellError error={err} cell={cell()} />}>
+                      <ErrorBoundary fallback={(err) => <CellError error={err} cell={cell} />}>
                         <CellRenderer
-                          cell={cell()}
-                          active={cell().id === grid.activeCellId}
+                          cell={cell}
+                          active={cell.id === grid.activeCellId}
                           width={Math.max(40, contentWidth() - splitCellArea() - 1)}
                         />
                       </ErrorBoundary>
@@ -286,31 +288,90 @@ function GridInner() {
                   row split the same way it drives the column split. */}
               <Match when={layout() === "split-v"}>
                 <box flexDirection="column" flexGrow={1}>
-                  <Show when={visibleCells()[0]}>
+                  <Show when={visibleCells()[0]} keyed>
                     {(cell) => (
-                      <ErrorBoundary fallback={(err) => <CellError error={err} cell={cell()} />}>
+                      <ErrorBoundary fallback={(err) => <CellError error={err} cell={cell} />}>
                         <CellRenderer
-                          cell={cell()}
-                          active={cell().id === grid.activeCellId}
+                          cell={cell}
+                          active={cell.id === grid.activeCellId}
                           width={contentWidth()}
-                          height={Math.max(6, Math.round(cellAreaHeight() * grid.splitRatio))}
+                          height={splitCellAreaHeight()}
                         />
                       </ErrorBoundary>
                     )}
                   </Show>
                   <Splitter layout="split-v" total={cellAreaHeight()} />
-                  <Show when={visibleCells()[1]}>
+                  <Show when={visibleCells()[1]} keyed>
                     {(cell) => (
-                      <ErrorBoundary fallback={(err) => <CellError error={err} cell={cell()} />}>
+                      <ErrorBoundary fallback={(err) => <CellError error={err} cell={cell} />}>
                         <CellRenderer
-                          cell={cell()}
-                          active={cell().id === grid.activeCellId}
+                          cell={cell}
+                          active={cell.id === grid.activeCellId}
                           width={contentWidth()}
-                          height={Math.max(6, cellAreaHeight() - Math.round(cellAreaHeight() * grid.splitRatio) - 1)}
+                          height={Math.max(6, cellAreaHeight() - splitCellAreaHeight() - 1)}
                         />
                       </ErrorBoundary>
                     )}
                   </Show>
+                </box>
+              </Match>
+
+              {/* 2x2: 4 cells in a 2x2 grid */}
+              <Match when={layout() === "2x2"}>
+                <box flexDirection="column" flexGrow={1}>
+                  {/* Top half */}
+                  <box flexDirection="row" height={splitCellAreaHeight()}>
+                    <Show when={visibleCells()[0]} keyed>
+                      {(cell) => (
+                        <ErrorBoundary fallback={(err) => <CellError error={err} cell={cell} />}>
+                          <CellRenderer
+                            cell={cell}
+                            active={cell.id === grid.activeCellId}
+                            width={splitCellArea()}
+                          />
+                        </ErrorBoundary>
+                      )}
+                    </Show>
+                    <Splitter layout="split-h" total={contentWidth()} />
+                    <Show when={visibleCells()[1]} keyed>
+                      {(cell) => (
+                        <ErrorBoundary fallback={(err) => <CellError error={err} cell={cell} />}>
+                          <CellRenderer
+                            cell={cell}
+                            active={cell.id === grid.activeCellId}
+                            width={Math.max(40, contentWidth() - splitCellArea() - 1)}
+                          />
+                        </ErrorBoundary>
+                      )}
+                    </Show>
+                  </box>
+                  <Splitter layout="split-v" total={cellAreaHeight()} />
+                  {/* Bottom half */}
+                  <box flexDirection="row" height={Math.max(6, cellAreaHeight() - splitCellAreaHeight() - 1)}>
+                    <Show when={visibleCells()[2]} keyed>
+                      {(cell) => (
+                        <ErrorBoundary fallback={(err) => <CellError error={err} cell={cell} />}>
+                          <CellRenderer
+                            cell={cell}
+                            active={cell.id === grid.activeCellId}
+                            width={splitCellArea()}
+                          />
+                        </ErrorBoundary>
+                      )}
+                    </Show>
+                    <Splitter layout="split-h" total={contentWidth()} />
+                    <Show when={visibleCells()[3]} keyed>
+                      {(cell) => (
+                        <ErrorBoundary fallback={(err) => <CellError error={err} cell={cell} />}>
+                          <CellRenderer
+                            cell={cell}
+                            active={cell.id === grid.activeCellId}
+                            width={Math.max(40, contentWidth() - splitCellArea() - 1)}
+                          />
+                        </ErrorBoundary>
+                      )}
+                    </Show>
+                  </box>
                 </box>
               </Match>
             </Switch>
@@ -337,15 +398,27 @@ function GridInner() {
  * Dispatches to the correct cell component based on cell.mode.
  */
 function CellRenderer(props: { cell: GridCell; active: boolean; width: number; height?: number }) {
+  const grid = useGrid()
   return (
-    <Switch>
-      <Match when={props.cell.mode === "plan-only"}>
-        <PlanCell cell={props.cell} />
-      </Match>
-      <Match when={true}>
-        <SessionCell cell={props.cell} active={props.active} wide={props.width > 120} height={props.height} />
-      </Match>
-    </Switch>
+    <box
+      flexDirection="column"
+      width={props.width}
+      height={props.height ?? "100%"}
+      onMouseUp={() => {
+        if (grid.activeCellId !== props.cell.id) {
+          grid.setActive(props.cell.id)
+        }
+      }}
+    >
+      <Switch>
+        <Match when={props.cell.mode === "plan-only"}>
+          <PlanCell cell={props.cell} />
+        </Match>
+        <Match when={true}>
+          <SessionCell cell={props.cell} active={props.active} width={props.width} wide={props.width > 120} height={props.height} />
+        </Match>
+      </Switch>
+    </box>
   )
 }
 

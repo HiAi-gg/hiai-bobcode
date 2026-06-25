@@ -97,6 +97,7 @@ const SessionRow = (props: {
   sidebarOpened: Accessor<boolean>
   warmPress: () => void
   warmFocus: () => void
+  routeDir?: string
 }): JSX.Element => {
   const title = () => sessionTitle(props.session.title)
   const layout = useLayout()
@@ -111,21 +112,33 @@ const SessionRow = (props: {
         // If a non-primary grid cell is active, open the session THERE (replace
         // that cell's session) instead of navigating the route (which only
         // changes the primary cell).
-        const dir = decode64(props.slug) ?? ""
-        const active = layout.grid.active(dir)()
-        const cells = layout.grid.cells(dir)()
-        const ids = layout.grid.cellsByID(dir)()
-        if (layout.grid.mode(dir)() > 1 && active && ids.includes(active) && active !== props.session.id) {
+        const currentDir = props.routeDir ? (decode64(props.routeDir) ?? "") : ""
+        if (!currentDir) return
+
+        const active = layout.grid.active(currentDir)()
+        const cells = layout.grid.cells(currentDir)()
+        const ids = layout.grid.cellsByID(currentDir)()
+        const sessionDir = decode64(props.slug) ?? ""
+
+        if (layout.grid.mode(currentDir)() > 1 && active && ids.includes(active) && active !== props.session.id) {
           e.preventDefault()
           // Preserve the cell's workspace + mode metadata while swapping the
           // session id. `cells` carries the full GridCell record now, so we
           // can't just replace the id — find the active cell and rebuild it
-          // with the new session id.
+          // with the new session id and update its directory.
           const next = cells.map((c) =>
-            c.sessionID === active ? { ...c, id: props.session.id, sessionID: props.session.id } : c,
+            c.sessionID === active
+              ? {
+                  ...c,
+                  id: props.session.id,
+                  sessionID: props.session.id,
+                  directory: sessionDir,
+                  workspaceID: props.session.workspaceID ?? c.workspaceID,
+                }
+              : c,
           )
-          layout.grid.setCells(dir, next)
-          layout.grid.setActive(dir, props.session.id)
+          layout.grid.setCells(currentDir, next)
+          layout.grid.setActive(currentDir, props.session.id)
           return
         }
         if (props.sidebarOpened()) return
@@ -231,6 +244,7 @@ export const SessionItem = (props: SessionItemProps): JSX.Element => {
       sidebarOpened={layout.sidebar.opened}
       warmPress={() => warm(2, "high")}
       warmFocus={() => warm(2, "high")}
+      routeDir={params.dir}
     />
   )
 

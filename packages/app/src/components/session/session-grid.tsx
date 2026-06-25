@@ -1,4 +1,4 @@
-import { createMemo, For, Show } from "solid-js"
+import { createMemo, ErrorBoundary, For, Show } from "solid-js"
 import { useLayout, type GridCell } from "@/context/layout"
 import Page from "@/pages/session"
 import { SessionProviders } from "@/components/session/session-providers"
@@ -29,6 +29,7 @@ const GRID_ROWS: Record<number, string> = {
 // The cell record carries its `workspaceID` and `mode` so workspace-aware
 // SDK clients can route calls to the right workspace instance.
 function Cell(props: { dir: string; cell: GridCell; active: boolean; onActivate?: () => void; onRemove?: () => void }) {
+  const cellDir = () => (props.cell.directory ? base64Encode(props.cell.directory) : props.dir)
   return (
     <div
       class="relative overflow-hidden rounded-md border bg-background-stronger"
@@ -38,26 +39,42 @@ function Cell(props: { dir: string; cell: GridCell; active: boolean; onActivate?
       }}
       onPointerDown={() => props.onActivate?.()}
     >
-      <Show when={props.onRemove}>
-        <button
-          type="button"
-          aria-label="Remove from grid"
-          class="absolute right-1 top-1 z-10 flex size-5 items-center justify-center rounded bg-background-base/80 text-12-regular text-text-weak hover:text-text-base"
-          onPointerDown={(e) => e.stopPropagation()}
-          onClick={() => props.onRemove?.()}
-        >
-          ✕
-        </button>
-      </Show>
       {/* Bind this cell's whole subtree to its own session so the session
           contexts (prompt/comments/file/terminal) resolve to it, not the route.
           The cell's workspaceID flows through SessionScope so consumers can
           pick the right workspace-scoped SDK client without re-deriving it
           from the cell record. Only the ACTIVE cell renders "full" (its header
-          chrome) — others render "cell" so the top controls aren't duplicated. */}
-      <SessionScopeProvider dir={props.dir} id={props.cell.sessionID} workspaceID={props.cell.workspaceID}>
+          chrome) — others render "cell" so the top controls aren't duplicated.
+
+          ARCHITECTURAL LIMITATION: SessionScopeProvider sets the scope's `dir`
+          per cell, but useSDK() returns the route-level SDK client (setup once
+          in SDKProvider from the route param). This means all SDK API calls
+          use the route directory, not the cell directory. Direct-ID lookups
+          (get, messages) work fine without project context, but directory-scoped
+          operations (sync.diff, sync.todo) may use the wrong project directory
+          for cross-project cells. A proper fix would require an SDKProvider per
+          cell, which is a significant refactor. */}
+      <SessionScopeProvider dir={cellDir()} id={props.cell.sessionID} workspaceID={props.cell.workspaceID}>
         <SessionProviders>
-          <Page sessionID={props.cell.sessionID} mode={props.active ? "full" : "cell"} />
+          <ErrorBoundary
+            fallback={(err: unknown) => (
+              <div class="flex size-full flex-col items-center justify-center gap-2 rounded-md border border-dashed border-border-weak-base bg-background-stronger p-3">
+                <div class="text-12-regular text-text-weak">Session unreachable</div>
+                <Show when={typeof (err as Error)?.message === "string"}>
+                  <div class="max-w-[90%] truncate text-12-regular text-text-weaker">{(err as Error).message}</div>
+                </Show>
+                <button
+                  type="button"
+                  class="rounded-md px-1 py-0.5 text-10-regular text-text-weak transition-colors hover:bg-background-base hover:text-text-base"
+                  onClick={() => props.onRemove?.()}
+                >
+                  Remove
+                </button>
+              </div>
+            )}
+          >
+            <Page sessionID={props.cell.sessionID} mode={props.active ? "full" : "cell"} />
+          </ErrorBoundary>
         </SessionProviders>
       </SessionScopeProvider>
     </div>
@@ -71,31 +88,41 @@ export function SessionGrid(props: { dir: string; primaryId?: string }) {
   // Cell 0 is always the primary (current route) session — Page handles the
   // new-session state when primaryId is undefined, and its header carries the
   // Grid toggle. Extra cells fill the remaining grid slots.
-  const extraCells = createMemo(() => cells().slice(0, Math.max(0, mode() - 1)))
+  const extraCells = createMemo(() => {
+    const seen = new Set<string>()
+    return cells()
+      .filter((c) => c.sessionID !== props.primaryId)
+      .filter((c) => {
+        if (seen.has(c.sessionID)) return false
+        seen.add(c.sessionID)
+        return true
+      })
+      .slice(0, Math.max(0, mode() - 1))
+  })
   const emptyCount = createMemo(() => Math.max(0, mode() - 1 - extraCells().length))
-  // Active cell (by last click) — defaults to the primary. Only it renders "full".
-  const activeId = createMemo(() => layout.grid.active(props.dir)() ?? props.primaryId)
-  // SessionScope wants `dir` in the SAME form as the route param (base64). The
-  // grid store keeps using the decoded props.dir for its keys.
-  const scopeDir = createMemo(() => base64Encode(props.dir))
-
   // Primary cell carries the primary session. If the primary session isn't
   // in the grid yet, synthesize an ephemeral cell so the cell chrome still
   // works (it'll be persisted once the user adds the session via the picker).
   const primaryCell = createMemo<GridCell>(() => ({
     id: props.primaryId ?? "primary",
     sessionID: props.primaryId ?? "",
-    workspaceID: "",
+    workspaceID: layout.grid.workspace(props.dir)(),
     mode: "full",
     label: "",
   }))
+
+  // Active cell (by last click) — defaults to the primary. Only it renders "full".
+  const activeId = createMemo(() => layout.grid.active(props.dir)() ?? primaryCell().id)
+  // SessionScope wants `dir` in the SAME form as the route param (base64). The
+  // grid store keeps using the decoded props.dir for its keys.
+  const scopeDir = createMemo(() => base64Encode(props.dir))
 
   return (
     <Show
       when={mode() > 1}
       fallback={
         // mode 1: plain single session (full page + header + Grid toggle).
-        <SessionScopeProvider dir={scopeDir()} id={props.primaryId}>
+        <SessionScopeProvider dir={scopeDir()} id={props.primaryId} workspaceID={layout.grid.workspace(props.dir)()}>
           <SessionProviders>
             <Page sessionID={props.primaryId} mode="full" />
           </SessionProviders>
@@ -114,16 +141,17 @@ export function SessionGrid(props: { dir: string; primaryId?: string }) {
         <Cell
           dir={scopeDir()}
           cell={primaryCell()}
-          active={activeId() === props.primaryId}
-          onActivate={() => props.primaryId && layout.grid.setActive(props.dir, props.primaryId)}
+          active={activeId() === primaryCell().id}
+          onActivate={() => layout.grid.setActive(props.dir, primaryCell().id)}
+          onRemove={() => layout.grid.setMode(props.dir, 1)}
         />
         <For each={extraCells()}>
           {(cell) => (
             <Cell
               dir={scopeDir()}
               cell={cell}
-              active={activeId() === cell.sessionID}
-              onActivate={() => layout.grid.setActive(props.dir, cell.sessionID)}
+              active={activeId() === cell.id}
+              onActivate={() => layout.grid.setActive(props.dir, cell.id)}
               onRemove={() => layout.grid.removeCell(props.dir, cell.sessionID)}
             />
           )}

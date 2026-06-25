@@ -674,7 +674,7 @@ export const RunCommand = cmd({
       const headers = (() => {
         const password = args.password ?? process.env.MIMOCODE_SERVER_PASSWORD
         if (!password) return undefined
-        const username = process.env.MIMOCODE_SERVER_USERNAME ?? "mimocode"
+        const username = process.env.MIMOCODE_SERVER_USERNAME ?? "bob"
         const auth = `Basic ${Buffer.from(`${username}:${password}`).toString("base64")}`
         return { Authorization: auth }
       })()

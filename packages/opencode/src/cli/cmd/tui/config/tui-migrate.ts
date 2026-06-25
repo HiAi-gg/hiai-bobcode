@@ -134,10 +134,12 @@ async function backupAndStripLegacy(file: string, source: string) {
 async function mimocodeFiles(input: { directories: string[]; cwd: string }) {
   const files = [
     ...ConfigPaths.fileInDirectory(Global.Path.config, "mimocode"),
-    ...(await Filesystem.findUp(["hiai-bob.json", "hiai-bob.jsonc"], input.cwd, undefined, { rootFirst: true })),
+    ...ConfigPaths.fileInDirectory(Global.Path.config, "hiai-bob"),
+    ...(await Filesystem.findUp(["hiai-bob.json", "hiai-bob.jsonc", "mimocode.json", "mimocode.jsonc"], input.cwd, undefined, { rootFirst: true })),
   ]
   for (const dir of unique(input.directories)) {
     files.push(...ConfigPaths.fileInDirectory(dir, "mimocode"))
+    files.push(...ConfigPaths.fileInDirectory(dir, "hiai-bob"))
   }
   if (Flag.MIMOCODE_CONFIG) files.push(Flag.MIMOCODE_CONFIG)
 

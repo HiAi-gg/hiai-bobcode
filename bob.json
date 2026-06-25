@@ -1,29 +1,57 @@
 {
-  "//": "Bob MODELS file — the ONLY place per-agent models are defined.",
-  "//models": "Format: <provider>/<model>. Provider creds are NOT here — connect providers via /connect in the TUI (writes ~/.local/share/mimocode/auth.json). Skill keys (firecrawl, context7) live in bob.env.",
+  "$schema": "https://opencode.ai/config.json",
+  "//": "Bob MODELS file \u2014 the ONLY place per-agent models are defined.",
+  "//models": "Format: <provider>/<model>. Provider creds are NOT here \u2014 connect providers via /connect in the TUI (writes ~/.local/share/mimocode/auth.json). Skill keys (firecrawl, context7) live in bob.env.",
   "models": {
-    "bob":        { "model": "openrouter/xiaomi/mimo-v2.5-pro",                       "recommended": "high" },
-    "coder":      { "model": "minimax-coding-plan/MiniMax-M3",          "recommended": "high" },
-    "strategist": { "model": "deepseek/deepseek-v4-pro",                "recommended": "xhigh" },
-    "manager":    { "model": "opencode-go/deepseek-v4-flash",           "recommended": "middle" },
-    "critic":     { "model": "openrouter/xiaomi/mimo-v2.5-pro",                      "recommended": "high" },
-    "designer":   { "model": "google/gemini-3.5-flash",                 "recommended": "design" },
-    "researcher": { "model": "opencode-go/deepseek-v4-flash",           "recommended": "fast" },
-    "writer":     { "model": "openrouter/mistralai/mistral-small-2603", "recommended": "writing" },
-    "vision":     { "model": "opencode-go/mimo-v2.5",        		"recommended": "vision" },
-    "sub":        { "model": "opencode-go/deepseek-v4-flash",           "recommended": "fast" }
+    "bob": {
+      "model": "openrouter/xiaomi/mimo-v2.5-pro",
+      "recommended": "high"
+    },
+    "coder": {
+      "model": "minimax-coding-plan/MiniMax-M3",
+      "recommended": "high"
+    },
+    "strategist": {
+      "model": "deepseek/deepseek-v4-pro",
+      "recommended": "xhigh"
+    },
+    "manager": {
+      "model": "opencode-go/deepseek-v4-flash",
+      "recommended": "middle"
+    },
+    "critic": {
+      "model": "openrouter/xiaomi/mimo-v2.5-pro",
+      "recommended": "high"
+    },
+    "designer": {
+      "model": "google/gemini-3.5-flash",
+      "recommended": "design"
+    },
+    "researcher": {
+      "model": "opencode-go/deepseek-v4-flash",
+      "recommended": "fast"
+    },
+    "writer": {
+      "model": "openrouter/mistralai/mistral-small-2603",
+      "recommended": "writing"
+    },
+    "vision": {
+      "model": "opencode-go/mimo-v2.5",
+      "recommended": "vision"
+    },
+    "sub": {
+      "model": "opencode-go/deepseek-v4-flash",
+      "recommended": "fast"
+    }
   },
-
   "//completion": "Completion-controller: auto-continue loop after subagent tasks. Most fields are safe defaults; tune max_auto_continues or set enabled:false to disable.",
-  "completion": {
-    "enabled": true,
-    "max_auto_continues": 25,
-    "require_critic": true,
-    "ui_globs": ["**/*.svelte", "**/*.tsx", "**/*.jsx", "**/*.vue", "**/*.css", "**/*.scss", "**/*.html", "**/*.astro"],
-    "reset_on_user_message": true
-  },
-
   "//memory": "Memory-consolidation passes. Only intervals are tunable here; the model is pinned to Bob's model automatically. auto=false disables a pass.",
-  "dream":   { "auto": true, "interval_days": 7 },
-  "distill": { "auto": true, "interval_days": 30 }
+  "dream": {
+    "auto": true,
+    "interval_days": 7
+  },
+  "distill": {
+    "auto": true,
+    "interval_days": 30
+  }
 }

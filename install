@@ -181,8 +181,8 @@ else
     fi
 
     if [ -z "$requested_version" ]; then
-        url="https://github.com/vlgalib/hiai-bob/releases/latest/download/$filename"
-        specific_version=$(curl -s https://api.github.com/repos/vlgalib/hiai-bob/releases/latest | sed -n 's/.*"tag_name": *"v\([^"]*\)".*/\1/p')
+        url="https://github.com/HiAi-gg/hiai-bobcode/releases/latest/download/$filename"
+        specific_version=$(curl -s https://api.github.com/repos/HiAi-gg/hiai-bobcode/releases/latest | sed -n 's/.*"tag_name": *"v\([^"]*\)".*/\1/p')
 
         if [[ $? -ne 0 || -z "$specific_version" ]]; then
             echo -e "${RED}Failed to fetch version information${NC}"
@@ -191,14 +191,14 @@ else
     else
         # Strip leading 'v' if present
         requested_version="${requested_version#v}"
-        url="https://github.com/vlgalib/hiai-bob/releases/download/v${requested_version}/$filename"
+        url="https://github.com/HiAi-gg/hiai-bobcode/releases/download/v${requested_version}/$filename"
         specific_version=$requested_version
 
         # Verify the release exists before downloading
-        http_status=$(curl -sI -o /dev/null -w "%{http_code}" "https://github.com/vlgalib/hiai-bob/releases/tag/v${requested_version}")
+        http_status=$(curl -sI -o /dev/null -w "%{http_code}" "https://github.com/HiAi-gg/hiai-bobcode/releases/tag/v${requested_version}")
         if [ "$http_status" = "404" ]; then
             echo -e "${RED}Error: Release v${requested_version} not found${NC}"
-            echo -e "${MUTED}Available releases: https://github.com/vlgalib/hiai-bob/releases${NC}"
+            echo -e "${MUTED}Available releases: https://github.com/HiAi-gg/hiai-bobcode/releases${NC}"
             exit 1
         fi
     fi
@@ -358,6 +358,37 @@ else
     download_and_install
 fi
 
+# Optional runtime dependencies for agent tools
+print_message info "\n${MUTED}Checking optional agent tool dependencies...${NC}"
+
+# firecrawl-cli (web research)
+if command -v firecrawl >/dev/null 2>&1; then
+    print_message info "  firecrawl-cli: ${MUTED}found${NC}"
+else
+    print_message info "  firecrawl-cli: ${MUTED}not found — install with: npm install -g firecrawl-cli${NC}"
+fi
+
+# chromium (for agent-browser)
+if command -v google-chrome >/dev/null 2>&1 || command -v chromium-browser >/dev/null 2>&1 || command -v chromium >/dev/null 2>&1; then
+    print_message info "  chromium: ${MUTED}found${NC}"
+else
+    print_message info "  chromium: ${MUTED}not found — install with: apt install chromium-browser${NC}"
+fi
+
+# psql (for PostgreSQL agent tools)
+if command -v psql >/dev/null 2>&1; then
+    print_message info "  psql: ${MUTED}found${NC}"
+else
+    print_message info "  psql: ${MUTED}not found — install with: apt install postgresql-client${NC}"
+fi
+
+# Docker (for PostgreSQL/Redis infra)
+if command -v docker >/dev/null 2>&1; then
+    print_message info "  docker: ${MUTED}found${NC}"
+    print_message info "  ${MUTED}Start infra: cd <install-dir>/infra && make db${NC}"
+else
+    print_message info "  docker: ${MUTED}not found${NC}"
+fi
 
 add_to_path() {
     local config_file=$1
@@ -457,4 +488,7 @@ echo -e "bob           ${MUTED}# Run command${NC}"
 echo -e ""
 echo -e "${MUTED}For more information visit ${NC}https://hiai.dev/docs"
 echo -e ""
+echo -e "${MUTED}Next steps:${NC}"
+echo -e "  cp bob.env.example bob.env   ${MUTED}# Create env file from template${NC}"
+echo -e "  nano bob.env                   ${MUTED}# Add your API keys (FIRECRAWL_API_KEY, CONTEXT7_API_KEY)${NC}"
 echo -e ""

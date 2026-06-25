@@ -24,6 +24,8 @@ function headers(req: Request, extra?: HeadersInit) {
   const out = new Headers(req.headers)
   for (const key of hop) out.delete(key)
   out.delete("accept-encoding")
+  out.delete("x-hiai-bob-directory")
+  out.delete("x-hiai-bob-workspace")
   out.delete("x-mimocode-directory")
   out.delete("x-mimocode-workspace")
   if (!extra) return out
@@ -60,7 +62,7 @@ const app = (upgrade: UpgradeWebSocket) =>
   new Hono().get(
     "/__workspace_ws",
     upgrade((c) => {
-      const url = c.req.header("x-mimocode-proxy-url")
+      const url = c.req.header("x-hiai-bob-proxy-url") || c.req.header("x-mimocode-proxy-url")
       const queue: Msg[] = []
       let remote: WebSocket | undefined
       return {
@@ -150,6 +152,7 @@ export function websocket(
   proxy.pathname = "/__workspace_ws"
   proxy.search = ""
   const next = new Headers(req.headers)
+  next.set("x-hiai-bob-proxy-url", socket(target))
   next.set("x-mimocode-proxy-url", socket(target))
   for (const [key, value] of new Headers(extra).entries()) {
     next.set(key, value)

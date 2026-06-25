@@ -9,7 +9,7 @@ import { Log } from "../util"
 import { NamedError } from "@mimo-ai/shared/util/error"
 import z from "zod"
 import path from "path"
-import { readFileSync, readdirSync, existsSync } from "fs"
+import { readFileSync, readdirSync, existsSync, renameSync } from "fs"
 import { Flag } from "../flag/flag"
 import { InstallationChannel } from "../installation/version"
 import { InstanceState } from "@/effect"
@@ -29,17 +29,31 @@ const log = Log.create({ service: "db" })
 
 export function getChannelPath() {
   if (["latest", "beta", "prod"].includes(InstallationChannel) || Flag.MIMOCODE_DISABLE_CHANNEL_DB)
-    return path.join(Global.Path.data, "mimocode.db")
+    return path.join(Global.Path.data, "bob.db")
   const safe = InstallationChannel.replace(/[^a-zA-Z0-9._-]/g, "-")
-  return path.join(Global.Path.data, `mimocode-${safe}.db`)
+  return path.join(Global.Path.data, `bob-${safe}.db`)
 }
 
 export const Path = iife(() => {
-  if (Flag.MIMOCODE_DB) {
-    if (Flag.MIMOCODE_DB === ":memory:" || path.isAbsolute(Flag.MIMOCODE_DB)) return Flag.MIMOCODE_DB
-    return path.join(Global.Path.data, Flag.MIMOCODE_DB)
+  const file = Flag.MIMOCODE_DB
+    ? (Flag.MIMOCODE_DB === ":memory:" || path.isAbsolute(Flag.MIMOCODE_DB)
+      ? Flag.MIMOCODE_DB
+      : path.join(Global.Path.data, Flag.MIMOCODE_DB))
+    : getChannelPath()
+
+  if (file !== ":memory:") {
+    const legacyFile = file.replace(/bob((?:-\w+)?)\.db$/, "mimocode$1.db")
+    if (!existsSync(file) && existsSync(legacyFile)) {
+      try {
+        renameSync(legacyFile, file)
+        log.info("migrated legacy database to new path", { from: legacyFile, to: file })
+      } catch (err) {
+        log.error("failed to migrate legacy database", { error: String(err) })
+      }
+    }
   }
-  return getChannelPath()
+
+  return file
 })
 
 export type Transaction = SQLiteTransaction<"sync", void>

@@ -305,6 +305,7 @@
     },
     "packages/script": {
       "name": "@mimo-ai/script",
+      "version": "0.0.1",
       "dependencies": {
         "semver": "^7.6.3",
       },
@@ -315,7 +316,7 @@
     },
     "packages/sdk/js": {
       "name": "@mimo-ai/sdk",
-      "version": "1.14.19",
+      "version": "0.0.1",
       "dependencies": {
         "cross-spawn": "catalog:",
       },
@@ -367,6 +368,7 @@
     },
     "packages/storybook": {
       "name": "@mimo-ai/storybook",
+      "version": "0.0.1",
       "devDependencies": {
         "@mimo-ai/ui": "workspace:*",
         "@solidjs/meta": "catalog:",

@@ -51,19 +51,10 @@ export function WorkspaceBrowser(props: { directory: string }) {
     },
   )
 
-  // The currently-active workspace for this directory. Read from the
-  // primary cell's record when one exists; otherwise the default
-  // (empty) workspace. The browser reflects that choice as the
-  // "selected" entry but doesn't render a separate "active" pill —
-  // the picker inside the grid is the visual source of truth.
-  const active = createMemo<WorkspaceID>(() => asWorkspaceID(""))
+  const active = createMemo<WorkspaceID>(() => asWorkspaceID(layout.grid.workspace(props.directory)()))
 
   const select = (next: WorkspaceID) => {
-    // If a primary session is mounted in this directory, route its cell
-    // record to the chosen workspace so the next "New session" button
-    // binds to it. With no primary session the selection still lives on
-    // the empty slot's picker, which reads from the layout for its own
-    // workspace.
+    layout.grid.setWorkspace(props.directory, next)
     const cells = layout.grid.cells(props.directory)()
     const primary = cells[0]
     if (primary) {

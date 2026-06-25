@@ -90,6 +90,7 @@ import { SessionRetry } from "@/session/retry"
 import { getRevertDiffFiles } from "../../util/revert-diff"
 import type { GridCell } from "@tui/context/grid-persistence"
 import { useSessionMessages, useSessionState } from "./session-hooks"
+import { useGrid } from "@tui/context/grid"
 
 addDefaultParsers(parsers.parsers)
 
@@ -146,6 +147,7 @@ function useCell() {
 export function SessionCell(props: {
   cell: GridCell
   active: boolean
+  width?: number
   wide?: boolean
   /**
    * Phase 6: optional fixed height (terminal rows). Used by `split-v` so the
@@ -158,6 +160,7 @@ export function SessionCell(props: {
   prompt?: PromptInfo
 }) {
   const fullRoute = useRoute()
+  const grid = useGrid()
   const navigate = fullRoute.navigate
   const sync = useSync()
   const event = useEvent()
@@ -223,7 +226,8 @@ export function SessionCell(props: {
   const [diffWrapMode] = kv.signal<"word" | "none">("diff_wrap_mode", "word")
   const [showGenericToolOutput, setShowGenericToolOutput] = kv.signal("generic_tool_output_visibility", false)
 
-  const wide = createMemo(() => props.wide ?? dimensions().width > 120)
+  const cellWidth = createMemo(() => props.width ?? dimensions().width)
+  const wide = createMemo(() => props.wide ?? cellWidth() > 120)
   const sidebarVisible = createMemo(() => {
     if (sync.session.get(props.cell.sessionID)?.parentID) return false
     if (currentAgentID() !== "main") return false
@@ -232,7 +236,7 @@ export function SessionCell(props: {
     return false
   })
   const showTimestamps = createMemo(() => timestamps() === "show")
-  const contentWidth = createMemo(() => dimensions().width - (sidebarVisible() ? 42 : 0) - 4)
+  const contentWidth = createMemo(() => Math.max(40, cellWidth() - (sidebarVisible() ? 42 : 0) - 4))
   const providers = createMemo(() => Model.index(sync.data.provider))
 
   // Phase 6: derived cell state aggregated into a single memo so downstream
@@ -559,8 +563,28 @@ export function SessionCell(props: {
         active: () => cellState().active,
       }}
     >
-      <box flexDirection="row" height="100%">
-        <box flexGrow={1} paddingBottom={1} paddingLeft={2} paddingRight={2} gap={1} onMouse={onWheel}>
+      <box
+        flexDirection="row"
+        height="100%"
+        onMouseUp={() => {
+          if (!props.active) {
+            grid.setActive(props.cell.id)
+          }
+        }}
+      >
+        <box
+          flexGrow={1}
+          paddingBottom={1}
+          paddingLeft={2}
+          paddingRight={2}
+          gap={1}
+          onMouse={onWheel}
+          onMouseUp={() => {
+            if (!props.active) {
+              grid.setActive(props.cell.id)
+            }
+          }}
+        >
           <Show when={sync.session.get(props.cell.sessionID)}>
             {/* Phase 8: empty-session bootstrap. When a cell holds a freshly
                 created session (no messages yet) we render the prompt first
@@ -584,6 +608,11 @@ export function SessionCell(props: {
               }
             >
               <scrollbox
+                onMouseUp={() => {
+                  if (!props.active) {
+                    grid.setActive(props.cell.id)
+                  }
+                }}
                 ref={(r) => (scroll = r)}
                 viewportOptions={{
                   paddingRight: 1,
@@ -729,6 +758,7 @@ export function SessionCell(props: {
                       onSubmit={toBottom}
                       sessionID={props.cell.sessionID}
                       focusEnabled={props.active}
+                      agentID={currentAgentID()}
                       right={<TuiPluginRuntime.Slot name="session_prompt_right" session_id={props.cell.sessionID} />}
                     />
                   </TuiPluginRuntime.Slot>
@@ -811,6 +841,7 @@ function EmptySessionPrompt(props: {
  */
 function InactiveOverlay(props: { cell: GridCell }) {
   const { theme } = useTheme()
+  const grid = useGrid()
   return (
     <box
       position="absolute"
@@ -818,12 +849,18 @@ function InactiveOverlay(props: { cell: GridCell }) {
       left={0}
       right={0}
       bottom={0}
+      width="100%"
+      height="100%"
       backgroundColor={RGBA.fromInts(0, 0, 0, 100)}
       alignItems="center"
       justifyContent="center"
       onMouseDown={(evt) => {
-        evt.preventDefault()
         evt.stopPropagation()
+        grid.setActive(props.cell.id)
+      }}
+      onMouseUp={(evt) => {
+        evt.stopPropagation()
+        grid.setActive(props.cell.id)
       }}
     >
       <box

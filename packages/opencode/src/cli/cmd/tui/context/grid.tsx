@@ -1,10 +1,13 @@
 import { createStore, produce, reconcile } from "solid-js/store"
 import { createEffect, createMemo, onCleanup } from "solid-js"
 import { createSimpleContext } from "./helper"
+import fs from "fs"
 import {
   defaultGridState,
   debouncedSave,
   normalizeGridState,
+  isGridState,
+  gridLayoutPath,
   type GridCell,
   type GridLayout,
   type GridSplitRatio,
@@ -16,8 +19,23 @@ export type AddCellInput = Omit<GridCell, "id">
 export const { use: useGrid, provider: GridProvider } = createSimpleContext({
   name: "Grid",
   init: (props: { initial?: GridState }) => {
+    let initialStore = props.initial
+    if (!initialStore) {
+      try {
+        if (fs.existsSync(gridLayoutPath)) {
+          const content = fs.readFileSync(gridLayoutPath, "utf-8")
+          const parsed = JSON.parse(content)
+          if (isGridState(parsed)) {
+            initialStore = normalizeGridState(parsed)
+          }
+        }
+      } catch (e) {
+        // ignore
+      }
+    }
+
     const [store, setStore] = createStore<GridState>(
-      props.initial ? normalizeGridState(props.initial) : defaultGridState(),
+      initialStore ? normalizeGridState(initialStore) : defaultGridState(),
     )
 
     const persist = debouncedSave(250)
@@ -61,6 +79,7 @@ export const { use: useGrid, provider: GridProvider } = createSimpleContext({
         setStore(
           produce((draft) => {
             draft.cells.push(cell)
+            draft.cells.sort((a, b) => a.sessionID.localeCompare(b.sessionID))
             draft.activeCellId = id
           }),
         )
@@ -113,7 +132,9 @@ export const { use: useGrid, provider: GridProvider } = createSimpleContext({
        * Use sparingly — prefer the targeted mutators above.
        */
       hydrate(state: GridState) {
-        setStore(reconcile(normalizeGridState(state)))
+        const normalized = normalizeGridState(state)
+        const sortedCells = [...normalized.cells].sort((a, b) => a.sessionID.localeCompare(b.sessionID))
+        setStore(reconcile({ ...normalized, cells: sortedCells }))
       },
     }
   },

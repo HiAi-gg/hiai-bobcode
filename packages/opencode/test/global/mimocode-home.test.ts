@@ -136,8 +136,8 @@ describe("MIMOCODE_HOME end-to-end", () => {
     })
     expect(result.ok).toBe(true)
     if (!result.ok) return
-    // Paths should reflect XDG layout (ends with "/mimocode"), not MIMOCODE_HOME layout
-    expect(result.paths.config).toBe(path.join(tmp.path, "config", "mimocode"))
-    expect(result.paths.data).toBe(path.join(tmp.path, "data", "mimocode"))
+    // Paths should reflect XDG layout (ends with "/hiai-bob"), not MIMOCODE_HOME layout
+    expect(result.paths.config).toBe(path.join(tmp.path, "config", "hiai-bob"))
+    expect(result.paths.data).toBe(path.join(tmp.path, "data", "hiai-bob"))
   })
 })

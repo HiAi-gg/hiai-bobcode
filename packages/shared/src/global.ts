@@ -3,7 +3,7 @@ import { xdgData, xdgCache, xdgConfig, xdgState } from "xdg-basedir"
 import os from "os"
 import { Context, Effect, Layer } from "effect"
 
-const APP = "mimocode"
+const APP = "hiai-bob"
 
 export type ResolvedPaths = {
   mode: "mimocode_home" | "xdg"
@@ -18,17 +18,17 @@ export type ResolvedPaths = {
  * Resolve mimocode's four base directories (config/data/state/cache)
  * from environment variables.
  *
- * If MIMOCODE_HOME is set and non-empty, the four paths are subdirectories
+ * If HIAI_BOB_HOME or MIMOCODE_HOME is set and non-empty, the four paths are subdirectories
  * of it. Otherwise, falls through to XDG Base Directory defaults.
  *
- * @throws if MIMOCODE_HOME is set but not an absolute path
+ * @throws if the home variable is set but not an absolute path
  */
 export function resolveMimocodeHome(env: NodeJS.ProcessEnv = process.env): ResolvedPaths {
-  const home = env.MIMOCODE_HOME
+  const home = env.HIAI_BOB_HOME || env.MIMOCODE_HOME
   if (home) {
     if (!path.isAbsolute(home)) {
       throw new Error(
-        `MIMOCODE_HOME must be an absolute path, got: ${JSON.stringify(home)}`,
+        `HIAI_BOB_HOME or MIMOCODE_HOME must be an absolute path, got: ${JSON.stringify(home)}`,
       )
     }
     return {

@@ -1,6 +1,6 @@
 # MiMo-Code Fork — Integration Map & Report (2026-06-13)
 
-> Decision basis for turning hiai-bob into a product by forking **XiaomiMiMo/MiMo-Code** and carrying
+> Decision basis for turning hiai-bob into a product by forking **XiaomiMiMo/MiMo-Code** (which is itself a fork of **opencode-ai**) and carrying
 > our agent/orchestration logic as a **bundled first-party plugin** (the pattern MiMo already uses for
 > its own features). Source studied from a shallow clone of `main` @ `42e7da3` (PR #252).
 

@@ -6,6 +6,7 @@ import { useProject } from "@tui/context/project"
 import { useSDK } from "@tui/context/sdk"
 import { useWorkspaceClients } from "@tui/context/workspace-clients"
 import { useToast } from "@tui/ui/toast"
+import { useRoute } from "@tui/context/route"
 import { createGridSession } from "./grid-create"
 
 /**
@@ -23,6 +24,7 @@ export function GridToolbar() {
   const sdk = useSDK()
   const workspaceClients = useWorkspaceClients()
   const toast = useToast()
+  const route = useRoute()
   const cells = () => grid.cells
   const activeId = () => grid.activeCellId
 
@@ -39,40 +41,42 @@ export function GridToolbar() {
       paddingLeft={1}
       paddingRight={1}
     >
-      <For each={cells()}>
-        {(cell) => {
-          const isActive = cell.id === activeId()
-          const session = () => sync.session.get(cell.sessionID)
-          const label = () => cell.label || session()?.title || "cell"
-          return (
-            <box
-              flexDirection="row"
-              alignItems="center"
-              paddingLeft={1}
-              paddingRight={1}
-              backgroundColor={isActive ? theme.background : theme.backgroundElement}
-              border={["left", "right"]}
-              borderColor={isActive ? theme.borderActive : theme.border}
-              marginRight={1}
-              onMouseUp={() => grid.setActive(cell.id)}
-            >
-              <text fg={theme.textMuted}>{cell.mode === "plan-only" ? "📋" : "💬"}</text>
-              <text fg={isActive ? theme.text : theme.textMuted} marginLeft={1} wrapMode="none">
-                {label()}
-              </text>
+      <box flexDirection="row">
+        <For each={cells()}>
+          {(cell) => {
+            const isActive = cell.id === activeId()
+            const session = () => sync.session.get(cell.sessionID)
+            const label = () => cell.label || session()?.title || "cell"
+            return (
               <box
-                marginLeft={1}
-                onMouseUp={(evt) => {
-                  evt.stopPropagation()
-                  grid.removeCell(cell.id)
-                }}
+                flexDirection="row"
+                alignItems="center"
+                paddingLeft={1}
+                paddingRight={1}
+                backgroundColor={isActive ? theme.background : theme.backgroundElement}
+                border={["left", "right"]}
+                borderColor={isActive ? theme.borderActive : theme.border}
+                marginRight={1}
+                onMouseUp={() => grid.setActive(cell.id)}
               >
-                <text fg={isActive ? theme.textMuted : theme.textMuted}>×</text>
+                <text fg={theme.textMuted}>{cell.mode === "plan-only" ? "📋" : "💬"}</text>
+                <text fg={isActive ? theme.text : theme.textMuted} marginLeft={1} wrapMode="none">
+                  {label()}
+                </text>
+                <box
+                  marginLeft={1}
+                  onMouseUp={(evt) => {
+                    evt.stopPropagation()
+                    grid.removeCell(cell.id)
+                  }}
+                >
+                  <text fg={isActive ? theme.textMuted : theme.textMuted}>×</text>
+                </box>
               </box>
-            </box>
-          )
-        }}
-      </For>
+            )
+          }}
+        </For>
+      </box>
 
       {/* "+" button to create a new cell — Phase 8: directly create a session
           via SDK and add it to the grid. Replaces the pre-Phase-8 behaviour of
@@ -80,6 +84,8 @@ export function GridToolbar() {
       <box onMouseUp={addNewCell} paddingLeft={1} paddingRight={1}>
         <text fg={theme.textMuted}>+</text>
       </box>
+
+      <box flexGrow={1} />
     </box>
   )
 }

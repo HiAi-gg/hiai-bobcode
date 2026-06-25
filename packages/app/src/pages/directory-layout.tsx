@@ -43,7 +43,7 @@ function DirectoryDataProvider(props: ParentProps<{ directory: string }>) {
             user drill into one. Cells then bind their session context to
             the chosen workspace via SessionScopeProvider. */}
         <WorkspaceBrowser directory={props.directory} />
-        {props.children}
+        <div class="flex-1 min-h-0 w-full">{props.children}</div>
       </LocalProvider>
     </DataProvider>
   )

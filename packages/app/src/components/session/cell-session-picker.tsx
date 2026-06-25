@@ -1,4 +1,5 @@
-import { createMemo, createResource, createSignal, For, Show } from "solid-js"
+import { createEffect, createMemo, createResource, createSignal, For, Show } from "solid-js"
+import { getFilename } from "@mimo-ai/shared/util/path"
 import { DropdownMenu } from "@mimo-ai/ui/dropdown-menu"
 import { Icon } from "@mimo-ai/ui/icon"
 import { showToast } from "@mimo-ai/ui/toast"
@@ -34,17 +35,89 @@ export function CellSessionPicker(props: { dir: string; primaryId?: string }) {
   const [open, setOpen] = createSignal(false)
   const [busy, setBusy] = createSignal(false)
 
+  // Fetch sessions across all known projects via the experimental endpoint.
+  // This surfaces sessions from OTHER projects in the picker dropdown so users
+  // can open sessions from any project in any cell slot.
+  const [crossProjectRaw] = createResource(
+    () => props.dir,
+    async () => {
+      const result = await sdk.client.experimental.session.list({ roots: true, limit: 30 }).catch(() => undefined)
+      return result?.data ?? []
+    },
+  )
+
   const taken = createMemo(() => {
     const set = new Set(layout.grid.cellsByID(props.dir)())
     if (props.primaryId) set.add(props.primaryId)
     return set
   })
-  const sessions = createMemo(() => sortedRootSessions(store, Date.now()).filter((s) => !taken().has(s.id)))
+  const allSessions = createMemo(() => {
+    const list: Array<{ project: string; directory: string; sessions: Array<{ id: string; title: string }> }> = []
+    const currentSessions = sortedRootSessions(store, Date.now()).filter((s) => !taken().has(s.id))
+    if (currentSessions.length > 0) {
+      list.push({
+        project: "Current Project",
+        directory: props.dir,
+        sessions: currentSessions,
+      })
+    }
 
-  // The cell's workspace defaults to whatever the surrounding scope provided
-  // (set by SessionGrid from the cell record). For a brand-new picker slot
-  // with no cell record yet, fall back to the empty workspace.
-  const cellWorkspaceID = createMemo<WorkspaceID>(() => asWorkspaceID(scope.workspaceID ?? ""))
+    // Merge cross-project sessions grouped by project name.
+    const cross = crossProjectRaw()
+    if (cross && cross.length > 0) {
+      const currentIds = new Set(currentSessions.map((s) => s.id))
+      const byProjectKey = new Map<
+        string,
+        {
+          name: string
+          directory: string
+          sessions: Array<{ id: string; title: string; time: { updated: number; created: number } }>
+        }
+      >()
+
+      for (const s of cross) {
+        if (taken().has(s.id) || currentIds.has(s.id)) continue
+        if (!s.id || s.parentID || s.time?.archived) continue
+
+        const pkey = s.project?.id ?? s.directory
+        let group = byProjectKey.get(pkey)
+        if (!group) {
+          group = {
+            name: s.project?.name ?? getFilename(s.directory),
+            directory: s.directory,
+            sessions: [],
+          }
+          byProjectKey.set(pkey, group)
+        }
+        group.sessions.push(s)
+      }
+
+      for (const group of byProjectKey.values()) {
+        if (group.sessions.length === 0) continue
+        group.sessions.sort((a, b) => {
+          const aUpdated = a.time.updated ?? a.time.created
+          const bUpdated = b.time.updated ?? b.time.created
+          return bUpdated - aUpdated
+        })
+        list.push({
+          project: group.name,
+          directory: group.directory,
+          sessions: group.sessions,
+        })
+      }
+    }
+
+    return list
+  })
+
+  // Maintain local workspace signal initialized to scope or active directory workspace
+  const [cellWorkspaceID, setCellWorkspaceID] = createSignal<WorkspaceID>(
+    asWorkspaceID(scope.workspaceID ?? layout.grid.workspace(props.dir)()),
+  )
+
+  createEffect(() => {
+    setCellWorkspaceID(asWorkspaceID(scope.workspaceID ?? layout.grid.workspace(props.dir)()))
+  })
 
   // Server-known workspaces for this directory. Used to populate the
   // workspace selector so users can target a specific workspace when
@@ -74,26 +147,11 @@ export function CellSessionPicker(props: { dir: string; primaryId?: string }) {
   )
 
   const switchWorkspace = (next: WorkspaceID) => {
-    // The picker itself doesn't own a cell record (only the primary cell does
-    // in the grid layout), but storing the chosen workspace on the layout
-    // makes it the default for the NEXT cell the user adds in this slot.
-    // Concrete per-cell switching happens via `layout.grid.updateCell` once
-    // the cell exists; this is the entry point for both flows.
+    setCellWorkspaceID(next)
     if (scope.id) {
       layout.grid.updateCell(props.dir, scope.id, { workspaceID: next })
       return
     }
-    // No cell yet — record the chosen workspace as the picker's default so
-    // the "New session" button uses it. Picker state is local since the
-    // picker slot is a transient UI element (it disappears once a session
-    // is added). The grid only persists state once the cell becomes real.
-    cellWorkspaceID // touch so createMemo stays live
-    void cellWorkspaceID
-    // Persist via layout.grid by adding a no-op cell? We can't add without a
-    // session id, so persist by piggy-backing on the primary cell's record
-    // when present. When there's no primary either (deep nested case) the
-    // selection is lost across reloads — acceptable since this is the empty
-    // slot UI. The dialog below gives the user a clear next step.
     showToast({
       title: "Workspace selection",
       description: `New sessions in this slot will open in workspace ${next || "(default)"}.`,
@@ -104,11 +162,15 @@ export function CellSessionPicker(props: { dir: string; primaryId?: string }) {
     setBusy(true)
     try {
       const workspaceID = cellWorkspaceID()
-      // Use the workspace-scoped SDK so server traffic routes to the right
-      // workspace instance via the `x-mimocode-workspace` header.
-      const client = workspaceClients.clientFor(workspaceID)
-      const result = await client.session.create({ workspace: workspaceID || undefined }).catch(() => undefined)
+      // Use route-scoped SDK when no explicit workspace selected (default = same project as sidebar)
+      // This ensures session.created SSE event goes to the sidebar's directory store
+      const useWorkspaceClient = workspaceID !== ""
+      const client = useWorkspaceClient ? workspaceClients.clientFor(workspaceID) : sdk.client
+      const result = await client.session
+        .create(useWorkspaceClient ? { workspace: workspaceID } : undefined)
+        .catch(() => undefined)
       const sessionID = result?.data?.id
+      const directory = result?.data?.directory
       if (!sessionID) {
         showToast({
           variant: "error",
@@ -120,6 +182,7 @@ export function CellSessionPicker(props: { dir: string; primaryId?: string }) {
       layout.grid.addCell(props.dir, sessionID, {
         workspaceID,
         label: "New Session",
+        directory,
       })
       // Make sure the new session's events flow into the sync store.
       void sync.session.sync(sessionID).catch(() => undefined)
@@ -145,26 +208,34 @@ export function CellSessionPicker(props: { dir: string; primaryId?: string }) {
                 <DropdownMenu.ItemLabel>{busy() ? "Creating…" : "New session"}</DropdownMenu.ItemLabel>
               </DropdownMenu.Item>
             </DropdownMenu.Group>
-            <DropdownMenu.Group>
-              <DropdownMenu.GroupLabel>Open existing</DropdownMenu.GroupLabel>
-              <For each={sessions()}>
-                {(s) => (
-                  <DropdownMenu.Item
-                    onSelect={() => {
-                      layout.grid.addCell(props.dir, s.id)
-                      setOpen(false)
-                    }}
-                  >
-                    <DropdownMenu.ItemLabel>{sessionTitle(s.title)}</DropdownMenu.ItemLabel>
-                  </DropdownMenu.Item>
-                )}
-              </For>
-              <Show when={sessions().length === 0}>
+            <For each={allSessions()}>
+              {(group) => (
+                <DropdownMenu.Group>
+                  <DropdownMenu.GroupLabel>{group.project}</DropdownMenu.GroupLabel>
+                  <For each={group.sessions}>
+                    {(s) => (
+                      <DropdownMenu.Item
+                        onSelect={() => {
+                          layout.grid.addCell(props.dir, s.id, {
+                            directory: group.directory,
+                          })
+                          setOpen(false)
+                        }}
+                      >
+                        <DropdownMenu.ItemLabel>{sessionTitle(s.title)}</DropdownMenu.ItemLabel>
+                      </DropdownMenu.Item>
+                    )}
+                  </For>
+                </DropdownMenu.Group>
+              )}
+            </For>
+            <Show when={allSessions().length === 0}>
+              <DropdownMenu.Group>
                 <DropdownMenu.Item disabled>
                   <DropdownMenu.ItemLabel>No other sessions</DropdownMenu.ItemLabel>
                 </DropdownMenu.Item>
-              </Show>
-            </DropdownMenu.Group>
+              </DropdownMenu.Group>
+            </Show>
           </DropdownMenu.Content>
         </DropdownMenu.Portal>
       </DropdownMenu>

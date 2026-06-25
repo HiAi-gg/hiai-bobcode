@@ -1246,6 +1246,7 @@ export function Session() {
                       toBottom()
                     }}
                     sessionID={route.sessionID}
+                    agentID={route.agentID ?? "main"}
                     right={<TuiPluginRuntime.Slot name="session_prompt_right" session_id={route.sessionID} />}
                   />
                 </TuiPluginRuntime.Slot>

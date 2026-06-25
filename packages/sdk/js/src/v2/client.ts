@@ -20,7 +20,9 @@ function rewrite(request: Request, values: { directory?: string; workspace?: str
   let changed = false
 
   for (const [name, key] of [
+    ["x-hiai-bob-directory", "directory"],
     ["x-mimocode-directory", "directory"],
+    ["x-hiai-bob-workspace", "workspace"],
     ["x-mimocode-workspace", "workspace"],
   ] as const) {
     const value = pick(
@@ -38,7 +40,9 @@ function rewrite(request: Request, values: { directory?: string; workspace?: str
   if (!changed) return request
 
   const next = new Request(url, request)
+  next.headers.delete("x-hiai-bob-directory")
   next.headers.delete("x-mimocode-directory")
+  next.headers.delete("x-hiai-bob-workspace")
   next.headers.delete("x-mimocode-workspace")
   return next
 }
@@ -59,6 +63,7 @@ export function createOpencodeClient(config?: Config & { directory?: string; exp
   if (config?.directory) {
     config.headers = {
       ...config.headers,
+      "x-hiai-bob-directory": encodeURIComponent(config.directory),
       "x-mimocode-directory": encodeURIComponent(config.directory),
     }
   }
@@ -66,6 +71,7 @@ export function createOpencodeClient(config?: Config & { directory?: string; exp
   if (config?.experimental_workspaceID) {
     config.headers = {
       ...config.headers,
+      "x-hiai-bob-workspace": config.experimental_workspaceID,
       "x-mimocode-workspace": config.experimental_workspaceID,
     }
   }

@@ -35,7 +35,6 @@ For full authoring rules see [`docs/SKILLS.md`](../docs/SKILLS.md).
 | `api-and-interface-design` | Use when designing APIs, module boundaries, or any public interface. | build |
 | `frontend-ui-engineering` | Use when building or modifying user-facing interfaces. | build |
 | `shadcn-ui` | Expert guidance for integrating and building applications with shadcn/ui components. | build |
-| `react-components` | Converts Stitch designs into modular Vite and React components with AST-based validation. | build |
 | `browser-testing-with-devtools` | Use when building or debugging anything that runs in a browser, via Chrome DevTools MCP. | read |
 | `full-page-screenshot` | Capture full-page screenshots of web pages via Chrome DevTools Protocol. | read |
 | `firecrawl-cli` | Firecrawl handles all web operations: pages, search, research, docs, scraping. | read |
@@ -62,11 +61,6 @@ For full authoring rules see [`docs/SKILLS.md`](../docs/SKILLS.md).
 
 | Skill | Description | Mode |
 |-------|-------------|------|
-| `stitch-design` | Unified entry point for Stitch design work: prompt enhancement, design-system synthesis, screen generation. | build |
-| `stitch-loop` | Teaches agents to iteratively build websites using Stitch with an autonomous baton-passing loop. | build |
-| `design-md` | Analyze Stitch projects and synthesize a semantic design system into DESIGN.md files. | build |
-| `taste-design` | Semantic Design System Skill for Google Stitch — premium, anti-generic UI standards. | build |
-| `enhance-prompt` | Transforms vague UI ideas into polished, Stitch-optimized prompts. | build |
 | `open-design-landing` | Entry point for the 150+ bundled brand design systems to generate landing page HTML. | build |
 | `open-design-landing-deck` | Entry point for the bundled brand design systems to generate slide deck HTML / PPT. | build |
 | `web-design-guidelines` | Web design guidelines and standards by the Vercel engineering team. | read |
@@ -82,7 +76,6 @@ For full authoring rules see [`docs/SKILLS.md`](../docs/SKILLS.md).
 | `figma-code-connect-components` | Connect Figma design components to code components using Code Connect. | build |
 | `figma-create-design-system-rules` | Generate project-specific design-system rules for Figma-to-code workflows. | build |
 | `figma-create-new-file` | Create a new blank Figma Design or FigJam file. | build |
-| `remotion` | Generate walkthrough videos from Stitch projects using Remotion. | build |
 
 ## Tooling
 

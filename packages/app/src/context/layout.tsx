@@ -69,6 +69,7 @@ export type GridCell = {
   agentID?: string
   mode: "full" | "plan-only"
   label: string
+  directory?: string
 }
 
 /**
@@ -327,6 +328,7 @@ export const { use: useLayout, provider: LayoutProvider } = createSimpleContext(
         gridMode: {} as Record<string, 1 | 2 | 3 | 4 | 6 | 8>,
         gridCells: {} as Record<string, GridCell[]>,
         gridActive: {} as Record<string, string>,
+        gridWorkspace: {} as Record<string, string>,
         handoff: {
           tabs: undefined as TabHandoff | undefined,
         },
@@ -1017,6 +1019,12 @@ export const { use: useLayout, provider: LayoutProvider } = createSimpleContext(
         }
       },
       grid: {
+        workspace(dir: string) {
+          return () => store.gridWorkspace[dir] ?? ""
+        },
+        setWorkspace(dir: string, workspaceID: string) {
+          setStore("gridWorkspace", dir, workspaceID)
+        },
         mode(dir: string) {
           return () => store.gridMode[dir] ?? 1
         },
@@ -1044,7 +1052,7 @@ export const { use: useLayout, provider: LayoutProvider } = createSimpleContext(
         setCells(dir: string, cells: GridCell[]) {
           setStore("gridCells", dir, cells)
         },
-        addCell(dir: string, sessionID: string, opts?: { workspaceID?: string; label?: string }) {
+        addCell(dir: string, sessionID: string, opts?: { workspaceID?: string; label?: string; directory?: string }) {
           const current = store.gridCells[dir] ?? []
           if (current.some((c) => c.sessionID === sessionID)) return
           const cell: GridCell = {
@@ -1053,6 +1061,7 @@ export const { use: useLayout, provider: LayoutProvider } = createSimpleContext(
             workspaceID: opts?.workspaceID ?? DEFAULT_WORKSPACE_ID,
             mode: "full",
             label: opts?.label ?? "",
+            directory: opts?.directory,
           }
           setStore("gridCells", dir, [...current, cell])
         },
@@ -1060,6 +1069,7 @@ export const { use: useLayout, provider: LayoutProvider } = createSimpleContext(
         // the workspace up front and want to keep the same shape everywhere).
         addCellFull(dir: string, cell: GridCell) {
           const current = store.gridCells[dir] ?? []
+          if (current.some((c) => c.sessionID === cell.sessionID)) return
           if (current.some((c) => c.id === cell.id)) return
           setStore("gridCells", dir, [...current, cell])
         },

@@ -2,6 +2,7 @@ import { For, Match, Show, Switch, createMemo } from "solid-js"
 import { useSync } from "@tui/context/sync"
 import { useTheme } from "@tui/context/theme"
 import { useTuiConfig } from "@tui/context/tui-config"
+import { useGrid } from "@tui/context/grid"
 import { TuiPluginRuntime } from "../../plugin"
 import { AgentStatus } from "../../component/agent-status"
 import { PlanSummary } from "../../component/plan-summary"
@@ -39,6 +40,7 @@ export function PlanCell(props: PlanCellProps) {
   const sync = useSync()
   const { theme } = useTheme()
   const tuiConfig = useTuiConfig()
+  const grid = useGrid()
 
   const sessionID = () => props.cell.sessionID
 
@@ -84,11 +86,21 @@ export function PlanCell(props: PlanCellProps) {
         paddingLeft={2}
         paddingRight={2}
         flexDirection="column"
+        onMouseUp={() => {
+          if (grid.activeCellId !== props.cell.id) {
+            grid.setActive(props.cell.id)
+          }
+        }}
       >
         <scrollbox
           flexGrow={1}
           flexShrink={1}
           scrollAcceleration={scrollAcceleration()}
+          onMouseUp={() => {
+            if (grid.activeCellId !== props.cell.id) {
+              grid.setActive(props.cell.id)
+            }
+          }}
           verticalScrollbarOptions={{
             trackOptions: {
               backgroundColor: theme.background,

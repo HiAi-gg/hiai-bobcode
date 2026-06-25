@@ -114,6 +114,7 @@ export function WorkspaceRouterMiddleware(upgrade: UpgradeWebSocket): Middleware
     }
 
     const headers = new Headers(c.req.raw.headers)
+    headers.delete("x-hiai-bob-workspace")
     headers.delete("x-mimocode-workspace")
 
     const req = new Request(c.req.raw, { headers })

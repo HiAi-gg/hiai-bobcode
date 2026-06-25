@@ -12,7 +12,7 @@ function View(props: { api: TuiPluginApi }) {
     ),
   )
   const done = createMemo(() => props.api.kv.get("dismissed_getting_started", false))
-  const show = createMemo(() => !has() && !done())
+  const show = () => false
   const path = createMemo(() => {
     const dir = props.api.state.path.directory || process.cwd()
     const out = dir.replace(Global.Path.home, "~")

@@ -20,8 +20,29 @@ type PersistTarget = {
 }
 
 const LEGACY_STORAGE = "default.dat"
-const GLOBAL_STORAGE = "opencode.global.dat"
-const LOCAL_PREFIX = "opencode."
+const GLOBAL_STORAGE = "hiai-bob.global.dat"
+const LOCAL_PREFIX = "hiai-bob."
+
+// Migrate legacy localStorage keys from "opencode.*" to "hiai-bob.*"
+if (typeof localStorage !== "undefined") {
+  try {
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i)
+      if (key && key.startsWith("opencode.")) {
+        const newKey = key.replace(/^opencode\./, "hiai-bob.")
+        if (localStorage.getItem(newKey) === null) {
+          const value = localStorage.getItem(key)
+          if (value !== null) {
+            localStorage.setItem(newKey, value)
+          }
+        }
+      }
+    }
+  } catch (e) {
+    console.warn("Failed to migrate localStorage keys from opencode to hiai-bob", e)
+  }
+}
+
 const fallback = new Map<string, boolean>()
 
 const CACHE_MAX_ENTRIES = 500
@@ -211,7 +232,7 @@ function normalize(defaults: unknown, raw: string, migrate?: (value: unknown) =>
 function workspaceStorage(dir: string) {
   const head = (dir.slice(0, 12) || "workspace").replace(/[^a-zA-Z0-9._-]/g, "-")
   const sum = checksum(dir) ?? "0"
-  return `opencode.workspace.${head}.${sum}.dat`
+  return `hiai-bob.workspace.${head}.${sum}.dat`
 }
 
 function localStorageWithPrefix(prefix: string): SyncStorage {

@@ -23,6 +23,9 @@ target
 .scripts
 .direnv/
 
+# Build artifacts (too large for GitHub)
+packages/opencode/bin/bob
+
 # Local dev files
 opencode-dev
 UPCOMING_CHANGELOG.md
@@ -53,6 +56,7 @@ packages/opencode/.logs/
 
 # Internal planning / audit files (not for open-source)
 todo.md
+bob-todo.md
 AGENTS.md
 AGENTS.md.bak
 todo.md.bak
