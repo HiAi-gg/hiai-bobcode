@@ -66,6 +66,7 @@ export type PromptProps = {
    * background cell. Defaults to `true` for the legacy single-session route.
    */
   focusEnabled?: boolean
+  agentID?: string
 }
 
 export type PromptRef = {
@@ -122,6 +123,21 @@ export function Prompt(props: PromptProps) {
   const sync = useSync()
   const dialog = useDialog()
   const toast = useToast()
+  const actor = createMemo(() => {
+    if (!props.agentID || props.agentID === "main") {
+      return undefined
+    }
+    return (sync.data.actor[props.sessionID ?? ""] ?? []).find((a) => a.actor_id === props.agentID)
+  })
+
+  const agent = createMemo(() => {
+    const act = actor()
+    if (act) {
+      return sync.data.agent.find((x) => x.name.toLowerCase() === act.agent.toLowerCase())
+    }
+    return local.agent.current()
+  })
+
   const status = createMemo(() => sync.data.session_status?.[props.sessionID ?? ""] ?? { type: "idle" })
   const history = usePromptHistory()
   const stash = usePromptStash()
@@ -276,7 +292,7 @@ export function Prompt(props: PromptProps) {
               if (!activeVoice) return
               av.setState("processing")
               const currentText = av.getPlainText()
-              const currentAgent = local.agent.current()?.name ?? ""
+              const currentAgent = agent()?.name ?? ""
               const availableAgents = local.agent.list().map((x) => x.name)
 
               const ctrl = await Voice.processVoiceControl({
@@ -517,7 +533,7 @@ export function Prompt(props: PromptProps) {
         if (!args.agent) local.agent.set(msg.agent)
         if (msg.model) {
           local.model.set(msg.model)
-          local.model.variant.set(msg.model.variant)
+          local.model.variant.set(msg.model.variant, msg.model)
         }
       }
     }
@@ -999,14 +1015,14 @@ export function Prompt(props: PromptProps) {
     if (props.disabled) return false
     if (autocomplete?.visible) return false
     if (!store.prompt.input) return false
-    const agent = local.agent.current()
-    if (!agent) return false
+    const activeAgent = agent()
+    if (!activeAgent) return false
     const trimmed = store.prompt.input.trim()
     if (trimmed === "exit" || trimmed === "quit" || trimmed === ":q") {
       void exit()
       return true
     }
-    const selectedModel = local.model.current()
+    const selectedModel = local.model.getModelForAgent(agent()?.name)
     if (!selectedModel) {
       void promptModelWarning()
       return false
@@ -1082,7 +1098,7 @@ export function Prompt(props: PromptProps) {
 
     // Capture mode before it gets reset
     const currentMode = store.mode
-    const variant = local.model.variant.current()
+    const variant = local.model.variant.current(selectedModel)
 
     const clientSlash = inputText.startsWith("/")
       ? command.slashes().find((s) => s.display === inputText.trim())
@@ -1120,7 +1136,7 @@ export function Prompt(props: PromptProps) {
         sessionID,
         command: command.slice(1),
         arguments: args,
-        agent: agent.name,
+        agent: activeAgent.name,
         model: `${selectedModel.providerID}/${selectedModel.modelID}`,
         messageID,
         variant,
@@ -1137,7 +1153,7 @@ export function Prompt(props: PromptProps) {
           sessionID,
           ...selectedModel,
           messageID,
-          agent: agent.name,
+          agent: activeAgent.name,
           model: selectedModel,
           variant,
           parts: [
@@ -1342,22 +1358,23 @@ export function Prompt(props: PromptProps) {
   const highlight = createMemo(() => {
     if (keybind.leader) return theme.border
     if (store.mode === "shell") return theme.primary
-    const agent = local.agent.current()
-    if (!agent) return theme.border
-    return local.agent.color(agent.name)
+    const activeAgent = agent()
+    if (!activeAgent) return theme.border
+    return local.agent.color(activeAgent.name)
   })
 
   const showVariant = createMemo(() => {
-    const variants = local.model.variant.list()
+    const selectedModel = local.model.getModelForAgent(agent()?.name)
+    const variants = local.model.variant.list(selectedModel)
     if (variants.length === 0) return false
-    const current = local.model.variant.current()
+    const current = local.model.variant.current(selectedModel)
     return !!current
   })
 
-  const agentMetaAlpha = createFadeIn(() => !!local.agent.current(), animationsEnabled)
-  const modelMetaAlpha = createFadeIn(() => !!local.agent.current() && store.mode === "normal", animationsEnabled)
+  const agentMetaAlpha = createFadeIn(() => !!agent(), animationsEnabled)
+  const modelMetaAlpha = createFadeIn(() => !!agent() && store.mode === "normal", animationsEnabled)
   const variantMetaAlpha = createFadeIn(
-    () => !!local.agent.current() && store.mode === "normal" && showVariant(),
+    () => !!agent() && store.mode === "normal" && showVariant(),
     animationsEnabled,
   )
   const borderHighlight = createMemo(() => tint(theme.border, highlight(), agentMetaAlpha()))
@@ -1374,8 +1391,8 @@ export function Prompt(props: PromptProps) {
   })
 
   const spinnerDef = createMemo(() => {
-    const agent = local.agent.current()
-    const color = agent ? local.agent.color(agent.name) : theme.border
+    const activeAgent = agent()
+    const color = activeAgent ? local.agent.color(activeAgent.name) : theme.border
     return {
       frames: createFrames({
         color,
@@ -1602,7 +1619,7 @@ export function Prompt(props: PromptProps) {
             />
             <box flexDirection="row" flexShrink={0} paddingTop={1} gap={1} justifyContent="space-between">
               <box flexDirection="row" gap={1}>
-                <Show when={local.agent.current()} fallback={<box height={1} />}>
+                <Show when={agent()} fallback={<box height={1} />}>
                   {(agent) => (
                     <>
                       <text fg={fadeColor(highlight(), agentMetaAlpha())}>
@@ -1615,13 +1632,13 @@ export function Prompt(props: PromptProps) {
                             flexShrink={0}
                             fg={fadeColor(keybind.leader ? theme.textMuted : theme.text, modelMetaAlpha())}
                           >
-                            {local.model.parsed().model}
+                            {local.model.parseModelInfo(local.model.getModelForAgent(agent()?.name)).model}
                           </text>
                           <Show when={showVariant()}>
                             <text fg={fadeColor(theme.textMuted, variantMetaAlpha())}>·</text>
                             <text>
                               <span style={{ fg: fadeColor(theme.warning, variantMetaAlpha()), bold: true }}>
-                                {local.model.variant.current()}
+                                {local.model.variant.current(local.model.getModelForAgent(agent()?.name))}
                               </span>
                             </text>
                           </Show>

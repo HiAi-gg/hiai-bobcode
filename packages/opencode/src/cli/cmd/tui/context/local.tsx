@@ -12,6 +12,8 @@ import { useArgs } from "./args"
 import { useSDK } from "./sdk"
 import { RGBA } from "@opentui/core"
 import { Filesystem } from "@/util"
+import { useGrid } from "./grid"
+import { useRoute } from "./route"
 
 export function parseModel(model: string) {
   const [providerID, ...rest] = model.split("/")
@@ -197,19 +199,80 @@ export const { use: useLocal, provider: LocalProvider } = createSimpleContext({
         }
       })
 
+      function getFocusedAgentName(): string | undefined {
+        let activeAgentID = "main"
+        let sessionID: string | undefined
+        
+        try {
+          const grid = useGrid()
+          const cell = grid?.activeCell()
+          if (cell) {
+            activeAgentID = cell.agentID ?? "main"
+            sessionID = cell.sessionID
+          }
+        } catch (e) {
+          // GridProvider is not in the tree
+        }
+        
+        try {
+          if (activeAgentID === "main") {
+            const route = useRoute()
+            if (route?.data?.type === "session") {
+              activeAgentID = route.data.agentID ?? "main"
+              sessionID = route.data.sessionID
+            }
+          }
+        } catch (e) {
+          // RouteProvider is not in the tree
+        }
+        
+        if (activeAgentID !== "main" && sessionID) {
+          const actor = (sync.data.actor[sessionID] ?? []).find((a) => a.actor_id === activeAgentID)
+          if (actor) {
+            return actor.agent
+          }
+        }
+        
+        return agent.current()?.name
+      }
+
+      function getModelForAgent(agentName: string | undefined) {
+        const name = agentName || getFocusedAgentName()
+        const a = name ? sync.data.agent.find((x) => x.name.toLowerCase() === name.toLowerCase()) : agent.current()
+        if (a && modelStore.model[a.name]) {
+          return modelStore.model[a.name]
+        }
+        if (a && a.model) {
+          return a.model
+        }
+        return fallbackModel()
+      }
+
       const currentModel = createMemo(() => {
-        const a = agent.current()
-        return (
-          getFirstValidModel(
-            () => a && modelStore.model[a.name],
-            () => a && a.model,
-            fallbackModel,
-          ) ?? undefined
-        )
+        return getModelForAgent(getFocusedAgentName())
       })
+
+      function parseModelInfo(value: { providerID: string; modelID: string } | undefined) {
+        if (!value) {
+          return {
+            provider: "Connect a provider",
+            model: "No provider selected",
+            reasoning: false,
+          }
+        }
+        const provider = sync.data.provider.find((x) => x.id === value.providerID)
+        const info = provider?.models[value.modelID]
+        return {
+          provider: provider?.name ?? value.providerID,
+          model: value.modelID === "mimo-auto" ? "Bob Auto（Bob-V2.5 限免中）" : (info?.name ?? value.modelID),
+          reasoning: info?.capabilities?.reasoning ?? false,
+        }
+      }
 
       return {
         current: currentModel,
+        getModelForAgent,
+        parseModelInfo,
         get ready() {
           return modelStore.ready
         },
@@ -219,23 +282,7 @@ export const { use: useLocal, provider: LocalProvider } = createSimpleContext({
         favorite() {
           return modelStore.favorite
         },
-        parsed: createMemo(() => {
-          const value = currentModel()
-          if (!value) {
-            return {
-              provider: "Connect a provider",
-              model: "No provider selected",
-              reasoning: false,
-            }
-          }
-          const provider = sync.data.provider.find((x) => x.id === value.providerID)
-          const info = provider?.models[value.modelID]
-          return {
-            provider: provider?.name ?? value.providerID,
-            model: value.modelID === "mimo-auto" ? "Bob Auto（Bob-V2.5 限免中）" : (info?.name ?? value.modelID),
-            reasoning: info?.capabilities?.reasoning ?? false,
-          }
-        }),
+        parsed: createMemo(() => parseModelInfo(currentModel())),
         cycle(direction: 1 | -1) {
           const current = currentModel()
           if (!current) return
@@ -247,7 +294,9 @@ export const { use: useLocal, provider: LocalProvider } = createSimpleContext({
           if (next >= recent.length) next = 0
           const val = recent[next]
           if (!val) return
-          const a = agent.current()
+          const name = getFocusedAgentName()
+          if (!name) return
+          const a = sync.data.agent.find((x) => x.name.toLowerCase() === name.toLowerCase())
           if (!a) return
           setModelStore("model", a.name, { ...val })
         },
@@ -275,7 +324,9 @@ export const { use: useLocal, provider: LocalProvider } = createSimpleContext({
           }
           const next = favorites[index]
           if (!next) return
-          const a = agent.current()
+          const name = getFocusedAgentName()
+          if (!name) return
+          const a = sync.data.agent.find((x) => x.name.toLowerCase() === name.toLowerCase())
           if (!a) return
           setModelStore("model", a.name, { ...next })
           const uniq = uniqueBy([next, ...modelStore.recent], (x) => `${x.providerID}/${x.modelID}`)
@@ -296,7 +347,9 @@ export const { use: useLocal, provider: LocalProvider } = createSimpleContext({
               })
               return
             }
-            const a = agent.current()
+            const name = getFocusedAgentName()
+            if (!name) return
+            const a = sync.data.agent.find((x) => x.name.toLowerCase() === name.toLowerCase())
             if (!a) return
             setModelStore("model", a.name, model)
             if (options?.recent) {
@@ -334,50 +387,70 @@ export const { use: useLocal, provider: LocalProvider } = createSimpleContext({
           })
         },
         variant: {
-          selected() {
-            const m = currentModel()
+          selected(m = currentModel()) {
             if (!m) return undefined
             const key = `${m.providerID}/${m.modelID}`
             return modelStore.variant[key]
           },
-          current() {
-            const v = this.selected()
+          current(m = currentModel()) {
+            const v = this.selected(m)
             if (!v) return undefined
-            if (!this.list().includes(v)) return undefined
+            if (!this.list(m).includes(v)) return undefined
             return v
           },
-          list() {
-            const m = currentModel()
+          list(m = currentModel()) {
             if (!m) return []
             const provider = sync.data.provider.find((x) => x.id === m.providerID)
             const info = provider?.models[m.modelID]
             if (!info?.variants) return []
             return Object.keys(info.variants)
           },
-          set(value: string | undefined) {
-            const m = currentModel()
+          set(value: string | undefined, m = currentModel()) {
             if (!m) return
             const key = `${m.providerID}/${m.modelID}`
             setModelStore("variant", key, value ?? "default")
             save()
           },
-          cycle() {
-            const variants = this.list()
+          cycle(m = currentModel()) {
+            const variants = this.list(m)
             if (variants.length === 0) return
-            const current = this.current()
+            const current = this.current(m)
             if (!current) {
-              this.set(variants[0])
+              this.set(variants[0], m)
               return
             }
             const index = variants.indexOf(current)
             if (index === -1 || index === variants.length - 1) {
-              this.set(undefined)
+              this.set(undefined, m)
               return
             }
-            this.set(variants[index + 1])
+            this.set(variants[index + 1], m)
           },
         },
       }
+
+      // Automatically update model when agent changes
+      createEffect(() => {
+        const value = agent.current()
+        if (!value) return
+        if (value.model) {
+          const currentOverride = modelStore.model[value.name]
+          if (!currentOverride) {
+            if (isModelValid(value.model)) {
+              setModelStore("model", value.name, {
+                providerID: value.model.providerID,
+                modelID: value.model.modelID,
+              })
+            } else {
+              toast.show({
+                variant: "warning",
+                message: `Agent ${value.name}'s configured model ${value.model.providerID}/${value.model.modelID} is not valid`,
+                duration: 3000,
+              })
+            }
+          }
+        }
+      })
     })
 
     const mcp = {
@@ -464,24 +537,7 @@ export const { use: useLocal, provider: LocalProvider } = createSimpleContext({
       }
     })
 
-    // Automatically update model when agent changes
-    createEffect(() => {
-      const value = agent.current()
-      if (!value) return
-      if (value.model) {
-        if (isModelValid(value.model))
-          model.set({
-            providerID: value.model.providerID,
-            modelID: value.model.modelID,
-          })
-        else
-          toast.show({
-            variant: "warning",
-            message: `Agent ${value.name}'s configured model ${value.model.providerID}/${value.model.modelID} is not valid`,
-            duration: 3000,
-          })
-      }
-    })
+
 
     const result = {
       model,
