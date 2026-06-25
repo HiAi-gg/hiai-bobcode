@@ -131,6 +131,11 @@ export function Prompt(props: PromptProps) {
   })
 
   const agent = createMemo(() => {
+    const agentID = props.agentID
+    if (agentID && agentID !== "main") {
+      const found = sync.data.agent.find((x) => x.name.toLowerCase() === agentID.toLowerCase())
+      if (found) return found
+    }
     const act = actor()
     if (act) {
       return sync.data.agent.find((x) => x.name.toLowerCase() === act.agent.toLowerCase())

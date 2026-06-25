@@ -226,10 +226,16 @@ export const { use: useLocal, provider: LocalProvider } = createSimpleContext({
           // RouteProvider is not in the tree
         }
         
-        if (activeAgentID !== "main" && sessionID) {
-          const actor = (sync.data.actor[sessionID] ?? []).find((a) => a.actor_id === activeAgentID)
-          if (actor) {
-            return actor.agent
+        if (activeAgentID !== "main") {
+          const found = sync.data.agent.find((x) => x.name.toLowerCase() === activeAgentID.toLowerCase())
+          if (found) {
+            return found.name
+          }
+          if (sessionID) {
+            const actor = (sync.data.actor[sessionID] ?? []).find((a) => a.actor_id === activeAgentID)
+            if (actor) {
+              return actor.agent
+            }
           }
         }
         
