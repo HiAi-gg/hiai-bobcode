@@ -24,6 +24,7 @@ export type PluginRoute = {
 export type GridRoute = {
   type: "grid"
   cells?: { sessionID: string; workspaceID?: string }[]
+  activeSessionID?: string
 }
 
 export type Route = HomeRoute | SessionRoute | PluginRoute | GridRoute

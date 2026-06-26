@@ -110,7 +110,7 @@ function GridInner() {
       if (!entry.sessionID) continue
       if (grid.cells.some((c) => c.sessionID === entry.sessionID)) continue
       processedCells.add(entry.sessionID)
-      await createGridSession({ grid, sdk, project, sync, workspaceClients, toast, route })
+      await createGridSession({ grid, sdk, project, sync, workspaceClients, toast, route, sessionID: entry.sessionID })
     }
   })
 
@@ -126,7 +126,18 @@ function GridInner() {
       if (processedCells.has(entry.sessionID)) continue
       if (grid.cells.some((c) => c.sessionID === entry.sessionID)) continue
       processedCells.add(entry.sessionID)
-      void createGridSession({ grid, sdk, project, sync, workspaceClients, toast, route })
+      void createGridSession({ grid, sdk, project, sync, workspaceClients, toast, route, sessionID: entry.sessionID })
+    }
+  })
+
+  // Watch for active cell changes from the route (e.g. chosen from DialogSessionList)
+  // and activate the matching cell in the grid.
+  createEffect(() => {
+    const activeSessionID = routeData.activeSessionID
+    if (!activeSessionID) return
+    const cell = grid.cells.find((c) => c.sessionID === activeSessionID)
+    if (cell && grid.activeCellId !== cell.id) {
+      grid.setActive(cell.id)
     }
   })
 
@@ -249,9 +260,12 @@ function GridInner() {
       const chunkIdx = Math.floor(activeIdx / 4) * 4
       return all.slice(chunkIdx, chunkIdx + 4)
     }
-    // Stable order: first N cells by index, same as 2x2 chunk slice.
+    // Stable order chunked by 2, similar to 2x2 chunk slice.
     // Active cell is highlighted via the `active` prop, not position.
-    return all.slice(0, 2)
+    const activeIdx = all.findIndex((c) => c.id === grid.activeCellId)
+    if (activeIdx < 0) return all.slice(0, 2)
+    const chunkIdx = Math.floor(activeIdx / 2) * 2
+    return all.slice(chunkIdx, chunkIdx + 2)
   })
 
   // Split layouts always render at most two cells; non-virtualized renders
@@ -301,9 +315,7 @@ function GridInner() {
                   <Show when={visibleCells()[0]} keyed>
                     {(cell) => (
                       <ErrorBoundary fallback={(err) => <CellError error={err} cell={cell} />}>
-                        <box flexGrow={1}>
-                          <CellRenderer cell={cell} active={cell.id === grid.activeCellId} width={splitCellArea()} />
-                        </box>
+                        <CellRenderer cell={cell} active={cell.id === grid.activeCellId} width={splitCellArea()} />
                       </ErrorBoundary>
                     )}
                   </Show>
@@ -311,13 +323,11 @@ function GridInner() {
                   <Show when={visibleCells()[1]} keyed>
                     {(cell) => (
                       <ErrorBoundary fallback={(err) => <CellError error={err} cell={cell} />}>
-                        <box flexGrow={1}>
-                          <CellRenderer
-                            cell={cell}
-                            active={cell.id === grid.activeCellId}
-                            width={Math.max(40, contentWidth() - splitCellArea() - 1)}
-                          />
-                        </box>
+                        <CellRenderer
+                          cell={cell}
+                          active={cell.id === grid.activeCellId}
+                          width={Math.max(40, contentWidth() - splitCellArea() - 1)}
+                        />
                       </ErrorBoundary>
                     )}
                   </Show>
@@ -331,14 +341,12 @@ function GridInner() {
                   <Show when={visibleCells()[0]} keyed>
                     {(cell) => (
                       <ErrorBoundary fallback={(err) => <CellError error={err} cell={cell} />}>
-                        <box flexGrow={1}>
-                          <CellRenderer
-                            cell={cell}
-                            active={cell.id === grid.activeCellId}
-                            width={contentWidth()}
-                            height={splitCellAreaHeight()}
-                          />
-                        </box>
+                        <CellRenderer
+                          cell={cell}
+                          active={cell.id === grid.activeCellId}
+                          width={contentWidth()}
+                          height={splitCellAreaHeight()}
+                        />
                       </ErrorBoundary>
                     )}
                   </Show>
@@ -346,14 +354,12 @@ function GridInner() {
                   <Show when={visibleCells()[1]} keyed>
                     {(cell) => (
                       <ErrorBoundary fallback={(err) => <CellError error={err} cell={cell} />}>
-                        <box flexGrow={1}>
-                          <CellRenderer
-                            cell={cell}
-                            active={cell.id === grid.activeCellId}
-                            width={contentWidth()}
-                            height={Math.max(6, cellAreaHeight() - splitCellAreaHeight() - 1)}
-                          />
-                        </box>
+                        <CellRenderer
+                          cell={cell}
+                          active={cell.id === grid.activeCellId}
+                          width={contentWidth()}
+                          height={Math.max(6, cellAreaHeight() - splitCellAreaHeight() - 1)}
+                        />
                       </ErrorBoundary>
                     )}
                   </Show>

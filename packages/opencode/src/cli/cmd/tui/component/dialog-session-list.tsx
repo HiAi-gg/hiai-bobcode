@@ -2,6 +2,7 @@ import { useDialog } from "@tui/ui/dialog"
 import { DialogSelect } from "@tui/ui/dialog-select"
 import { useRoute } from "@tui/context/route"
 import { useSync } from "@tui/context/sync"
+import { useGrid } from "@tui/context/grid"
 
 import { createMemo, createResource, createSignal, onMount } from "solid-js"
 import { Locale } from "@/util"
@@ -194,16 +195,14 @@ export function DialogSessionList() {
       }}
       onSelect={(option) => {
         if (route.data.type === "grid") {
-          // Get current cells from route data to preserve them when adding
-          // a new cell. Prevents losing existing cells when opening a
-          // session from the session list while in grid mode.
-          const currentCells = (route.data as any).cells ?? []
-          if (!currentCells.some((c: any) => c.sessionID === option.value)) {
-            route.navigate({
-              type: "grid",
-              cells: [...currentCells, { sessionID: option.value }],
-            })
-          }
+          const grid = useGrid()
+          const currentCells = grid.cells.map((c) => ({ sessionID: c.sessionID, workspaceID: c.workspaceID }))
+          const exists = currentCells.some((c) => c.sessionID === option.value)
+          route.navigate({
+            type: "grid",
+            cells: exists ? currentCells : [...currentCells, { sessionID: option.value }],
+            activeSessionID: option.value,
+          })
         } else {
           route.navigate({
             type: "session",

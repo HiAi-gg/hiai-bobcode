@@ -1695,6 +1695,13 @@ const layer: Layer.Layer<
       const cfg = yield* config.get()
       if (cfg.model) return parseModel(cfg.model)
 
+      const defaultAgentName = cfg.default_agent ?? "bob"
+      const candidateAgents = [defaultAgentName, "bob", "main", "build"]
+      for (const name of candidateAgents) {
+        const agentModel = cfg.agent?.[name]?.model
+        if (agentModel) return parseModel(agentModel)
+      }
+
       const s = yield* InstanceState.get(state)
       const recent = yield* fs.readJson(path.join(Global.Path.state, "model.json")).pipe(
         Effect.map((x): { providerID: ProviderID; modelID: ModelID }[] => {

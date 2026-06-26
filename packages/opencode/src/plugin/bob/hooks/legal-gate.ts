@@ -1,9 +1,9 @@
 import type { Hooks } from "@mimo-ai/plugin"
 
-// Legal gate — enforces USE_RESTRICTIONS.md on the autonomy feature.
+// Legal gate — enforces the project ethical-use policy on the autonomy feature.
 //
-// Two parts (per bob-plan.md §F.2 step 6 + F1 findings):
-//   (a) hard deny-list: prohibit patterns the hiai USE_RESTRICTIONS.md forbids
+// Two parts (per the original fork plan):
+//   (a) hard deny-list: prohibit patterns the project ethical-use policy forbids
 //       (military, malicious cyber, unauthorized data exfiltration).
 //   (b) ask-before-do: high-risk actions (writes, shell, deploys) require
 //       human permission via the `permission.ask` hook. The native hiai
@@ -28,7 +28,7 @@ const HARD_DENY: Array<{ pattern: RegExp; reason: string }> = [
   // Military
   {
     pattern: /\b(weapon|weapons|munitions|military[-_ ]?(target|grade|operation))\b/i,
-    reason: "military use is prohibited by USE_RESTRICTIONS.md",
+    reason: "military use is prohibited by the project ethical-use policy",
   },
   {
     pattern: /\b(drone|drone[-_ ]?strike|missile|ballistic)\b.*\b(target|launch|deploy|guidance)\b/i,
@@ -104,7 +104,7 @@ export function createLegalGate(): Pick<Hooks, "tool.execute.before" | "permissi
       if (hit) {
         throw new Error(
           `[bob] LEGAL GATE: ${hit.reason}. Pattern matched in ${input.tool} args. ` +
-            `This use is prohibited by USE_RESTRICTIONS.md and cannot be overridden.`,
+            `This use is prohibited by the project ethical-use policy and cannot be overridden.`,
         )
       }
     },

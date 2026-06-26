@@ -30,7 +30,7 @@ export const MCP_REGISTRY: Record<
     optionalEnv: [],
     timeout: DEFAULT_MCP_TIMEOUT,
   },
-  // NOTE: context7 was removed from the MCP registry (see bob-plan.md §F.2).
+  // NOTE: context7 was removed from the MCP registry (per the original fork plan).
   // Library docs lookups are now on-demand via the `context7` skill/CLI
   // (see bob/skills/context7/SKILL.md) — no always-on MCP process.
   //

@@ -4,11 +4,11 @@
 
 ## Project Overview
 
-**hiai-bob** is the orchestrator agent of the HiAi ecosystem. It is a rebrand of **MiMo-Code** that layers the `BobPlugin` workflow engine on top of the upstream **opencode-ai** (OpenCode) codebase. It inherits all core capabilities (multiple LLM providers, TUI, LSP, MCP, plugins, persistent memory, subagents) and exposes a Bun-native backend (REST + WebSocket on port `50900`) and a Svelte/Vite web UI (port `50901`) optimized for managing agentic sessions, providers, session grids, completion controllers, and port-scanning.
+**hiai-bob** is the orchestrator agent of the HiAi ecosystem. It is a rebrand of **MiMo-Code** that layers the `BobPlugin` workflow engine on top of the upstream **opencode-ai** (OpenCode) codebase. It inherits all core capabilities (multiple LLM providers, TUI, LSP, MCP, plugins, persistent memory, subagents) and exposes a Bun-native backend (REST + WebSocket on port `50900`) and a SolidJS/Vite web UI (port `50901`) optimized for managing agentic sessions, providers, session grids, completion controllers, and port-scanning.
 
-- **Repo root:** `/home/hiai/projects/hiai-bobcode`
+- **Repo root:** `<project-root>` (or `$HIAI_BOB_HOME` if set)
 - **Engine:** TypeScript + Bun (fork of MiMo-Code/opencode-ai@1.17.4 with `BobPlugin`)
-- **Frontend (Web UI):** Svelte 5 + Vite (`packages/app`)
+- **Frontend (Web UI):** SolidJS 1.9 + Vite (`packages/app`)
 - **Headless runtime:** Bun 1.3.14+ (Node.js is only needed for a handful of tooling scripts; primary runtime is Bun)
 - **Default branch:** `dev` (local `main` may not exist)
 
@@ -179,9 +179,6 @@ Local `main` may not exist — always diff against `origin/dev`.
 ## Additional Resources
 
 - `AGENTS.md` — operational rules for autonomous agents
-- `docs/getting-started.md` — new user setup guide
-- `MIMO-FORK-INTEGRATION.md` — fork integration map (upstream ↔ BobPlugin)
-- `bob-plan.md` — product roadmap
-- `todo.md` — live task tracker
+- `docs/mimo-fork-integration.md` — fork integration map (upstream ↔ BobPlugin)
 - `CHANGELOG.md` — release history
 - `docs/build-release.md` — release & build instructions

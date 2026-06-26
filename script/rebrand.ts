@@ -47,7 +47,6 @@ const FILE_MAP: Array<{ from: string; to: string; kind: "text" | "binary" }> = [
   { from: "README.md", to: "README.md", kind: "text" },
   { from: "README.zh.md", to: "README.zh.md", kind: "text" },
   { from: "package.json", to: "package.json", kind: "text" },
-  { from: "USE_RESTRICTIONS.md", to: "USE_RESTRICTIONS.md", kind: "text" },
   { from: "packages/opencode/package.json", to: "packages/opencode/package.json", kind: "text" },
   { from: "packages/opencode/bin/mimo", to: "packages/opencode/bin/bob", kind: "text" },
   { from: "packages/opencode/src/cli/logo.ts", to: "packages/opencode/src/cli/logo.ts", kind: "text" },

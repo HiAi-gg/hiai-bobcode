@@ -63,3 +63,9 @@ todo.md.bak
 
 # runtime agent data (plans/memory/tasks)
 .bob/
+
+# Editor/IDE config (local, not committed)
+.zed/
+
+# OpenCode skill runtime (local)
+.opencode/

@@ -8,10 +8,9 @@
 
 <p align="center">
   <a href="https://github.com/HiAi-gg/hiai-bobcode/releases/latest"><img src="https://img.shields.io/github/v/release/HiAi-gg/hiai-bobcode?style=flat-square&logo=github" alt="Release"></a>
-  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square" alt="License"></a>
+  <a href="LICENSE.md"><img src="https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square" alt="License"></a>
   <a href="https://github.com/HiAi-gg/hiai-bobcode/stargazers"><img src="https://img.shields.io/github/stars/HiAi-gg/hiai-bobcode?style=flat-square" alt="GitHub stars"></a>
   <a href="https://bun.sh"><img src="https://img.shields.io/badge/runtime-Bun-f9f1e1?style=flat-square&logo=bun" alt="Bun"></a>
-  <a href="https://nodejs.org"><img src="https://img.shields.io/badge/node-%E2%89%A520-339933?style=flat-square&logo=node.js&logoColor=white" alt="Node"></a>
   <a href="https://www.typescriptlang.org"><img src="https://img.shields.io/badge/TypeScript-5.8-3178C6?style=flat-square&logo=typescript&logoColor=white" alt="TypeScript"></a>
   <a href="https://www.solidjs.com"><img src="https://img.shields.io/badge/SolidJS-1.9-2C4F7C?style=flat-square&logo=solid&logoColor=white" alt="SolidJS"></a>
   <a href="https://hono.dev"><img src="https://img.shields.io/badge/Hono-4.10-E36002?style=flat-square&logo=hono&logoColor=white" alt="Hono"></a>
@@ -39,7 +38,7 @@ When Bob (the orchestrator agent) starts on a fresh machine, it reads this secti
    - `which psql` || `apt install -y postgresql-client`  (database queries)
 3. **Setup env**: copy `bob.env.example` to `bob.env` if API keys are available
 4. **Start infra** (optional): `cd infra && make db` for PostgreSQL + Redis
-5. **Verify**: `./dev.sh` should start backend on :50900 and frontend on :50901
+5. **Verify**: `./script/dev.sh` should start backend on :50900 and frontend on :50901
 
 Missing tools are non-fatal — the agent adapts and skips unavailable capabilities.
 
@@ -82,7 +81,7 @@ cd packages/app && bun dev -- --port 50901
 
 ```bash
 # Launch backend + frontend for browser use:
-./dev.sh
+./script/dev.sh
 ```
 
 Docker: `docker-compose up --build` (backend at `:50900`, frontend at `:50902`).
@@ -130,13 +129,7 @@ docker push ghcr.io/hiai-gg/hiai-bobcode:latest
 
 ## Project Structure
 
-```
-packages/opencode/   — Server + BobPlugin (agents, hooks, tools, MCP, config)
-packages/app/        — SolidJS web UI (SessionGrid, TUI, design systems)
-packages/sdk/        — TypeScript SDK (client for session/project APIs)
-packages/ui/         — Shared UI components
-docs/                — build-release.md (CI/CD instructions)
-```
+See [ARCHITECTURE.md](./ARCHITECTURE.md) for the full repository layout.
 
 ---
 
@@ -407,6 +400,27 @@ All string values support `{env:VAR_NAME}` interpolation. API keys live in `bob.
 
 ---
 
+## Architecture
+
+See [ARCHITECTURE.md](./ARCHITECTURE.md) for the full system architecture, agent model, repository layout, and plugin design.
+
+## Documentation Index
+
+| Document | Purpose |
+|---|---|
+| `README.md` | Project overview + quick start |
+| `ARCHITECTURE.md` | System architecture and repository layout |
+| `CHANGELOG.md` | Version history |
+| `CONTRIBUTING.md` | How to contribute |
+| `SECURITY.md` | Security policy |
+| `CODE_OF_CONDUCT.md` | Community standards |
+| `LICENSE.md` | MIT license |
+| `docs/mimo-fork-integration.md` | Integration map with MiMo-Code |
+| `docs/development.md` | Developer setup guide |
+| `docs/build-release.md` | Build and release instructions |
+
+---
+
 ## License
 
-Code: [MIT License](./LICENSE). Use: subject to [Use Restrictions](./USE_RESTRICTIONS.md). Hosted services: [Bob Terms of Service](https://platform.hiai-opencode.com/docs/terms/user-agreement).
+Code: [MIT License](./LICENSE.md).

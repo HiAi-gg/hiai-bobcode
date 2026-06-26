@@ -12,7 +12,7 @@ native hook. This is materially simpler and more reliable than the external-plug
 cheaper than forking raw opencode (MiMo already did that work).
 
 ## 1. Repo facts
-- **License:** MIT. **But** `USE_RESTRICTIONS.md` binds *derivatives* (see §9) — legal review required.
+- **License:** MIT (no additional restrictions). Previously `USE_RESTRICTIONS.md` bound derivatives — that file has been removed; the project is MIT-only.
 - **Stack:** TypeScript monorepo; **bun@1.3.11**; **turbo**; **tsgo** typecheck; **sst** (deploy infra);
   **nix** (flake); `effect` (Effect-TS) + an internal **Bus/BusEvent**. Packages: `opencode` (core
   runtime), `plugin` (`@mimo-ai/plugin` SDK), app/console/desktop/enterprise/extensions/identity.
@@ -53,7 +53,7 @@ This is the finding that rewrites the plan.
   (`excludeOnly` / include) — `plugin/matcher.ts`.
 - **Therefore the autonomy loop and the Critic gate are not ours to build.** MiMo owns the loop + the
   cap. We only supply the *decision* inside `actor.postStop`. Our whole `session.idle` state machine,
-  re-prompt-via-`session.prompt`, and critic-parent attribution glue from `bob-plan.md` **disappear**.
+  re-prompt-via-`session.prompt`, and critic-parent attribution glue from `the original fork plan` **disappear**.
 
 ## 4. Feature → native seam (integration map)
 | Our goal (§R) | Native seam in the fork | What we write |
@@ -91,11 +91,7 @@ compaction; context-limit handling; reasoning-repair; the TUI task/todo/goal sid
 ## 8. Risks / caveats (accept consciously)
 - **Rebase cadence:** upstream `main` is daily. Mitigation: isolate our code to `src/plugin/bob/`; carry
   a one-line registry diff; rebase weekly. Don't scatter edits across core files.
-- ⚠️ **USE_RESTRICTIONS.md binds derivatives** — notably *"do not use … to autonomously execute
-  high-risk actions without appropriate human oversight."* Directly constrains our autonomy feature:
-  keep human-in-the-loop / permission gates for high-risk actions (writes, shell, deploys). Also: no
-  military, no malicious-cyber, lawful-data only. **Legal review + trademark strip (remove MiMo/Xiaomi
-  branding) before any product/distribution.**
+- **Historical note:** The original fork carried `USE_RESTRICTIONS.md` (see §1), which constrained autonomy features and required legal review before distribution. That file has been removed; the project is now MIT-only. The human-in-the-loop/permission gate design (legal-gate.ts) is retained voluntarily. Trademark strip (MiMo/Xiaomi branding removal) is handled by `script/rebrand.ts`.
 - **Effect-TS + Bus:** core is Effect-based. BobPlugin can stay in the standard `@mimo-ai/plugin` Hooks
   surface and only touch Bus/Session where strictly needed. Budget a learning ramp.
 - **tsgo / bun versions:** pin `bun@1.3.11`; typecheck is `tsgo`, not `tsc`.
@@ -105,4 +101,4 @@ The fork makes the plan **smaller**, not bigger, for our features — because th
 are native. The work becomes: (1) stand up the fork + dev loop, (2) port hiai-bob into
 `src/plugin/bob/` as a builtin, (3) implement the completion decision as an `actor.postStop` hook
 (replacing the entire external `completion-controller` glue), (4) the parallelism prompts (unchanged),
-(5) branding/build/release + legal. See the revised plan in `bob-plan.md §F`.
+(5) branding/build/release + legal. See the original fork development plan.

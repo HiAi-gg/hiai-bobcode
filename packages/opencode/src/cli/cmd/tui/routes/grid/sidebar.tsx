@@ -46,6 +46,28 @@ export function Sidebar() {
       paddingRight={1}
     >
       <box flexDirection="column" flexShrink={0}>
+        {/* Layout toggles */}
+        <box flexDirection="row" gap={1} marginBottom={1} flexShrink={0}>
+          <For each={layouts()}>
+            {(item) => (
+              <box
+                width={5}
+                height={3}
+                alignItems="center"
+                justifyContent="center"
+                backgroundColor={layout() === item.key ? theme.backgroundElement : undefined}
+                border={["top", "bottom", "left", "right"]}
+                borderColor={layout() === item.key ? theme.borderActive : theme.border}
+                onMouseUp={() => grid.setLayout(item.key)}
+              >
+                <text fg={layout() === item.key ? theme.text : theme.textMuted} attributes={TextAttributes.BOLD}>
+                  {item.label}
+                </text>
+              </box>
+            )}
+          </For>
+        </box>
+
         {/* Cell list */}
         <box
           flexDirection="row"
@@ -120,28 +142,6 @@ export function Sidebar() {
                 </Show>
               )
             }}
-          </For>
-        </box>
-
-        {/* Layout toggles */}
-        <box flexDirection="row" gap={1} marginTop={2} flexShrink={0}>
-          <For each={layouts()}>
-            {(item) => (
-              <box
-                width={5}
-                height={3}
-                alignItems="center"
-                justifyContent="center"
-                backgroundColor={layout() === item.key ? theme.backgroundElement : undefined}
-                border={["top", "bottom", "left", "right"]}
-                borderColor={layout() === item.key ? theme.borderActive : theme.border}
-                onMouseUp={() => grid.setLayout(item.key)}
-              >
-                <text fg={layout() === item.key ? theme.text : theme.textMuted} attributes={TextAttributes.BOLD}>
-                  {item.label}
-                </text>
-              </box>
-            )}
           </For>
         </box>
 

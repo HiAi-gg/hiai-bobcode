@@ -78,7 +78,7 @@ const log = Log.create({ service: "plugin.bob" })
 const PLUGIN_NAME = "BobPlugin"
 // We hide the native hiai agents (build/plan/compose) by overriding their
 
-// lowercase keys in the config merge (see §7.1 in bob-plan.md). hiai registers
+// lowercase keys in the config merge (per the original fork plan). hiai registers
 // these as `build: { ... mode: "primary", native: true }` etc. — the LOWERCASE
 // keys are the ones the picker uses, so we set hidden: true + disable: true
 // on those entries. Overriding the capitalized name creates a phantom agent.

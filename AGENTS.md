@@ -1,7 +1,7 @@
 # hiai-bob — AGENTS.md
 
 > **Role:** orchestration agent (outside the plugin scheme) — orchestrator/runner based on a fork of XiaomiMiMo/MiMo-Code
-> with first-party `BobPlugin` logic (see `MIMO-FORK-INTEGRATION.md`, `bob-plan.md §F`).
+> with first-party `BobPlugin` logic (see `docs/mimo-fork-integration.md`).
 > **Status:** active
 > **Ecosystem entry point:** Ecosystem documentation lives in the workspace root (`/home/hiai/Documents/` and `/home/hiai/AGENTS.md`).
 > **Conventions:** Workspace-level conventions are defined in the root `AGENTS.md` and project-level `AGENTS.md` files.
@@ -11,8 +11,8 @@
 
 - **Runtime:** Bun 1.3.14+
 - **Backend/Engine:** TypeScript + fork of opencode-ai@1.17.4 (MiMo-Code) with `BobPlugin`
-- **Frontend:** N/A (headless orchestrator)
-- **UI:** N/A
+- **Frontend:** SolidJS 1.9 + Vite (packages/app)
+- **UI:** SolidJS (packages/ui)
 - **ORM:** Drizzle ORM 0.45+ (in shared data models)
 - **Auth:** Better Auth 1.6+ (via integrations, not embedded in bob)
 - **DB:** PostgreSQL 18 + pgvector (for RAG/memory)
@@ -32,12 +32,16 @@ Ecosystem-wide documentation (conventions, architecture, ADRs) lives in the work
 | Document | Purpose |
 |---|---|
 | `README.md` | Project overview + full documentation |
-| `docs/build-release.md` | Build and release instructions |
 | `AGENTS.md` (this file) | Agent rules |
-| `bob-todo.md` | Live task status |
-| `bob-plan.md` | Product plan for the fork |
-| `MIMO-FORK-INTEGRATION.md` | Integration map with MiMo-Code |
-| `CHANGELOG.md`, `CONTRIBUTING.md`, `SECURITY.md`, `LICENSE`, `USE_RESTRICTIONS.md` | Standard project files |
+| `ARCHITECTURE.md` | System architecture and repository layout |
+| `CHANGELOG.md` | Version history |
+| `CONTRIBUTING.md` | How to contribute |
+| `SECURITY.md` | Security policy |
+| `CODE_OF_CONDUCT.md` | Community standards |
+| `LICENSE.md` | MIT license |
+| `docs/mimo-fork-integration.md` | Integration map with MiMo-Code |
+| `docs/development.md` | Developer setup guide |
+| `docs/build-release.md` | Build and release instructions |
 | `bob.env.example` | Environment variable template (distinct from the real `bob.env`) |
 
 ## Project Rules (legacy, preserved)
@@ -49,7 +53,7 @@ Ecosystem-wide documentation (conventions, architecture, ADRs) lives in the work
 - Local `main` ref may not exist; use `dev` or `origin/dev` for diffs.
 - Prefer automation: execute requested actions without confirmation unless blocked by missing info or safety/irreversibility.
 
-> **Note:** This file (`AGENTS.md`) and `bob-todo.md` are listed in `.gitignore` and are not committed.
+> **Note:** This file (`AGENTS.md`) is listed in `.gitignore` and is not committed.
 > They contain operational instructions for agents and may change without review.
 
 ## Agent Tool Dependencies
@@ -177,7 +181,7 @@ const table = sqliteTable("session", {
 
 When running on a new machine, check tool availability before delegating:
 
-**Development**: `./dev.sh` starts backend (:50900) and frontend (:50901) from source.
+**Development**: `./script/dev.sh` starts backend (:50900) and frontend (:50901) from source.
 
 **Production**:
 1. `cd packages/opencode && bun run build` — produces `hiai-bob` binary

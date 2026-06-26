@@ -28,31 +28,28 @@ export async function createGridSession(input: {
   workspaceClients: ReturnType<typeof useWorkspaceClients>
   toast: ToastContext
   route?: RouteContext
+  sessionID?: string
 }): Promise<string | undefined> {
   const workspaceID = input.project.workspace.current()
-  const client = workspaceID ? input.workspaceClients.clientFor(asWorkspaceID(workspaceID)) : input.sdk.client
-  const result = await client.session.create({ workspace: workspaceID }).catch(() => undefined)
-  if (!result?.data) {
-    input.toast.show({
-      message: "Failed to create session",
-      variant: "error",
-    })
-    return undefined
+  let sessionID = input.sessionID
+  if (!sessionID) {
+    const client = workspaceID ? input.workspaceClients.clientFor(asWorkspaceID(workspaceID)) : input.sdk.client
+    const result = await client.session.create({ workspace: workspaceID }).catch(() => undefined)
+    if (!result?.data) {
+      input.toast.show({
+        message: "Failed to create session",
+        variant: "error",
+      })
+      return undefined
+    }
+    sessionID = result.data.id
   }
-  const sessionID = result.data.id
   input.grid.addCell({
     sessionID,
     workspaceID: workspaceID ?? "",
     mode: "full",
-    label: "New Session",
+    label: input.sessionID ? "" : "New Session",
   })
-  // Sync route data so dialog-session-list sees all current cells
-  if (input.route) {
-    input.route.navigate({
-      type: "grid",
-      cells: input.grid.cells.map((c) => ({ sessionID: c.sessionID, workspaceID: c.workspaceID })),
-    })
-  }
   void input.sync.session.sync(sessionID).catch(() => undefined)
   return sessionID
 }

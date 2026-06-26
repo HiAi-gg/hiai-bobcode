@@ -627,8 +627,7 @@ export function SessionCell(props: {
                 }}
                 stickyScroll={true}
                 stickyStart="bottom"
-                flexGrow={props.height ? 0 : 1}
-                height={props.height}
+                flexGrow={1}
                 scrollAcceleration={scrollAcceleration()}
                 // Phase 6: viewport culling. With culling enabled the scrollbox
                 // stops allocating render slots for off-screen messages, which

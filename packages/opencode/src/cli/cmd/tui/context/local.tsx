@@ -183,6 +183,31 @@ export const { use: useLocal, provider: LocalProvider } = createSimpleContext({
           }
         }
 
+        const defaultAgentName = sync.data.config?.default_agent ?? "bob"
+        const candidateAgents = [defaultAgentName, "bob", "main", "build"]
+        if (sync.data?.agent) {
+          for (const name of candidateAgents) {
+            const found = sync.data.agent.find((x) => x && x.name && x.name.toLowerCase() === name.toLowerCase())
+            if (found?.model) {
+              const { providerID, modelID } = found.model
+              if (isModelValid({ providerID, modelID })) {
+                return { providerID, modelID }
+              }
+            }
+          }
+        }
+        if (sync.data?.config?.agent) {
+          for (const name of candidateAgents) {
+            const agentConfig = sync.data.config.agent[name]
+            if (agentConfig && typeof agentConfig.model === "string") {
+              const { providerID, modelID } = parseModel(agentConfig.model)
+              if (isModelValid({ providerID, modelID })) {
+                return { providerID, modelID }
+              }
+            }
+          }
+        }
+
         for (const item of modelStore.recent) {
           if (isModelValid(item)) {
             return item
