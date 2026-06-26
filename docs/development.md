@@ -179,6 +179,108 @@ Local `main` may not exist — always diff against `origin/dev`.
 ## Additional Resources
 
 - `AGENTS.md` — operational rules for autonomous agents
-- `docs/mimo-fork-integration.md` — fork integration map (upstream ↔ BobPlugin)
 - `CHANGELOG.md` — release history
-- `docs/build-release.md` — release & build instructions
+
+## Building for Production
+
+This project is developed on an internal GitLab; when pushed to GitHub (`https://github.com/HiAi-gg/hiai-bobcode`), the source is trimmed, so **build and release happen locally** — no GitHub Actions CI build is used.
+
+### GitHub-Retained Files
+
+The only GitHub-side automation that ships with the public mirror is `typecheck.yml`. Everything build/release-related runs locally.
+
+```
+.github/
+├── actions/
+│   └── setup-bun/action.yml          # bun install (used by typecheck)
+├── workflows/
+│   └── typecheck.yml                  # PR gate: type check
+├── ISSUE_TEMPLATE/                    # Issue templates
+└── pull_request_template.md           # PR template
+```
+
+Removed: publish/test workflows, `setup-git-committer`, GitHub bot, `CODEOWNERS`, `TEAM_MEMBERS`, etc.
+
+### Local Release Flow
+
+#### Prerequisites
+
+| Env Var | Purpose | How to Get |
+|---|---|---|
+| `NPM_TOKEN` | npm publish (`@hiai-bob` scope) | npmjs.com → Access Tokens → Granular Token |
+| `GH_TOKEN` | Create / upload GitHub Release | `gh auth token` or a GitHub PAT (`repo` scope) |
+| `GH_REPO` | Target GitHub repository | `HiAi-gg/hiai-bobcode` |
+
+Optional:
+
+| Env Var | Purpose | Default Behavior |
+|---|---|---|
+| `OPENCODE_VERSION` | Override version | Reads `packages/opencode/package.json` |
+| `OPENCODE_BUMP` | Auto-increment (`major` / `minor` / `patch`) | No bump — use as-is |
+| `OPENCODE_RELEASE` | Create a GitHub Release | Auto-set by `script/version.ts` |
+| `OPENCODE_CHANNEL` | Release channel (`latest` / `beta` / ...) | Inferred from the git branch; detached HEAD defaults to `latest` |
+
+#### One-Shot Release
+
+```bash
+GH_REPO=HiAi-gg/hiai-bobcode \
+NPM_TOKEN=npm_xxxxx \
+GH_TOKEN=$(gh auth token) \
+  ./script/release.ts
+```
+
+This executes in order:
+
+1. **version** — compute version, create draft GitHub Release
+2. **build** — compile cross-platform CLI binaries, upload to the draft Release
+3. **publish npm** — publish `@hiai-bob/cli` + platform packages + SDK + plugin to npm
+4. **finalize release** — flip the GitHub Release from draft to published
+
+#### Step-by-Step
+
+If you only need part of the flow:
+
+```bash
+# Build only (no publish)
+OPENCODE_VERSION=1.2.3 ./packages/opencode/script/build.ts
+
+# npm publish only (build first)
+NPM_TOKEN=npm_xxxxx OPENCODE_VERSION=1.2.3 ./script/publish.ts
+
+# GitHub Release only (no npm)
+GH_TOKEN=$(gh auth token) GH_REPO=HiAi-gg/hiai-bobcode ./script/version.ts
+# Then manually upload binaries:
+gh release upload v1.2.3 packages/opencode/dist/*.zip packages/opencode/dist/*.tar.gz --repo HiAi-gg/hiai-bobcode
+gh release edit v1.2.3 --draft=false --repo HiAi-gg/hiai-bobcode
+```
+
+### Version Number Logic
+
+Version resolution in `packages/script/src/index.ts`:
+
+| Priority | Condition | Result |
+|---|---|---|
+| 1 | `OPENCODE_VERSION` is set | Use directly |
+| 2 | Preview channel (non-`latest`) | `0.0.0-{channel}-{timestamp}` |
+| 3 | `OPENCODE_BUMP` is set | Read `package.json` and bump |
+| 4 | No bump | Use `package.json` version as-is |
+
+### First Release
+
+1. Confirm the `@hiai-bob` org exists on npmjs.org.
+2. Create a Granular Access Token (Packages: Read and write, scope: `@hiai-bob`).
+3. Confirm `gh auth status` has `repo` permission for `HiAi-gg/hiai-bobcode`.
+4. Set `package.json` version to `0.1.0`.
+5. Run `./script/release.ts`.
+
+### npm Package Structure
+
+| Package | Contents |
+|---|---|
+| `@hiai-bob/cli` | Wrapper package (bin shim + postinstall) |
+| `hiai-bob-darwin-arm64` | macOS ARM binary |
+| `hiai-bob-darwin-x64` | macOS x64 binary |
+| `hiai-bob-linux-arm64` | Linux ARM binary |
+| `hiai-bob-linux-x64` | Linux x64 binary |
+| `hiai-bob-win32-arm64` | Windows ARM binary |
+| `hiai-bob-win32-x64` | Windows x64 binary |

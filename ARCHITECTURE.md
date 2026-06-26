@@ -8,7 +8,7 @@ This document explains how the Bob monorepo is assembled, where each layer lives
 >
 > - [`README.md`](README.md) — overview, install, usage.
 > - [`AGENTS.md`](AGENTS.md) — operational rules for agents and tooling.
-> - [`docs/mimo-fork-integration.md`](docs/mimo-fork-integration.md) — fork-to-upstream integration map.
+> - [`.bob/docs/mimo-fork-integration.md`](.bob/docs/mimo-fork-integration.md) — fork-to-upstream integration map (archived, maintainer-only).
 > - [`bob.json`](bob.json) — model slot switchboard.
 > - [`bob.env.example`](bob.env.example) — secrets template (the real `bob.env` is gitignored).
 
@@ -149,7 +149,7 @@ The bundled plugin that defines Bob's behavior. It is **not** a standalone packa
 - `bob.json` — model slots and completion-controller / dream / distill config (see [Models](#models)).
 - `bob.env` (gitignored), `bob.env.example` — runtime secrets (Firecrawl key, Context7 key, etc.).
 - `AGENTS.md`, `README.md`, `ARCHITECTURE.md` (this file), `LICENSE.md` — root docs.
-- `docs/mimo-fork-integration.md` — fork integration map.
+- `.bob/docs/mimo-fork-integration.md` — fork integration map (archived, maintainer-only).
 - `dev.sh` — convenience launcher for dev mode (engine + frontend).
 - `.oxlintrc.json`, `prettier` config — linter (oxlint, **not** Biome) and formatter.
 
@@ -361,7 +361,7 @@ The root documentation set should stay small and non-duplicative. Keep:
 
 Additional root docs are allowed only when they serve a genuinely new role. The fork keeps these by design:
 
-- `docs/mimo-fork-integration.md` — fork ↔ upstream integration map.
+- `.bob/docs/mimo-fork-integration.md` — fork ↔ upstream integration map (archived, maintainer-only).
 - `bob.json`, `bob.env.example` — config and secret templates.
 - `CHANGELOG.md`, `CONTRIBUTING.md`, `SECURITY.md`, `CODE_OF_CONDUCT.md` — standard project files.
 

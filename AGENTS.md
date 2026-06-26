@@ -1,7 +1,7 @@
 # hiai-bob — AGENTS.md
 
 > **Role:** orchestration agent (outside the plugin scheme) — orchestrator/runner based on a fork of XiaomiMiMo/MiMo-Code
-> with first-party `BobPlugin` logic (see `docs/mimo-fork-integration.md`).
+> with first-party `BobPlugin` logic (see `.bob/docs/mimo-fork-integration.md` — archived, maintainer-only).
 > **Status:** active
 > **Ecosystem entry point:** Ecosystem documentation lives in the workspace root (`/home/hiai/Documents/` and `/home/hiai/AGENTS.md`).
 > **Conventions:** Workspace-level conventions are defined in the root `AGENTS.md` and project-level `AGENTS.md` files.
@@ -15,7 +15,7 @@
 - **UI:** SolidJS (packages/ui)
 - **ORM:** Drizzle ORM 0.45+ (in shared data models)
 - **Auth:** Better Auth 1.6+ (via integrations, not embedded in bob)
-- **DB:** PostgreSQL 18 + pgvector (for RAG/memory)
+- **DB:** SQLite (via Drizzle ORM, FTS5 for RAG/memory)
 - **Cache:** Redis 8.6+
 - **Lint:** oxlint + Prettier (this repo uses oxlint, not Biome)
 - **Tests:** Bun test runner
@@ -39,9 +39,8 @@ Ecosystem-wide documentation (conventions, architecture, ADRs) lives in the work
 | `SECURITY.md` | Security policy |
 | `CODE_OF_CONDUCT.md` | Community standards |
 | `LICENSE.md` | MIT license |
-| `docs/mimo-fork-integration.md` | Integration map with MiMo-Code |
 | `docs/development.md` | Developer setup guide |
-| `docs/build-release.md` | Build and release instructions |
+| `docs/quickstart.md` | 5-minute setup guide |
 | `bob.env.example` | Environment variable template (distinct from the real `bob.env`) |
 
 ## Project Rules (legacy, preserved)
