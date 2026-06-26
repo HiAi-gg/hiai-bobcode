@@ -37,6 +37,7 @@ Beyond the 10-agent team, BobPlugin bundles:
 - **Web research** — `firecrawl-cli` scrapes, crawls, and searches the web.
 - **Library docs lookup** — `context7` finds real API examples from official docs.
 - **Native memory** — SQLite FTS5 over markdown. Session checkpoints, project memory, task progress — all indexed and searchable.
+- **Session Grid** — run multiple AI sessions side-by-side in TUI or web UI. Independent cells, keyboard nav, plan-only mode.
 
 ---
 
@@ -116,6 +117,23 @@ BobPlugin registers 10 agents. Here's who does what:
 | **Vision**     | Browser      | Opens a real browser, takes screenshots, verifies UI. |
 
 Bob delegates to the right agent for the job. Simple tasks go to Sub. Complex ones go to Coder. UI work goes to Designer. Everything gets reviewed by Critic before it's done.
+
+---
+
+## Session Grid
+
+Why watch one AI session when you can watch four? The Session Grid lets you run multiple AI sessions simultaneously — side by side, stacked, or in a 2×2 layout — in both the **terminal** and the **web UI**.
+
+| Surface | Modes | How |
+|---------|-------|-----|
+| **TUI** | single, split-h, split-v, 2×2 | `--grid` flag, `MIMOCODE_GRID` env, or "Grid Mode" on home screen |
+| **Web** | 1, 2, 3, 4, 6, 8 cells | Dropdown toggle in session header |
+
+Each cell is an independent session — its own chat, its own prompt, its own file tabs. Switch between them with keyboard shortcuts (`<leader>1..9`), drag the splitter to resize, or toggle any cell into **plan-only mode** (tasks, diffs, agent status — no chat).
+
+Under the hood: viewport virtualization (only visible cells render), per-cell error boundaries (one cell crashes, the rest keep going), and layout persistence across restarts.
+
+This is a **MiMoCode native feature** — we inherit it from upstream. BobPlugin doesn't touch it; it just works.
 
 ---
 
