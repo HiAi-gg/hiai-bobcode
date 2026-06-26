@@ -1,48 +1,46 @@
 # hiai-bob — AGENTS.md
 
-> **Роль:** orchestrator agent (вне plugin-схемы) — оркестратор/раннер на базе форка XiaomiMiMo/MiMo-Code
-> с первой партийной логикой `BobPlugin` (см. `MIMO-FORK-INTEGRATION.md`, `bob-plan.md §F`).
-> **Статус:** активный
-> **Точка входа экосистемы:** [`projects/INDEX.md`](../../INDEX.md)
-> **Канонические правила:** [`docs/hiai-ecosystem/CONVENTIONS.md`](../../docs/hiai-ecosystem/CONVENTIONS.md)
-> **Примечание:** Этот проект живёт самостоятельно (вне plugin-схемы). Правилам §1–§7 следует по возможности, но не обязан быть plugin-совместимым.
+> **Role:** orchestration agent (outside the plugin scheme) — orchestrator/runner based on a fork of XiaomiMiMo/MiMo-Code
+> with first-party `BobPlugin` logic (see `MIMO-FORK-INTEGRATION.md`, `bob-plan.md §F`).
+> **Status:** active
+> **Ecosystem entry point:** Ecosystem documentation lives in the workspace root (`/home/hiai/Documents/` and `/home/hiai/AGENTS.md`).
+> **Conventions:** Workspace-level conventions are defined in the root `AGENTS.md` and project-level `AGENTS.md` files.
+> **Note:** This project lives independently (outside the plugin scheme). Rules §1–§7 are followed where possible, but it is not required to be plugin-compatible.
 
-## Cheat-Sheet (краткая сводка конвенций)
+## Cheat-Sheet (conventions summary)
 
 - **Runtime:** Bun 1.3.14+
-- **Backend/Engine:** TypeScript + fork of opencode-ai@1.17.4 (MiMo-Code) с `BobPlugin`
+- **Backend/Engine:** TypeScript + fork of opencode-ai@1.17.4 (MiMo-Code) with `BobPlugin`
 - **Frontend:** N/A (headless orchestrator)
 - **UI:** N/A
-- **ORM:** Drizzle ORM 0.45+ (в shared моделях данных)
-- **Auth:** Better Auth 1.6+ (через интеграции, не встроено в bob)
-- **DB:** PostgreSQL 18 + pgvector (для RAG/memory)
+- **ORM:** Drizzle ORM 0.45+ (in shared data models)
+- **Auth:** Better Auth 1.6+ (via integrations, not embedded in bob)
+- **DB:** PostgreSQL 18 + pgvector (for RAG/memory)
 - **Cache:** Redis 8.6+
-- **Lint:** oxlint + Prettier (этот репо использует oxlint, не Biome)
+- **Lint:** oxlint + Prettier (this repo uses oxlint, not Biome)
 - **Tests:** Bun test runner
-- **Env только через `lib/config.ts` (Zod)** — никогда `process.env` напрямую
-- **Branch:** `dev` по умолчанию (main может не существовать локально)
-- **Typecheck:** `bun typecheck` из директории пакета (например `packages/opencode`), не из корня
+- **Env only via `lib/config.ts` (Zod)** — never `process.env` directly
+- **Branch:** `dev` by default (main may not exist locally)
+- **Typecheck:** `bun typecheck` from the package directory (e.g. `packages/opencode`), not from root
 
-## Канонические ссылки
+## Canonical References
 
-- [`docs/hiai-ecosystem/CONVENTIONS.md`](../../docs/hiai-ecosystem/CONVENTIONS.md) — правила экосистемы
-- [`docs/hiai-ecosystem/ARCHITECTURE.md`](../../docs/hiai-ecosystem/ARCHITECTURE.md) — архитектура экосистемы
-- [`docs/hiai-ecosystem/UNIFICATION_ADR.md`](../../docs/hiai-ecosystem/UNIFICATION_ADR.md) — ADR
+Ecosystem-wide documentation (conventions, architecture, ADRs) lives in the workspace root under `Documents/` and `AGENTS.md`. This project's documentation is self-contained within its own `docs/` directory. See the document index below.
 
-## Индекс проектных документов
+## Project Document Index
 
-| Документ | Назначение |
+| Document | Purpose |
 |---|---|
-| `README.md` | обзор проекта |
-| `AGENTS.md` (этот файл) | правила для агентов |
-| `todo.md` | живой статус задач (ранее `bob-todo.md`) |
-| `bob-plan.md` | продуктовый план форка |
-| `MIMO-FORK-INTEGRATION.md` | карта интеграции с MiMo-Code |
-| `CHANGELOG.md`, `CONTRIBUTING.md`, `SECURITY.md`, `LICENSE`, `USE_RESTRICTIONS.md` | стандартные |
-| `bob.env.example` | шаблон переменных окружения (не путать с реальным `bob.env`) |
-| `docs/build-release.md` | инструкции по сборке и релизу |
+| `README.md` | Project overview + full documentation |
+| `docs/build-release.md` | Build and release instructions |
+| `AGENTS.md` (this file) | Agent rules |
+| `bob-todo.md` | Live task status |
+| `bob-plan.md` | Product plan for the fork |
+| `MIMO-FORK-INTEGRATION.md` | Integration map with MiMo-Code |
+| `CHANGELOG.md`, `CONTRIBUTING.md`, `SECURITY.md`, `LICENSE`, `USE_RESTRICTIONS.md` | Standard project files |
+| `bob.env.example` | Environment variable template (distinct from the real `bob.env`) |
 
-## Проектные правила (legacy, сохраняем)
+## Project Rules (legacy, preserved)
 
 - Always use superpowers skill instead of builtin plan mode.
 - To regenerate the JavaScript SDK, run `./packages/sdk/js/script/build.ts`.
@@ -51,8 +49,31 @@
 - Local `main` ref may not exist; use `dev` or `origin/dev` for diffs.
 - Prefer automation: execute requested actions without confirmation unless blocked by missing info or safety/irreversibility.
 
-> **Примечание:** Этот файл (`AGENTS.md`) и `todo.md` добавлены в `.gitignore` и не коммитятся.
-> Они содержат оперативные инструкции для агентов и могут меняться без review.
+> **Note:** This file (`AGENTS.md`) and `bob-todo.md` are listed in `.gitignore` and are not committed.
+> They contain operational instructions for agents and may change without review.
+
+## Agent Tool Dependencies
+
+Some agent tools require system binaries to be installed. If missing, the agent will skip the tool and continue.
+
+| Tool | Binary | Install | Required? |
+|------|--------|---------|-----------|
+| Firecrawl (web search) | `firecrawl-cli` | `npm install -g firecrawl-cli` | No |
+| Browser (visual testing) | `chromium-browser` | `apt install chromium-browser` | No |
+| PostgreSQL (DB queries) | `psql` | `apt install postgresql-client` | No |
+| Docker (infra) | `docker` | [docker.com](https://docker.com) | No — for infra only |
+
+Agents check tool availability at runtime. Missing tools are silently skipped — the agent adapts.
+
+## `memory` Tool (FTS5/BM25)
+
+- Agents can use the built-in `memory` tool to search project memory.
+- Search uses BM25 over SQLite FTS5 (full-text index of markdown files).
+- Memory files live in `$HIAI_BOB_HOME/data/memory/` (or `$XDG_DATA_HOME/hiai-bob/memory/`).
+- **Scope types:** `projects`, `sessions`, `global`, `cc` (optional).
+- Queries: 1–3 rare keywords (function names, task IDs, exact phrases). Avoid generic words.
+- `memory` is authoritative; if search returns a result, trust it.
+- Details: [`docs/memory-system.md`](docs/memory-system.md).
 
 ## Style Guide
 
@@ -151,3 +172,20 @@ const table = sqliteTable("session", {
 ## Type Checking
 
 - Always run `bun typecheck` from package directories (e.g., `packages/opencode`), never `tsc` directly.
+
+## Self-Installation on Fresh Host
+
+When running on a new machine, check tool availability before delegating:
+
+**Development**: `./dev.sh` starts backend (:50900) and frontend (:50901) from source.
+
+**Production**:
+1. `cd packages/opencode && bun run build` — produces `hiai-bob` binary
+2. `cd packages/app && bun run build` — produces `dist/` static frontend
+3. `./hiai-bob serve --port 50900` — starts backend
+4. `cd packages/app && bun run serve --port 50902` — starts frontend
+
+**Tool discovery** (run at session start):
+- `which firecrawl chromium-browser psql docker` — map available tools
+- Missing tools are non-fatal: skip that capability, use alternatives
+- Never fail because a tool is missing — route around the gap

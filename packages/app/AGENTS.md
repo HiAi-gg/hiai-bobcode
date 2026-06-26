@@ -1,18 +1,20 @@
+# app — AGENTS.md
+
 ## Debugging
 
 - NEVER try to restart the app, or the server process, EVER.
 
 ## Local Dev
 
-- `opencode dev web` proxies `https://app.opencode.ai`, so local UI/CSS changes will not show there.
-- For local UI changes, run the backend and app dev servers separately.
-- Backend (from `packages/opencode`): `bun run --conditions=browser ./src/index.ts serve --port 50900`
-- App (from `packages/app`): `bun dev -- --port 50901`
-- Open `http://localhost:50901` to verify UI changes (it targets the backend at `http://localhost:50900`).
+- For local UI changes, run the backend and app dev servers separately:
+  - Backend (from `packages/opencode`): `bun run --conditions=browser ./src/index.ts serve --port 50900`
+  - App (from `packages/app`): `bun dev -- --port 50901`
+  - Open `http://localhost:50901` to verify UI changes (it targets the backend at `http://localhost:50900`).
 
 ## SolidJS
 
 - Always prefer `createStore` over multiple `createSignal` calls
+- `SessionGrid` (`components/session/session-grid.tsx`) — main session display component for the directory page; accepts `dir` and optional `primaryId`
 
 ## Tool Calling
 

@@ -28,6 +28,11 @@ export function Sidebar() {
     { key: "2x2", label: "田" },
   ])
 
+  const availableSessions = createMemo(() => {
+    const all = sync.data.session ?? []
+    return all.filter((s: any) => !s.parentID && !s.time?.archived)
+  })
+
   return (
     <box
       width={28}
@@ -42,10 +47,15 @@ export function Sidebar() {
     >
       <box flexDirection="column" flexShrink={0}>
         {/* Cell list */}
-        <box flexDirection="row" justifyContent="space-between" alignItems="center" marginBottom={1} height={1} flexShrink={0}>
-          <text fg={theme.textMuted}>
-            Cells ({cells().length})
-          </text>
+        <box
+          flexDirection="row"
+          justifyContent="space-between"
+          alignItems="center"
+          marginBottom={1}
+          height={1}
+          flexShrink={0}
+        >
+          <text fg={theme.textMuted}>Cells ({cells().length})</text>
           <box
             onMouseUp={() => route.navigate({ type: "home" })}
             paddingLeft={1}
@@ -54,7 +64,9 @@ export function Sidebar() {
             border={["left", "right"]}
             borderColor={theme.border}
           >
-            <text fg={theme.text} wrapMode="none">Exit Grid</text>
+            <text fg={theme.text} wrapMode="none">
+              Exit Grid
+            </text>
           </box>
         </box>
         <box flexDirection="column" flexShrink={0}>
@@ -75,6 +87,37 @@ export function Sidebar() {
                   </text>
                   <text fg={theme.textMuted}>{cell.mode === "plan-only" ? " 📋" : " 💬"}</text>
                 </box>
+              )
+            }}
+          </For>
+        </box>
+
+        {/* Existing sessions — click to add to grid */}
+        <box flexDirection="column" flexShrink={0} marginTop={1}>
+          <text fg={theme.textMuted}>Sessions</text>
+          <For each={availableSessions()}>
+            {(session) => {
+              const inGrid = cells().some((c) => c.sessionID === session.id)
+              return (
+                <Show when={!inGrid}>
+                  <box
+                    flexDirection="row"
+                    alignItems="center"
+                    paddingLeft={1}
+                    onMouseUp={() => {
+                      grid.addCell({
+                        sessionID: session.id,
+                        label: session.title,
+                        workspaceID: session.workspaceID ?? "",
+                        mode: "full",
+                      })
+                    }}
+                  >
+                    <text fg={theme.textMuted} wrapMode="none">
+                      + {session.title}
+                    </text>
+                  </box>
+                </Show>
               )
             }}
           </For>
@@ -110,16 +153,10 @@ export function Sidebar() {
                 Active Cell
               </text>
               <text fg={theme.textMuted}>
-                Session:{" "}
-                <span style={{ fg: theme.text }}>
-                  {sync.session.get(ac().sessionID)?.title ?? "—"}
-                </span>
+                Session: <span style={{ fg: theme.text }}>{sync.session.get(ac().sessionID)?.title ?? "—"}</span>
               </text>
               <text fg={theme.textMuted}>
-                Workspace:{" "}
-                <span style={{ fg: theme.text }}>
-                  {ac().workspaceID || "default"}
-                </span>
+                Workspace: <span style={{ fg: theme.text }}>{ac().workspaceID || "default"}</span>
               </text>
               <Show when={ac().agentID}>
                 {(agentId) => (

@@ -112,10 +112,18 @@ The backend binary serves the API. For the frontend:
 cd packages/app && bun run serve --port 50902
 ```
 
-Or use Docker:
+### Docker
+
+Build and run the container:
 ```bash
 docker build -t hiai-bob .
 docker run -p 50900:50900 -p 50902:50902 hiai-bob
+```
+
+Push to registry (optional):
+```bash
+docker tag hiai-bob ghcr.io/hiai-gg/hiai-bobcode:latest
+docker push ghcr.io/hiai-gg/hiai-bobcode:latest
 ```
 
 ---

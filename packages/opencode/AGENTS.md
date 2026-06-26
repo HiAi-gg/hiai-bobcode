@@ -1,3 +1,7 @@
+# opencode core — AGENTS.md (hiai-bob fork)
+
+> Project documentation: [`../../README.md`](../../README.md) — architecture, agents, delegation, memory, plugins.
+
 # opencode database guide
 
 ## Database

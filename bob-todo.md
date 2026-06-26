@@ -1,5 +1,7 @@
 # hiai-bob — Hardening & Completion Plan (2026-06-12)
 
+> ⚠️ **HISTORICAL.** This file documents the pre-fork investigation era. The fork has been completed; active development follows `bob-plan.md §F`. Package references to `@opencode-ai/plugin` throughout this file are stale — the fork uses `@mimo-ai/plugin` (workspace).
+>
 > ⚠️ **DIRECTION PIVOTED (2026-06-13): hiai-bob is becoming a PRODUCT — a fork of XiaomiMiMo/MiMo-Code
 > with our logic as a bundled first-party `BobPlugin`.** Authoritative docs now:
 > `MIMO-FORK-INTEGRATION.md` (integration map) + `bob-plan.md §F` (fork plan). §R below remains the

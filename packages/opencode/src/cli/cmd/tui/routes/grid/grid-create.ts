@@ -4,6 +4,7 @@ import { useProject } from "@tui/context/project"
 import { useSync } from "@tui/context/sync"
 import { useWorkspaceClients, asWorkspaceID } from "@tui/context/workspace-clients"
 import type { ToastContext } from "@tui/ui/toast"
+import type { RouteContext } from "@tui/context/route"
 
 /**
  * Create a fresh session via the workspace-aware SDK and add it to the grid
@@ -11,6 +12,10 @@ import type { ToastContext } from "@tui/ui/toast"
  * toolbar "+" button. Replaces the old "navigate to home" behaviour so the
  * action actually opens a new grid cell instead of teleporting the user
  * out of the grid.
+ *
+ * When `route` is provided the route data is synced after adding the cell
+ * so that `dialog-session-list` sees all current grid cells and can
+ * preserve them when navigating within grid mode.
  *
  * Returns the new session id on success, or `undefined` when the server
  * call fails — callers can surface a toast on the latter.
@@ -22,6 +27,7 @@ export async function createGridSession(input: {
   sync: ReturnType<typeof useSync>
   workspaceClients: ReturnType<typeof useWorkspaceClients>
   toast: ToastContext
+  route?: RouteContext
 }): Promise<string | undefined> {
   const workspaceID = input.project.workspace.current()
   const client = workspaceID ? input.workspaceClients.clientFor(asWorkspaceID(workspaceID)) : input.sdk.client
@@ -40,6 +46,13 @@ export async function createGridSession(input: {
     mode: "full",
     label: "New Session",
   })
+  // Sync route data so dialog-session-list sees all current cells
+  if (input.route) {
+    input.route.navigate({
+      type: "grid",
+      cells: input.grid.cells.map((c) => ({ sessionID: c.sessionID, workspaceID: c.workspaceID })),
+    })
+  }
   void input.sync.session.sync(sessionID).catch(() => undefined)
   return sessionID
 }

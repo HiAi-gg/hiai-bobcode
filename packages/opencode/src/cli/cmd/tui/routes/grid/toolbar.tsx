@@ -28,7 +28,7 @@ export function GridToolbar() {
   const cells = () => grid.cells
   const activeId = () => grid.activeCellId
 
-  const addNewCell = () => void createGridSession({ grid, sdk, project, sync, workspaceClients, toast })
+  const addNewCell = () => void createGridSession({ grid, sdk, project, sync, workspaceClients, toast, route })
 
   return (
     <box
