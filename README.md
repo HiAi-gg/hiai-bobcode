@@ -42,45 +42,52 @@ Beyond the 10-agent team, BobPlugin bundles:
 
 ## Quick Start
 
-### Prerequisites
+Copy this prompt to any AI agent (Bob, Claude, Cursor, Cody — whatever you use):
 
-- **Bun** 1.3.14+ (`curl -fsSL https://bun.sh/install | bash`)
-- **Git**
+````text
+Set up hiai-bobcode on this machine.
 
-### Install
+1. Check prerequisites: bun --version (>=1.3.14), git --version
+   Install bun if missing: curl -fsSL https://bun.sh/install | bash
 
-```bash
-git clone https://github.com/HiAi-gg/hiai-bobcode.git
-cd hiai-bobcode
-bun install
-```
+2. Clone and install:
+   git clone https://github.com/HiAi-gg/hiai-bobcode.git
+   cd hiai-bobcode
+   bun install
 
-### Run
+3. Set up environment:
+   cp bob.env.example bob.env
+   # Add FIRECRAWL_API_KEY and CONTEXT7_API_KEY if you have them
+   # (optional — Bob adapts without them)
 
-```bash
-# Backend (API server on :50900)
-bun dev
+4. Run backend (terminal 1):
+   bun dev
+   # API server starts on http://localhost:50900
 
-# In another terminal — Web UI (on :50901)
-bun dev:web
-```
+5. Run Web UI (terminal 2):
+   bun dev:web
+   # UI starts on http://localhost:50901
 
-Open http://localhost:50901. That's it.
+6. Verify:
+   curl -fsS http://localhost:50900/health
+   # Should return: ok
 
-### Verify
+7. Open http://localhost:50901 — you're in.
 
-```bash
-curl -fsS http://localhost:50900/health
-```
+If anything fails, tell me the exact error and I'll read CONTRIBUTING.md for troubleshooting.
+````
 
-### Optional: API Keys
+### Manual
 
-Copy `bob.env.example` to `bob.env` and add:
-
-- `FIRECRAWL_API_KEY` — from [firecrawl.dev](https://firecrawl.dev) (web research)
-- `CONTEXT7_API_KEY` — from [context7.com](https://context7.com) (docs lookup, works without for low usage)
-
-Missing tools are non-fatal — Bob adapts and skips what's not available.
+| Step | Command |
+|------|---------|
+| Prerequisites | `bun --version` (≥1.3.14), `git --version` |
+| Clone | `git clone https://github.com/HiAi-gg/hiai-bobcode.git && cd hiai-bobcode` |
+| Install | `bun install` |
+| Env | `cp bob.env.example bob.env` |
+| Run backend | `bun dev` → :50900 |
+| Run Web UI | `bun dev:web` → :50901 |
+| Verify | `curl -fsS http://localhost:50900/health` |
 
 ### Next Steps
 
