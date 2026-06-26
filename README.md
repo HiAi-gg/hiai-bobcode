@@ -1,9 +1,5 @@
 # hiai-bobcode
 
-<p align="center">
-  <img src="assets/readme/bob-banner.png" alt="hiai-bob" width="700">
-</p>
-
 <p align="center"><strong>An AI coding agent that actually finishes what it starts. With memory, taste, and a 10-agent team.</strong></p>
 
 <p align="center">
@@ -19,15 +15,28 @@
 
 ## What's the deal?
 
-`hiai-bobcode` is a fork of [MiMoCode](https://github.com/XiaomiMiMo/MiMo-Code), which is itself a fork of [OpenCode](https://github.com/opencode-ai/opencode). It's forks all the way down. Want to fork *this* fork? Go ahead — that's literally the point.
+`hiai-bobcode` is a fork of [MiMoCode](https://github.com/XiaomiMiMo/MiMo-Code), which is itself a fork of [OpenCode](https://github.com/opencode-ai/opencode). It's forks all the way down. Want to fork _this_ fork? Go ahead — that's literally the point.
 
 We took MiMoCode (which already handles reasoning, compaction, fallback, and context management natively) and bundled a first-party plugin called **BobPlugin** on top. BobPlugin adds three things MiMoCode doesn't have:
 
 - **Agent specialization** — a 10-agent team with clear roles. Bob is the boss.
-- **Completion gating** — Bob won't stop until the work is actually done *and* reviewed.
+- **Completion gating** — Bob won't stop until the work is actually done _and_ reviewed.
 - **Parallelism orchestration** — independent work runs concurrently, not one-at-a-time.
 
 Tech stack: **Bun** runtime, **TypeScript** 5.8, **SolidJS** frontend, **SQLite** (via Drizzle) for storage, **oxlint** + **Prettier** for linting.
+
+---
+
+## What's in the box
+
+Beyond the 10-agent team, BobPlugin bundles:
+
+- **56 skills** — code review, TDD, security audit, Figma-to-code, git workflows, systematic debugging, and more.
+- **154 design systems** — every brand from Apple to Stripe to SpaceX, ready for Stitch-powered UI generation.
+- **Browser automation** — `agent-browser` opens a real Chrome, takes screenshots, fills forms, verifies UI. No Playwright needed.
+- **Web research** — `firecrawl-cli` scrapes, crawls, and searches the web.
+- **Library docs lookup** — `context7` finds real API examples from official docs.
+- **Native memory** — SQLite FTS5 over markdown. Session checkpoints, project memory, task progress — all indexed and searchable.
 
 ---
 
@@ -58,6 +67,12 @@ bun dev:web
 
 Open http://localhost:50901. That's it.
 
+### Verify
+
+```bash
+curl -fsS http://localhost:50900/health
+```
+
 ### Optional: API Keys
 
 Copy `bob.env.example` to `bob.env` and add:
@@ -67,24 +82,31 @@ Copy `bob.env.example` to `bob.env` and add:
 
 Missing tools are non-fatal — Bob adapts and skips what's not available.
 
+### Next Steps
+
+- [The Team](#the-team) — what each of the 10 agents does
+- [Integrations](#integrations) — MCP, CLI, browser, design, LSP, memory
+- [CONTRIBUTING.md](CONTRIBUTING.md) — dev setup, debugging, building for production
+- [ARCHITECTURE.md](ARCHITECTURE.md) — system architecture and modification map
+
 ---
 
 ## The Team
 
 BobPlugin registers 10 agents. Here's who does what:
 
-| Agent | Role | The vibe |
-|-------|------|----------|
-| **Bob** | Orchestrator | The boss. Delegates, never implements. |
-| **Coder** | Builder | Writes the code. Deep, multi-file, gets it done. |
-| **Sub** | Quick worker | Cheap, fast, 1-2 file fixes. The intern. |
-| **Strategist** | Planner | Reads, thinks, writes a plan. Never touches code. |
-| **Manager** | Coordinator | Dispatches parallel waves. Keeps the trains running. |
-| **Critic** | Reviewer | Says "approved" or "try again." Mandatory gate. |
-| **Designer** | UI/Visual | Generates screens via Stitch. Has taste. |
-| **Researcher** | Discovery | Greps code, searches docs, finds answers. |
-| **Writer** | Copy | Landing pages, CTAs, microcopy. Words person. |
-| **Vision** | Browser | Opens a real browser, takes screenshots, verifies UI. |
+| Agent          | Role         | The vibe                                              |
+| -------------- | ------------ | ----------------------------------------------------- |
+| **Bob**        | Orchestrator | The boss. Delegates, never implements.                |
+| **Coder**      | Builder      | Writes the code. Deep, multi-file, gets it done.      |
+| **Sub**        | Quick worker | Cheap, fast, 1-2 file fixes. The intern.              |
+| **Strategist** | Planner      | Reads, thinks, writes a plan. Never touches code.     |
+| **Manager**    | Coordinator  | Dispatches parallel waves. Keeps the trains running.  |
+| **Critic**     | Reviewer     | Says "approved" or "try again." Mandatory gate.       |
+| **Designer**   | UI/Visual    | Generates screens via Stitch. Has taste.              |
+| **Researcher** | Discovery    | Greps code, searches docs, finds answers.             |
+| **Writer**     | Copy         | Landing pages, CTAs, microcopy. Words person.         |
+| **Vision**     | Browser      | Opens a real browser, takes screenshots, verifies UI. |
 
 Bob delegates to the right agent for the job. Simple tasks go to Sub. Complex ones go to Coder. UI work goes to Designer. Everything gets reviewed by Critic before it's done.
 
@@ -101,7 +123,7 @@ actor(subagent_type="coder", description="Build auth", prompt="...")
 - `run_in_background=false` — Bob waits for the result (sync)
 - `run_in_background=true` — Bob keeps working, result arrives later (async)
 
-The native runtime handles the task tree, checkpoints, and progress tracking. BobPlugin just decides *who* does *what*.
+The native runtime handles the task tree, checkpoints, and progress tracking. BobPlugin just decides _who_ does _what_.
 
 ---
 
@@ -118,20 +140,20 @@ Capped at 25 auto-continues for safety. A user message resets the counter. Bob w
 
 ---
 
-## Tools & Integrations
+## Integrations
 
-**MCP Servers (2):** `grep_app` (GitHub code search) + `sequential-thinking` (deep reasoning).  
-**CLI Skills:** `firecrawl-cli` (web research) + `context7` (library docs, CLI+skill pattern).  
-**Browser:** `agent-browser` — native Chrome via CDP, no Playwright.  
-**LSP:** TypeScript, Svelte, Bash, Pyright — `lsp_diagnostics` after every edit.
+| Category    | What                              | Who uses it                                                   |
+| ----------- | --------------------------------- | ------------------------------------------------------------- |
+| **MCP**     | `grep_app`                        | Researcher — GitHub/OSS code search                           |
+| **MCP**     | `sequential-thinking`             | Strategist, Critic — deep reasoning                           |
+| **CLI**     | `firecrawl-cli`                   | Researcher — web scraping, crawling, search                   |
+| **CLI**     | `context7`                        | Researcher, Coder — library/API docs lookup                   |
+| **Browser** | `agent-browser`                   | Vision, Critic — UI verification, screenshots, form filling   |
+| **Design**  | Stitch MCP + 154 design systems   | Designer — high-fidelity screen generation                    |
+| **LSP**     | TypeScript, Svelte, Bash, Pyright | Coder — diagnostics after every edit                          |
+| **Memory**  | SQLite FTS5 (native)              | All agents — cross-session memory, checkpoints, task progress |
 
 BobPlugin keeps exactly **6 hooks** (~28 MiMo-duplicate hooks were deleted). The slim set: `completion-controller`, `closure-injector`, `quality-gate`, `keyword-detector`, `non-interactive-env`, `tool-output-truncator`.
-
----
-
-## External Databases (Optional)
-
-hiai-bobcode itself uses **SQLite** for all persistent storage. The agent prompts include PostgreSQL connection rules for interacting with *external* HiAi infrastructure databases (ai-core, webs) when needed — those are not part of bobcode's own runtime. When connecting to those, use direct `psql` commands only.
 
 ---
 
@@ -143,17 +165,15 @@ All config lives in `bob.json` at the repo root. Three-layer merge: fork default
 
 ## Documentation
 
-| Document | What's in it |
-|---|---|
-| `README.md` | You are here. Overview + quick start. |
-| [`ARCHITECTURE.md`](ARCHITECTURE.md) | System architecture, repo layout, modification map. |
-| [`docs/quickstart.md`](docs/quickstart.md) | 5-minute setup. |
-| [`docs/development.md`](docs/development.md) | Dev setup, debugging, building for production. |
-| [`CHANGELOG.md`](CHANGELOG.md) | Version history. |
-| [`CONTRIBUTING.md`](CONTRIBUTING.md) | How to contribute. |
-| [`SECURITY.md`](SECURITY.md) | Security policy. |
-| [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) | Community standards. |
-| [`LICENSE.md`](LICENSE.md) | MIT license. |
+| Document                                   | What's in it                                                      |
+| ------------------------------------------ | ----------------------------------------------------------------- |
+| `README.md`                                | You are here. Overview + quick start.                             |
+| [`ARCHITECTURE.md`](ARCHITECTURE.md)       | System architecture, repo layout, modification map.               |
+| [`CHANGELOG.md`](CHANGELOG.md)             | Version history.                                                  |
+| [`CONTRIBUTING.md`](CONTRIBUTING.md)       | Dev setup, debugging, building for production, how to contribute. |
+| [`SECURITY.md`](SECURITY.md)               | Security policy.                                                  |
+| [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) | Community standards.                                              |
+| [`LICENSE.md`](LICENSE.md)                 | MIT license.                                                      |
 
 ---
 

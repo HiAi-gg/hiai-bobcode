@@ -25,22 +25,20 @@
 
 ## Canonical References
 
-Ecosystem-wide documentation (conventions, architecture, ADRs) lives in the workspace root under `Documents/` and `AGENTS.md`. This project's documentation is self-contained within its own `docs/` directory. See the document index below.
+Ecosystem-wide documentation (conventions, architecture, ADRs) lives in the workspace root under `Documents/` and `AGENTS.md`. This project's documentation is self-contained at the repo root. See the document index below.
 
 ## Project Document Index
 
 | Document | Purpose |
 |---|---|
-| `README.md` | Project overview + full documentation |
+| `README.md` | Project overview + quick start |
 | `AGENTS.md` (this file) | Agent rules |
 | `ARCHITECTURE.md` | System architecture and repository layout |
+| `CONTRIBUTING.md` | How to contribute + dev setup, debugging, building for production |
 | `CHANGELOG.md` | Version history |
-| `CONTRIBUTING.md` | How to contribute |
 | `SECURITY.md` | Security policy |
 | `CODE_OF_CONDUCT.md` | Community standards |
 | `LICENSE.md` | MIT license |
-| `docs/development.md` | Developer setup guide |
-| `docs/quickstart.md` | 5-minute setup guide |
 | `bob.env.example` | Environment variable template (distinct from the real `bob.env`) |
 
 ## Project Rules (legacy, preserved)
@@ -76,7 +74,6 @@ Agents check tool availability at runtime. Missing tools are silently skipped â€
 - **Scope types:** `projects`, `sessions`, `global`, `cc` (optional).
 - Queries: 1â€“3 rare keywords (function names, task IDs, exact phrases). Avoid generic words.
 - `memory` is authoritative; if search returns a result, trust it.
-- Details: [`docs/memory-system.md`](docs/memory-system.md).
 
 ## Style Guide
 
