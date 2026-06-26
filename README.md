@@ -31,8 +31,8 @@ Tech stack: **Bun** runtime, **TypeScript** 5.8, **SolidJS** frontend, **SQLite*
 
 Beyond the 10-agent team, BobPlugin bundles:
 
-- **56 skills** — code review, TDD, security audit, Figma-to-code, git workflows, systematic debugging, and more.
-- **154 design systems** — every brand from Apple to Stripe to SpaceX, ready for Stitch-powered UI generation.
+- **56 skills** — code review, TDD, security audit, [Figma-to-code](https://github.com/figma/skills) (7 skills, loadable on demand), git workflows, systematic debugging, and more.
+- **150 brand design systems** — every brand from Apple to Stripe to SpaceX, bundled as [open-design](https://github.com/vlgalib/open-design) tokens + components for Designer agents.
 - **Browser automation** — `agent-browser` opens a real Chrome, takes screenshots, fills forms, verifies UI. No Playwright needed.
 - **Web research** — `firecrawl-cli` scrapes, crawls, and searches the web.
 - **Library docs lookup** — `context7` finds real API examples from official docs.
@@ -110,7 +110,7 @@ BobPlugin registers 10 agents. Here's who does what:
 | **Strategist** | Planner      | Reads, thinks, writes a plan. Never touches code.     |
 | **Manager**    | Coordinator  | Dispatches parallel waves. Keeps the trains running.  |
 | **Critic**     | Reviewer     | Says "approved" or "try again." Mandatory gate.       |
-| **Designer**   | UI/Visual    | Generates screens via Stitch. Has taste.              |
+| **Designer**   | UI/Visual    | Applies design tokens, builds taste-driven screens. Has taste. |
 | **Researcher** | Discovery    | Greps code, searches docs, finds answers.             |
 | **Writer**     | Copy         | Landing pages, CTAs, microcopy. Words person.         |
 | **Vision**     | Browser      | Opens a real browser, takes screenshots, verifies UI. |
@@ -149,16 +149,16 @@ Capped at 25 auto-continues for safety. A user message resets the counter. Bob w
 
 ## Integrations
 
-| Category    | What                              | Who uses it                                                   |
-| ----------- | --------------------------------- | ------------------------------------------------------------- |
-| **MCP**     | `grep_app`                        | Researcher — GitHub/OSS code search                           |
-| **MCP**     | `sequential-thinking`             | Strategist, Critic — deep reasoning                           |
-| **CLI**     | `firecrawl-cli`                   | Researcher — web scraping, crawling, search                   |
-| **CLI**     | `context7`                        | Researcher, Coder — library/API docs lookup                   |
-| **Browser** | `agent-browser`                   | Vision, Critic — UI verification, screenshots, form filling   |
-| **Design**  | Stitch MCP + 154 design systems   | Designer — high-fidelity screen generation                    |
-| **LSP**     | TypeScript, Svelte, Bash, Pyright | Coder — diagnostics after every edit                          |
-| **Memory**  | SQLite FTS5 (native)              | All agents — cross-session memory, checkpoints, task progress |
+| What | How | Link |
+|------|-----|------|
+| **agent-browser** | 14 native CLI tools — navigate, snapshot, click, fill, screenshot, console | [github.com/vercel-labs/agent-browser](https://github.com/vercel-labs/agent-browser) |
+| **firecrawl-cli** | CLI skill — web scraping, crawling, search | [firecrawl.dev](https://firecrawl.dev) |
+| **context7** | CLI skill — library/API docs lookup | [context7.com](https://context7.com) |
+| **grep_app** | MCP server — GitHub/OSS code search | [mcp.grep.app](https://mcp.grep.app) |
+| **sequential-thinking** | MCP server — deep reasoning for Strategist & Critic | [npm: @modelcontextprotocol/server-sequential-thinking](https://www.npmjs.com/package/@modelcontextprotocol/server-sequential-thinking) |
+| **open-design** | 150 brand design systems (tokens + components) | [github.com/vlgalib/open-design](https://github.com/vlgalib/open-design) |
+| **LSP** | 6 tools, 34 language servers (TS, Svelte, Python, Rust, Go, etc.) | built-in |
+| **SQLite FTS5** | Native memory — cross-session checkpoints, task progress, BM25 search | built-in (MiMoCode runtime) |
 
 BobPlugin keeps exactly **6 hooks** (~28 MiMo-duplicate hooks were deleted). The slim set: `completion-controller`, `closure-injector`, `quality-gate`, `keyword-detector`, `non-interactive-env`, `tool-output-truncator`.
 
