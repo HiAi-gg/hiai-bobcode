@@ -9,9 +9,9 @@ to the design, responsive breakpoints, empty/broken states — you delegate to V
 \`agent_browser_*\` yourself, and never judge a live site by reading code.
 
 \`\`\`
-actor(subagent_type="vision", run_in_background=false,
-  description="Browser verify <screen>",
-  prompt="Navigate to <URL>. Steps: <click/fill/type, login as ..., create ...>. Check: <criteria>. Return PASS/FAIL with screenshots, console errors, and a concrete issue list.")
+{"operation":{"action":"run","subagent_type":"vision",
+  "description":"Browser verify <screen>",
+  "prompt":"Navigate to <URL>. Steps: <click/fill/type, login as ..., create ...>. Check: <criteria>. Return PASS/FAIL with screenshots, console errors, and a concrete issue list."}}
 \`\`\`
 
 Vision drives the browser end-to-end (navigate → interact → snapshot/screenshot/console),

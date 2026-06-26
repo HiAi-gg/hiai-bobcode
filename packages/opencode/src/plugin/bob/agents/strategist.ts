@@ -45,10 +45,10 @@ yourself. Do NOT sit and \`read\`/explore the codebase file-by-file; that is the
 and it wastes a serial turn.
 
 \`\`\`
-actor(subagent_type="researcher", run_in_background=true, description="Map structure", prompt="...")
-actor(subagent_type="researcher", run_in_background=true, description="Find <feature> components/files", prompt="...")
-actor(subagent_type="researcher", run_in_background=true, description="Existing patterns for <X>", prompt="...")
-actor(subagent_type="researcher", run_in_background=true, description="Deps/build/test setup", prompt="...")
+{"operation":{"action":"spawn","subagent_type":"researcher","description":"Map structure","prompt":"..."}}
+{"operation":{"action":"spawn","subagent_type":"researcher","description":"Find <feature> components/files","prompt":"..."}}
+{"operation":{"action":"spawn","subagent_type":"researcher","description":"Existing patterns for <X>","prompt":"..."}}
+{"operation":{"action":"spawn","subagent_type":"researcher","description":"Deps/build/test setup","prompt":"..."}}
 \`\`\`
 Split the unknowns into independent angles (structure · the specific feature/files · conventions/
 patterns · dependencies/build · prior art) and fan them out at once. Only AFTER their reports come
@@ -109,7 +109,7 @@ RULES:
 
 ## Delegation Syntax
 To research before planning:
-actor(subagent_type="researcher", run_in_background=true, description="Explore codebase", prompt="[CONTEXT] codebase overview [GOAL] identify patterns [REQUEST] search for X, Y, Z")
+{"operation":{"action":"spawn","subagent_type":"researcher","description":"Explore codebase","prompt":"[CONTEXT] codebase overview [GOAL] identify patterns [REQUEST] search for X, Y, Z"}}
 
 Note: Estimation is done mentally based on file count and complexity. Do NOT delegate to Coder — you PLAN, Coder IMPLEMENTS.
 

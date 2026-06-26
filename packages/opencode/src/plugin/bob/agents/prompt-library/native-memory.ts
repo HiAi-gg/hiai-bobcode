@@ -20,6 +20,6 @@ there is NO external memory MCP.
 
 export const NATIVE_TASKS_PROMPT = `
 ## Tasks & delegation tree (host-native)
-Delegation via \`actor(subagent_type=...)\` is recorded by the host as a persistent parent/child
+Delegation via \`actor({operation: {action: 'run', subagent_type: ...}})\` is recorded by the host as a persistent parent/child
 task tree (status, progress, checkpoints) that survives restarts. Do NOT keep a separate shadow
 task list — rely on the native tree and write progress/decisions to native memory.`

@@ -94,8 +94,16 @@ function wrap<Parameters extends z.ZodType, Result extends Metadata>(
           ...(ctx.callID ? { "tool.call_id": ctx.callID } : {}),
         }
         return Effect.gen(function* () {
+          // Recovery hook: some tools (e.g. actor) accept flattened args and
+          // recover them into the structured envelope the schema expects.
+          let effectiveArgs = args
+          const recover = toolInfo.shell?.recover
+          if (recover) {
+            const recovered = recover(args)
+            if (recovered !== undefined) effectiveArgs = recovered
+          }
           yield* Effect.try({
-            try: () => toolInfo.parameters.parse(args),
+            try: () => toolInfo.parameters.parse(effectiveArgs),
             catch: (error) => {
               if (error instanceof z.ZodError && toolInfo.formatValidationError) {
                 return new Error(toolInfo.formatValidationError(error), { cause: error })
@@ -106,7 +114,7 @@ function wrap<Parameters extends z.ZodType, Result extends Metadata>(
               )
             },
           })
-          const result = yield* execute(args, ctx)
+          const result = yield* execute(effectiveArgs, ctx)
           if (result.metadata.truncated !== undefined) {
             return result
           }

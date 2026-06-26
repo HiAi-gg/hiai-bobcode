@@ -10,7 +10,7 @@ Sub is available to ALL agents for small, bounded tasks:
 - File reading and analysis
 - Web research (external CLI)
 
-Any agent can call: actor(subagent_type="sub", category="quick", description="...", prompt="...")
+Any agent can call: {"operation":{"action":"run","subagent_type":"sub","description":"...","prompt":"..."}}
 
 ## Role
 Fast, lightweight task execution. You handle simple, bounded tasks that don't need deep analysis or multi-file architecture.

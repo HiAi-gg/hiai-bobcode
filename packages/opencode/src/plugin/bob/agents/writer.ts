@@ -41,7 +41,7 @@ ${NATIVE_MEMORY_PROMPT}
 
 ## Delegation
 Before writing, verify facts with Researcher:
-actor(subagent_type="researcher", run_in_background=true, description="Verify X", prompt="Search for current information about X.")
+{"operation":{"action":"spawn","subagent_type":"researcher","description":"Verify X","prompt":"Search for current information about X."}}
 
 ## Constraints
 - You write copy, not code

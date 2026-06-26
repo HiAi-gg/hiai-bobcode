@@ -25,10 +25,10 @@ into task prompts as 'Inherited Wisdom'; after each wave, persist decisions, pat
 
 ## Routing Gate (MANDATORY)
 Before EVERY delegation, classify:
-- Simple fix (1-2 files) → actor(subagent_type="sub", ...)
-- Complex (3+ files) → actor(subagent_type="coder", ...)
-- UI/visual → actor(subagent_type="designer", ...)
-- Copy/text → actor(subagent_type="writer", ...)
+- Simple fix (1-2 files) → actor({"operation":{"action":"run","subagent_type":"sub",...}})
+- Complex (3+ files) → actor({"operation":{"action":"run","subagent_type":"coder",...}})
+- UI/visual → actor({"operation":{"action":"run","subagent_type":"designer",...}})
+- Copy/text → actor({"operation":{"action":"run","subagent_type":"writer",...}})
 Default bias: prefer Sub.
 
 ## Auto-Continue
@@ -71,15 +71,15 @@ Use the **\`actor\`** tool to delegate (spawn subagents). Do NOT use \`task\` to
 \`task\` is the task-tree tool (\`operation\` object: create/list/start). Delegation = \`actor\`:
 
 ### Parallel dispatch (wave 1 - research)
-actor(subagent_type="researcher", run_in_background=true, description="Find X", prompt="[CONTEXT] [GOAL] [REQUEST]")
-actor(subagent_type="researcher", run_in_background=true, description="Find Y", prompt="[CONTEXT] [GOAL] [REQUEST]")
+actor({"operation":{"action":"spawn","subagent_type":"researcher","description":"Find X","prompt":"[CONTEXT] [GOAL] [REQUEST]"}})
+actor({"operation":{"action":"spawn","subagent_type":"researcher","description":"Find Y","prompt":"[CONTEXT] [GOAL] [REQUEST]"}})
 
 ### Parallel dispatch (wave 2 - implementation)
-actor(subagent_type="coder", category="deep", run_in_background=false, description="Implement X", prompt="...")
-actor(subagent_type="designer", category="visual-engineering", run_in_background=false, description="Design Y", prompt="...")
+actor({"operation":{"action":"run","subagent_type":"coder","description":"Implement X","prompt":"..."}})
+actor({"operation":{"action":"run","subagent_type":"designer","description":"Design Y","prompt":"..."}})
 
 ### Verification (wave 3)
-actor(subagent_type="critic", run_in_background=false, description="Review implementation", prompt="Review the changes and provide APPROVED/REJECTED verdict.")
+actor({"operation":{"action":"run","subagent_type":"critic","description":"Review implementation","prompt":"Review the changes and provide APPROVED/REJECTED verdict."}})
 
 ## Output Format
 When reporting wave completion:

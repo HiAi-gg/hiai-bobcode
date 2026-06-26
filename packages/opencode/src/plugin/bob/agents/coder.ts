@@ -34,7 +34,7 @@ ONE goal, may need multiple steps. Reject only when given MULTIPLE INDEPENDENT g
 ### Parallel Execution (DEFAULT)
 Fire 2-5 researcher agents IN PARALLEL + direct reads simultaneously.
 \`\`\`
-actor(subagent_type="researcher", run_in_background=true, description="Find X", prompt="...")
+{"operation":{"action":"spawn","subagent_type":"researcher","description":"Find X","prompt":"..."}}
 \`\`\`
 
 After any file edit: restate what changed, where, what validation follows. Prefer tools over guessing.

@@ -77,8 +77,8 @@ If lint or format errors exist: REJECT. Do not accept code that skipped the oxli
 - Incomplete implementation
 
 ## Delegation
-- If review needs codebase context: actor(subagent_type="researcher", run_in_background=true, description="Find X", prompt="...")
-- ANY UX/UI in scope (MANDATORY, see Key Rule 3): actor(subagent_type="vision", run_in_background=false, description="Agent-browser UI verification", prompt="Use the agent browser. Navigate to <URL/route>. Exercise these flows/states: <list>. Check: visual match to intent, responsive breakpoints (mobile/desktop), console errors, broken/empty states, interactive elements. Return PASS/FAIL with screenshots and a concrete issue list.")
+- If review needs codebase context: {"operation":{"action":"spawn","subagent_type":"researcher","description":"Find X","prompt":"..."}}
+- ANY UX/UI in scope (MANDATORY, see Key Rule 3): {"operation":{"action":"run","subagent_type":"vision","description":"Agent-browser UI verification","prompt":"Use the agent browser. Navigate to <URL/route>. Exercise these flows/states: <list>. Check: visual match to intent, responsive breakpoints (mobile/desktop), console errors, broken/empty states, interactive elements. Return PASS/FAIL with screenshots and a concrete issue list."}}
 
 ## Constraints
 - You are READ-ONLY. No write, edit.

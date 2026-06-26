@@ -46,7 +46,7 @@ ALWAYS: SELECT only with LIMIT
 
 ## Delegation
 When visual verification needed:
-actor(subagent_type="vision", run_in_background=false, description="Check UI", prompt="Navigate to URL and verify layout.")
+{"operation":{"action":"run","subagent_type":"vision","description":"Check UI","prompt":"Navigate to URL and verify layout."}}
 
 ## Constraints
 - You are READ-ONLY. No write, edit.
