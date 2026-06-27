@@ -12,10 +12,16 @@ COPY packages/sdk/js/package.json ./packages/sdk/js/
 RUN bun -e "const fs=require('fs');const p=JSON.parse(fs.readFileSync('package.json','utf8'));p.workspaces.packages=p.workspaces.packages.filter(w=>w==='packages/*'||w==='packages/sdk/js');fs.writeFileSync('package.json',JSON.stringify(p,null,2))"
 RUN bun install
 
+# --- Build ---
+FROM base AS build
+COPY --from=deps /app/node_modules ./node_modules
+COPY . .
+RUN cd packages/opencode && bun run build
+
 # --- Runtime ---
 FROM base AS runtime
 COPY --from=deps /app/node_modules ./node_modules
-COPY packages/opencode/dist ./packages/opencode/dist
+COPY --from=build /app/packages/opencode/dist ./packages/opencode/dist
 COPY packages/opencode/package.json ./packages/opencode/
 
 ENV NODE_ENV=production
