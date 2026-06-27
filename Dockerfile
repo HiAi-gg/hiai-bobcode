@@ -1,25 +1,36 @@
-# Use the official Bun image
-FROM oven/bun:1.3-alpine
-
+FROM oven/bun:1.3-alpine AS base
 WORKDIR /app
 
-RUN addgroup -S bob && adduser -S bob -G bob
-
-# Copy configuration and lockfiles
+# --- Install dependencies ---
+FROM base AS deps
 COPY package.json bun.lock ./
 COPY packages/app/package.json ./packages/app/
 COPY packages/opencode/package.json ./packages/opencode/
 COPY packages/shared/package.json ./packages/shared/
 COPY packages/sdk/js/package.json ./packages/sdk/js/
-
-# Install dependencies (utilizes Docker layer caching)
 RUN bun install
 
-# Copy the rest of the application
+# --- Build ---
+FROM base AS build
+COPY --from=deps /app/node_modules ./node_modules
 COPY . .
+RUN cd packages/opencode && bun run build
+
+# --- Runtime ---
+FROM base AS runtime
+COPY --from=deps /app/node_modules ./node_modules
+COPY --from=build /app/packages/opencode/dist ./packages/opencode/dist
+COPY packages/opencode/package.json ./packages/opencode/
+
+ENV NODE_ENV=production
+
+RUN addgroup -S bob && adduser -S bob -G bob \
+    && chown -R -h bob:bob /app
 
 USER bob
 
-# Expose default ports (50900 for backend api, 50901 for frontend UI)
+HEALTHCHECK --interval=30s CMD wget -qO- http://localhost:50900/health || exit 1
+
 EXPOSE 50900 50901
-CMD ["bun", "--cwd", "packages/opencode", "src/index.ts", "serve", "--port", "50900", "--hostname", "0.0.0.0"]
+
+CMD ["bun", "--cwd", "packages/opencode", "dist/index.js", "serve", "--port", "50900", "--hostname", "0.0.0.0"]

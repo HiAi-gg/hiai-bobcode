@@ -1,8 +1,56 @@
+# Secrets and env
 bob.env
-node_modules/
-.git/
-.bob/
-.dev-home/
-*.log
 .env
 .env.*
+*.local.env
+
+# VCS
+.git
+.gitignore
+
+# Dependencies (re-installed inside image)
+node_modules
+**/node_modules
+
+# Build outputs
+dist
+**/dist
+.ts-dist
+*.tsbuildinfo
+
+# Dev/IDE
+.dev-home
+.vscode
+.idea
+.zed
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Agent state (local only)
+.bob
+.opencode
+.mimocode
+.claude
+
+# Logs
+*.log
+logs
+**/*.log
+
+# Test artifacts
+coverage
+**/coverage
+tests
+**/tests
+qa
+
+# Docker dev
+docker-compose.yml
+
+# Misc
+tmp
+temp
+.cache
+.turbo
