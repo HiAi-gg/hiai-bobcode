@@ -1,7 +1,7 @@
 {
   "name": "@mimo-ai/desktop",
   "private": true,
-  "version": "0.0.1",
+  "version": "0.0.0-master-202606272015",
   "type": "module",
   "license": "MIT",
   "homepage": "https://opencode.ai",

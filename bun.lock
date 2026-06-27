@@ -29,7 +29,7 @@
     },
     "packages/app": {
       "name": "@mimo-ai/app",
-      "version": "0.0.1",
+      "version": "0.0.0-master-202606272015",
       "dependencies": {
         "@kobalte/core": "catalog:",
         "@mimo-ai/sdk": "workspace:*",
@@ -83,7 +83,7 @@
     },
     "packages/desktop": {
       "name": "@mimo-ai/desktop",
-      "version": "0.0.1",
+      "version": "0.0.0-master-202606272015",
       "dependencies": {
         "drizzle-orm": "catalog:",
         "effect": "catalog:",
@@ -126,8 +126,8 @@
       },
     },
     "packages/opencode": {
-      "name": "@hiai-bob/cli",
-      "version": "0.0.1",
+      "name": "@hiai-gg/hiai-bobcode",
+      "version": "0.0.0-master-202606272015",
       "bin": {
         "bob": "./bin/bob",
       },
@@ -280,7 +280,7 @@
     },
     "packages/plugin": {
       "name": "@mimo-ai/plugin",
-      "version": "0.0.1",
+      "version": "0.0.0-master-202606272015",
       "dependencies": {
         "@mimo-ai/sdk": "workspace:*",
         "effect": "catalog:",
@@ -305,7 +305,7 @@
     },
     "packages/script": {
       "name": "@mimo-ai/script",
-      "version": "0.0.1",
+      "version": "0.0.0-master-202606272015",
       "dependencies": {
         "semver": "^7.6.3",
       },
@@ -316,7 +316,7 @@
     },
     "packages/sdk/js": {
       "name": "@mimo-ai/sdk",
-      "version": "0.0.1",
+      "version": "0.0.0-master-202606272015",
       "dependencies": {
         "cross-spawn": "catalog:",
       },
@@ -331,7 +331,7 @@
     },
     "packages/shared": {
       "name": "@mimo-ai/shared",
-      "version": "0.0.1",
+      "version": "0.0.0-master-202606272015",
       "bin": {
         "opencode": "./bin/opencode",
       },
@@ -355,7 +355,7 @@
     },
     "packages/slack": {
       "name": "@mimo-ai/slack",
-      "version": "0.0.1",
+      "version": "0.0.0-master-202606272015",
       "dependencies": {
         "@mimo-ai/sdk": "workspace:*",
         "@slack/bolt": "^3.17.1",
@@ -368,7 +368,7 @@
     },
     "packages/storybook": {
       "name": "@mimo-ai/storybook",
-      "version": "0.0.1",
+      "version": "0.0.0-master-202606272015",
       "devDependencies": {
         "@mimo-ai/ui": "workspace:*",
         "@solidjs/meta": "catalog:",
@@ -391,7 +391,7 @@
     },
     "packages/ui": {
       "name": "@mimo-ai/ui",
-      "version": "0.0.1",
+      "version": "0.0.0-master-202606272015",
       "dependencies": {
         "@kobalte/core": "catalog:",
         "@mimo-ai/sdk": "workspace:*",
@@ -913,7 +913,7 @@
 
     "@hey-api/types": ["@hey-api/types@0.1.2", "", {}, "sha512-uNNtiVAWL7XNrV/tFXx7GLY9lwaaDazx1173cGW3+UEaw4RUPsHEmiB4DSpcjNxMIcrctfz2sGKLnVx5PBG2RA=="],
 
-    "@hiai-bob/cli": ["@hiai-bob/cli@workspace:packages/opencode"],
+    "@hiai-gg/hiai-bobcode": ["@hiai-gg/hiai-bobcode@workspace:packages/opencode"],
 
     "@hono/node-server": ["@hono/node-server@1.19.11", "", { "peerDependencies": { "hono": "^4" } }, "sha512-dr8/3zEaB+p0D2n/IUrlPF1HZm586qgJNXK1a9fhg/PzdtkK7Ksd5l312tJX2yBuALqDYBlG20QEbayqPyxn+g=="],
 
