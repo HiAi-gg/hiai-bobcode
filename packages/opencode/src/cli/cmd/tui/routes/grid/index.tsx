@@ -5,6 +5,7 @@ import {
   createMemo,
   createSignal,
   createEffect,
+  on,
   onCleanup,
   onMount,
   ErrorBoundary,
@@ -131,15 +132,17 @@ function GridInner() {
   })
 
   // Watch for active cell changes from the route (e.g. chosen from DialogSessionList)
-  // and activate the matching cell in the grid.
-  createEffect(() => {
-    const activeSessionID = routeData.activeSessionID
-    if (!activeSessionID) return
-    const cell = grid.cells.find((c) => c.sessionID === activeSessionID)
-    if (cell && grid.activeCellId !== cell.id) {
-      grid.setActive(cell.id)
-    }
-  })
+  // and activate the matching cell in the grid. Uses on() for explicit dependency
+  // tracking so that changes to grid.activeCellId (e.g. from mouse clicks) do NOT
+  // re-trigger this effect and snap back to the old activeSessionID.
+  createEffect(on(
+    () => routeData.activeSessionID,
+    (activeSessionID) => {
+      if (!activeSessionID) return
+      const cell = grid.cells.find((c) => c.sessionID === activeSessionID)
+      if (cell) grid.setActive(cell.id)
+    },
+  ))
 
   // Phase 6: throttle the splitter-driven resize recalculation and terminal SIGWINCH.
   // Yoga relayout is expensive enough that a 60-fps drag tick would tank the

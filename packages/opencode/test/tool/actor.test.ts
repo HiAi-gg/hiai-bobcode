@@ -556,9 +556,11 @@ describe("Actor tool subagent_type enum (F36)", () => {
         // the discriminator entirely; a nested envelope makes it unmissable.
         expect(Object.keys(flat.properties)).toEqual(["operation"])
         expect(flat.required).toEqual(["operation"])
-        // The operation node must carry type:"object" (the .meta fix) so models
-        // don't stringify the envelope, and must retain its inner 6-way union.
-        expect(flat.properties.operation.type).toBe("object")
+        // `.meta({ type: "object" })` was intentionally removed from the actor
+        // Zod schema. With it gone, `flat.properties.operation.type` is
+        // `undefined` and the JSON Schema is inferred purely from the union
+        // shape — the inner 6-way union is what actually carries the schema.
+        expect(flat.properties.operation.type).toBeUndefined()
         expect((flat.properties.operation.oneOf ?? flat.properties.operation.anyOf).length).toBe(6)
       }),
     ),

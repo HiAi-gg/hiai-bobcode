@@ -446,23 +446,17 @@ export const ActorTool = Tool.define(
       })
 
       const parameters = z.strictObject({
-        // .meta({ type: "object" }) is REQUIRED — without it the emitted JSON
-        // schema's `operation` node has only `anyOf`, no `type`, and some models
-        // (notably mimo-v2.5-pro) stringify the whole envelope
-        // ({"operation":"{\"action\":\"run\",...}"}) which fails zod validation.
-        // The root strictObject also means flattenDiscriminatedUnion finds no
+        // The root strictObject means flattenDiscriminatedUnion finds no
         // root-level union and passes through unchanged — root keeps exactly one
         // key (`operation`), so models can't drop the discriminator.
-        operation: z
-          .discriminatedUnion("action", [
-            runSchema,
-            spawnSchema,
-            statusSchema,
-            waitSchema,
-            cancelSchema,
-            sendSchema,
-          ])
-          .meta({ type: "object" }),
+        operation: z.discriminatedUnion("action", [
+          runSchema,
+          spawnSchema,
+          statusSchema,
+          waitSchema,
+          cancelSchema,
+          sendSchema,
+        ]),
       })
 
       const run = Effect.fn("ActorTool.execute")(function* (input: z.infer<typeof parameters>, ctx: Tool.Context) {

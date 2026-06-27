@@ -2,7 +2,6 @@ import { useDialog } from "@tui/ui/dialog"
 import { DialogSelect } from "@tui/ui/dialog-select"
 import { useRoute } from "@tui/context/route"
 import { useSync } from "@tui/context/sync"
-import { useGrid } from "@tui/context/grid"
 
 import { createMemo, createResource, createSignal, onMount } from "solid-js"
 import { Locale } from "@/util"
@@ -195,8 +194,8 @@ export function DialogSessionList() {
       }}
       onSelect={(option) => {
         if (route.data.type === "grid") {
-          const grid = useGrid()
-          const currentCells = grid.cells.map((c) => ({ sessionID: c.sessionID, workspaceID: c.workspaceID }))
+          const cells = route.data.cells ?? []
+          const currentCells = cells.map((c) => ({ sessionID: c.sessionID, workspaceID: c.workspaceID }))
           const exists = currentCells.some((c) => c.sessionID === option.value)
           route.navigate({
             type: "grid",
