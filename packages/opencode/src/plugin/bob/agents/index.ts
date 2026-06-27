@@ -132,6 +132,7 @@ export function createAllAgents(config: BobConfig): AgentDefinition[] {
         model: resolveModel("vision", config),
         prompt: VISION_PROMPT,
         temperature: 0.2,
+        thinking: { type: "disabled" },
       },
     },
     {
