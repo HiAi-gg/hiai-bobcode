@@ -184,7 +184,7 @@ BobPlugin keeps exactly **6 hooks** (~28 MiMo-duplicate hooks were deleted). The
 
 ## Configuration
 
-All config lives in `bob.json` at the repo root. Three-layer merge: fork defaults → `bob.json` → env overrides. Model IDs are full `provider/model-id` strings — run `opencode models` to see what's available, then copy the exact ID.
+All config lives in `bob.json` at the repo root. Three-layer merge: fork defaults → `bob.json` → env overrides. Model IDs are full `provider/model-id` strings — run `hiai-bob models` to see what's available, then copy the exact ID.
 
 ---
 

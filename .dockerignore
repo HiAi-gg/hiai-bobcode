@@ -1,0 +1,8 @@
+bob.env
+node_modules/
+.git/
+.bob/
+.dev-home/
+*.log
+.env
+.env.*

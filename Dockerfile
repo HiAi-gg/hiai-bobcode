@@ -1,7 +1,9 @@
 # Use the official Bun image
-FROM oven/bun:latest
+FROM oven/bun:1.3-alpine
 
 WORKDIR /app
+
+RUN addgroup -S bob && adduser -S bob -G bob
 
 # Copy configuration and lockfiles
 COPY package.json bun.lock ./
@@ -16,5 +18,8 @@ RUN bun install
 # Copy the rest of the application
 COPY . .
 
-# Expose default ports (50900 for backend api, 50902 for frontend UI)
-EXPOSE 50900 50902
+USER bob
+
+# Expose default ports (50900 for backend api, 50901 for frontend UI)
+EXPOSE 50900 50901
+CMD ["bun", "--cwd", "packages/opencode", "src/index.ts", "serve", "--port", "50900", "--hostname", "0.0.0.0"]

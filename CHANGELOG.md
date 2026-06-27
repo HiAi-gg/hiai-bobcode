@@ -5,6 +5,8 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
 ## [0.0.2] - 2026-06-25
 
 ### v0.0.2 — Full Integration Release
@@ -46,8 +48,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Workspace propagation: session workspace state persists across grid navigations
 - Port scanner: improved instance detection for multi-port environments
 
-## [Unreleased]
-
 ## [0.0.1] - 2026-06-21
 
 ### Production-Readiness Release
@@ -56,7 +56,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Complete rebranding from MiMo-Code/OpenCode to hiai-bob across all surfaces
 - Agent identifies as "Bob, built by hiai" in all prompts; "You are Bob" in system prompt
-- MIMOCODE*\* env vars renamed to BOB*\* throughout source
+- MIMOCODE\_\* env vars renamed to BOB\_\* throughout source (Note: rename documented but not yet executed in source)
 - README, CONTRIBUTING.md, SECURITY.md updated for fork attribution chain
 - VS Code extension, Desktop app, Zed extension rebranded
 
@@ -80,7 +80,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Dockerfile: added non-root USER (bob), pinned Alpine 3.21, added .dockerignore
 - CI workflow (typecheck + build + test + lint)
-- Binary output renamed to hiai-bob-_ (was opencode-_/mimocode-\*)
+- Binary output renamed to hiai-bob-\_ (was opencode-\_/mimocode-\*)
 - Release/publish scripts updated for @hiai-bob/\* namespace
 
 **Package Namespace:**

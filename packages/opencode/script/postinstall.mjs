@@ -49,8 +49,8 @@ function detectPlatformAndArch() {
 
 function findBinary() {
   const { platform, arch } = detectPlatformAndArch()
-  const packageName = `opencode-${platform}-${arch}`
-  const binaryName = platform === "windows" ? "opencode.exe" : "opencode"
+  const packageName = `hiai-bob-${platform}-${arch}`
+  const binaryName = platform === "windows" ? "hiai-bob.exe" : "hiai-bob"
 
   try {
     // Use require.resolve to find the package

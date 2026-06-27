@@ -5,7 +5,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    command: bun --cwd packages/opencode src/index.ts serve --port 50900 --hostname 0.0.0.0 --cors http://localhost:50902
+    command: bun --cwd packages/opencode src/index.ts serve --port 50900 --hostname 0.0.0.0 --cors http://localhost:50901
     ports:
       - "50900:50900"
     environment:
@@ -19,9 +19,9 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    command: bun --cwd packages/app dev --host 0.0.0.0 --port 50902
+    command: bun --cwd packages/app dev --host 0.0.0.0 --port 50901
     ports:
-      - "50902:50902"
+      - "50901:50901"
     depends_on:
       - backend
 

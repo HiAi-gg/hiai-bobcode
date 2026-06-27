@@ -2,7 +2,7 @@
 
 This document explains how the Bob monorepo is assembled, where each layer lives, and which files to change when you want to modify a given concern.
 
-`hiai-bobcode` is an autonomous AI coding agent monorepo, forked from [`XiaomiMiMo/MiMo-Code`](https://github.com/XiaomiMiMo/MiMo-Code) (which itself tracks `opencode-ai/MiMo-Code`). The fork adds a first-party bundled plugin, **`BobPlugin`**, that ships the 10-agent orchestration model, the closure protocol, the skill loader, the hook system, the LSP and tool bridges, and the on-demand `grep_app` / `sequential-thinking` MCP wiring.
+`hiai-bobcode` is an autonomous AI coding agent monorepo, forked from [`XiaomiMiMo/MiMo-Code`](https://github.com/XiaomiMiMo/MiMo-Code) (which itself tracks `opencode-ai/opencode`). The fork adds a first-party bundled plugin, **`BobPlugin`**, that ships the 10-agent orchestration model, the closure protocol, the skill loader, the hook system, the LSP and tool bridges, and the on-demand `grep_app` / `sequential-thinking` MCP wiring.
 
 > **Companion docs**
 >
