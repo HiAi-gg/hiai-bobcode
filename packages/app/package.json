@@ -1,6 +1,6 @@
 {
   "name": "@mimo-ai/app",
-  "version": "0.0.0-master-202606272015",
+  "version": "0.0.1",
   "description": "",
   "type": "module",
   "exports": {

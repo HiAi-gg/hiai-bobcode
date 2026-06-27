@@ -29,7 +29,7 @@
     },
     "packages/app": {
       "name": "@mimo-ai/app",
-      "version": "0.0.0-master-202606272015",
+      "version": "0.0.1",
       "dependencies": {
         "@kobalte/core": "catalog:",
         "@mimo-ai/sdk": "workspace:*",
@@ -83,7 +83,7 @@
     },
     "packages/desktop": {
       "name": "@mimo-ai/desktop",
-      "version": "0.0.0-master-202606272015",
+      "version": "0.0.1",
       "dependencies": {
         "drizzle-orm": "catalog:",
         "effect": "catalog:",
@@ -127,7 +127,7 @@
     },
     "packages/opencode": {
       "name": "@hiai-gg/hiai-bobcode",
-      "version": "0.0.0-master-202606272015",
+      "version": "0.0.1",
       "bin": {
         "bob": "./bin/bob",
       },
@@ -280,7 +280,7 @@
     },
     "packages/plugin": {
       "name": "@mimo-ai/plugin",
-      "version": "0.0.0-master-202606272015",
+      "version": "0.0.1",
       "dependencies": {
         "@mimo-ai/sdk": "workspace:*",
         "effect": "catalog:",
@@ -305,7 +305,7 @@
     },
     "packages/script": {
       "name": "@mimo-ai/script",
-      "version": "0.0.0-master-202606272015",
+      "version": "0.0.1",
       "dependencies": {
         "semver": "^7.6.3",
       },
@@ -316,7 +316,7 @@
     },
     "packages/sdk/js": {
       "name": "@mimo-ai/sdk",
-      "version": "0.0.0-master-202606272015",
+      "version": "0.0.1",
       "dependencies": {
         "cross-spawn": "catalog:",
       },
@@ -331,7 +331,7 @@
     },
     "packages/shared": {
       "name": "@mimo-ai/shared",
-      "version": "0.0.0-master-202606272015",
+      "version": "0.0.1",
       "bin": {
         "opencode": "./bin/opencode",
       },
@@ -355,7 +355,7 @@
     },
     "packages/slack": {
       "name": "@mimo-ai/slack",
-      "version": "0.0.0-master-202606272015",
+      "version": "0.0.1",
       "dependencies": {
         "@mimo-ai/sdk": "workspace:*",
         "@slack/bolt": "^3.17.1",
@@ -368,7 +368,7 @@
     },
     "packages/storybook": {
       "name": "@mimo-ai/storybook",
-      "version": "0.0.0-master-202606272015",
+      "version": "0.0.1",
       "devDependencies": {
         "@mimo-ai/ui": "workspace:*",
         "@solidjs/meta": "catalog:",
@@ -391,7 +391,7 @@
     },
     "packages/ui": {
       "name": "@mimo-ai/ui",
-      "version": "0.0.0-master-202606272015",
+      "version": "0.0.1",
       "dependencies": {
         "@kobalte/core": "catalog:",
         "@mimo-ai/sdk": "workspace:*",
