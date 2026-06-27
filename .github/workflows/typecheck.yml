@@ -134,8 +134,8 @@ jobs:
       - name: Build and publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-          OPENCODE_VERSION: ${{ github.ref_name }}
+          CLEAN_VERSION: ${{ github.ref_name }}
         run: |
           TAG_VERSION="${{ github.ref_name }}"
           CLEAN_VERSION="${TAG_VERSION#v}"
-          OPENCODE_VERSION="$CLEAN_VERSION" ./script/publish.ts
+          CLEAN_VERSION="$CLEAN_VERSION" ./script/publish.ts
