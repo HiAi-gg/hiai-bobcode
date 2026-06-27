@@ -18,7 +18,7 @@ async function publish(dir: string, name: string, version: string) {
     return
   }
   await $`bun pm pack`.cwd(dir)
-  await $`npm publish *.tgz --access public --tag ${Script.channel}`.cwd(dir)
+  await $`npm publish *.tgz --access public --tag ${Script.channel} --provenance`.cwd(dir)
 }
 
 const binaries: Record<string, string> = {}
