@@ -8,6 +8,7 @@ COPY packages/app/package.json ./packages/app/
 COPY packages/opencode/package.json ./packages/opencode/
 COPY packages/shared/package.json ./packages/shared/
 COPY packages/sdk/js/package.json ./packages/sdk/js/
+COPY patches ./patches/
 # Strip workspaces that don't exist in the Docker build context
 RUN bun -e "const fs=require('fs');const p=JSON.parse(fs.readFileSync('package.json','utf8'));p.workspaces.packages=p.workspaces.packages.filter(w=>w==='packages/*'||w==='packages/sdk/js');fs.writeFileSync('package.json',JSON.stringify(p,null,2))"
 RUN bun install

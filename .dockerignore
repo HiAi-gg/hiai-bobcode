@@ -18,6 +18,9 @@ dist
 .ts-dist
 *.tsbuildinfo
 
+# Re-include patches (bun install applies these via package.json patches field)
+!patches
+
 # Dev/IDE
 .dev-home
 .vscode
