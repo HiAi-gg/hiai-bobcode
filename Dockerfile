@@ -20,7 +20,6 @@ RUN --mount=type=cache,target=/root/.bun/install/cache bun install --ignore-scri
 # --- Build ---
 FROM base AS build
 COPY --from=deps /app/node_modules ./node_modules
-COPY --from=deps /app/packages/opencode/node_modules packages/opencode/node_modules/
 COPY packages/opencode/ packages/opencode/
 COPY packages/plugin/   packages/plugin/
 COPY packages/script/   packages/script/
@@ -29,6 +28,12 @@ COPY packages/ui/       packages/ui/
 COPY packages/shared/   packages/shared/
 COPY package.json bun.lock ./
 COPY patches ./patches/
+COPY --from=deps /app/packages/opencode/node_modules packages/opencode/node_modules/
+COPY --from=deps /app/packages/plugin/node_modules packages/plugin/node_modules/
+COPY --from=deps /app/packages/script/node_modules packages/script/node_modules/
+COPY --from=deps /app/packages/sdk/js/node_modules packages/sdk/js/node_modules/
+COPY --from=deps /app/packages/ui/node_modules packages/ui/node_modules/
+COPY --from=deps /app/packages/shared/node_modules packages/shared/node_modules/
 ENV OPENCODE_CHANNEL=latest
 ENV NODE_ENV=production
 ENV MODELS_DEV_API_JSON=/app/packages/opencode/models-cache.json
