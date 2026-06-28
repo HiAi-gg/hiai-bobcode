@@ -20,6 +20,7 @@ RUN --mount=type=cache,target=/root/.bun/install/cache bun install --ignore-scri
 # --- Build ---
 FROM base AS build
 COPY --from=deps /app/node_modules ./node_modules
+COPY --from=deps /app/packages/opencode/node_modules packages/opencode/node_modules/
 COPY packages/opencode/ packages/opencode/
 COPY packages/plugin/   packages/plugin/
 COPY packages/script/   packages/script/
