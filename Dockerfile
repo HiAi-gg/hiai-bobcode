@@ -32,6 +32,7 @@ ENV OPENCODE_CHANNEL=latest
 ENV NODE_ENV=production
 ENV MODELS_DEV_API_JSON=/app/packages/opencode/models-cache.json
 RUN sed -i '/preload = /d' packages/opencode/bunfig.toml
+RUN cd packages/opencode && bun add @opentui/solid
 RUN cd packages/opencode && bun run script/build.ts --single --skip-embed-web-ui --skip-install
 
 # --- Runtime ---
