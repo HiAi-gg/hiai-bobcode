@@ -21,9 +21,11 @@ const scriptPath = realpathSync(__filename)
 const scriptDir = dirname(scriptPath)
 
 //
-const cached = join(scriptDir, ".mimocode")
-if (existsSync(cached)) {
-  run(cached)
+const cached = join(scriptDir, ".bob-cache")
+const legacyCached = join(scriptDir, ".mimocode")
+const resolvedCache = existsSync(cached) ? cached : existsSync(legacyCached) ? legacyCached : null
+if (resolvedCache) {
+  run(resolvedCache)
 }
 
 const platformMap = {
@@ -185,6 +187,7 @@ const sourceEntry = join(packageRoot, "src", "index.ts")
 if (existsSync(sourceEntry)) {
   const result = Bun.spawnSync(["bun", "run", "--conditions=browser", sourceEntry, ...process.argv.slice(2)], {
     stdio: ["inherit", "inherit", "inherit"],
+    cwd: packageRoot,
   })
   const code = typeof result.exitCode === "number" ? result.exitCode : 0
   process.exit(code)
