@@ -1,11 +1,11 @@
-# hiai-bob — AGENTS.md
+# hiai-bobcode — AGENTS.md
 
-> **Role:** orchestration agent (outside the plugin scheme) — orchestrator/runner based on a fork of XiaomiMiMo/MiMo-Code
-> with first-party `BobPlugin` logic (see `.bob/docs/mimo-fork-integration.md` — archived, maintainer-only).
+> **Role:** standalone orchestrator/runner — originally based on MiMo-Code (opencode-ai fork), now fully independent with bundled BobPlugin logic. Formerly `hiai-bob`.
 > **Status:** active
 > **Ecosystem entry point:** Ecosystem documentation lives in the workspace root (`/home/hiai/Documents/` and `/home/hiai/AGENTS.md`).
 > **Conventions:** Workspace-level conventions are defined in the root `AGENTS.md` and project-level `AGENTS.md` files.
 > **Note:** This project lives independently (outside the plugin scheme). Rules §1–§7 are followed where possible, but it is not required to be plugin-compatible.
+> **Independence:** No runtime dependencies on MiMo-Code, opencode-ai, or hiai-opencode. Self-contained product.
 
 ## Cheat-Sheet (conventions summary)
 

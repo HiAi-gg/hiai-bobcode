@@ -15,7 +15,7 @@
 
 ## What's the deal?
 
-`hiai-bobcode` is a fork of [MiMoCode](https://github.com/XiaomiMiMo/MiMo-Code), which is itself a fork of [OpenCode](https://github.com/opencode-ai/opencode). It's forks all the way down. Want to fork _this_ fork? Go ahead — that's literally the point.
+`hiai-bobcode` started as a fork of [MiMoCode](https://github.com/XiaomiMiMo/MiMo-Code) (which is itself a fork of [OpenCode](https://github.com/opencode-ai/opencode)), but is now a **fully independent project**. It absorbed the agent orchestration logic from the former `hiai-opencode` plugin and ships as a standalone product with zero runtime dependencies on its predecessors. Previously named `hiai-bob`, renamed to `hiai-bobcode`.
 
 We took MiMoCode (which already handles reasoning, compaction, fallback, and context management natively) and bundled a first-party plugin called **BobPlugin** on top. BobPlugin adds three things MiMoCode doesn't have:
 
