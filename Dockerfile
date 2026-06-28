@@ -14,7 +14,7 @@ COPY patches ./patches/
 RUN bun -e "const{readFileSync,writeFileSync}=require('fs');const p=JSON.parse(readFileSync('package.json','utf8'));p.workspaces.packages=['packages/opencode','packages/plugin','packages/script','packages/ui','packages/shared','packages/sdk/js'];writeFileSync('package.json',JSON.stringify(p,null,2))"
 ENV BUN_INSTALL_CONCURRENCY=1
 RUN apk add --no-cache python3 make g++
-RUN npm install -g node-gyp
+RUN bun add -g node-gyp
 RUN --mount=type=cache,target=/root/.bun/install/cache bun install
 
 # --- Build ---
