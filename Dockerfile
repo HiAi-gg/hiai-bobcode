@@ -15,7 +15,7 @@ RUN bun -e "const{readFileSync,writeFileSync}=require('fs');const p=JSON.parse(r
 ENV BUN_INSTALL_CONCURRENCY=1
 RUN apk add --no-cache python3 make g++
 RUN bun add -g node-gyp
-RUN --mount=type=cache,target=/root/.bun/install/cache bun install
+RUN --mount=type=cache,target=/root/.bun/install/cache bun install --ignore-scripts
 
 # --- Build ---
 FROM base AS build
