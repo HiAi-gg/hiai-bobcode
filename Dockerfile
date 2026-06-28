@@ -11,11 +11,12 @@ COPY packages/sdk/js/package.json    packages/sdk/js/
 COPY packages/ui/package.json        packages/ui/
 COPY packages/shared/package.json    packages/shared/
 COPY patches ./patches/
+COPY packages/opencode/script/fix-node-pty.ts packages/opencode/script/fix-node-pty.ts
 RUN bun -e "const{readFileSync,writeFileSync}=require('fs');const p=JSON.parse(readFileSync('package.json','utf8'));p.workspaces.packages=['packages/opencode','packages/plugin','packages/script','packages/ui','packages/shared','packages/sdk/js'];writeFileSync('package.json',JSON.stringify(p,null,2))"
 ENV BUN_INSTALL_CONCURRENCY=1
 RUN apk add --no-cache python3 make g++
 RUN bun add -g node-gyp
-RUN --mount=type=cache,target=/root/.bun/install/cache bun install --ignore-scripts
+RUN --mount=type=cache,target=/root/.bun/install/cache bun install --frozen-lockfile
 
 # --- Build ---
 FROM base AS build
