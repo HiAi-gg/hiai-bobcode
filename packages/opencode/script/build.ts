@@ -197,7 +197,7 @@ for (const item of targets) {
   await Bun.build({
     conditions: ["browser"],
     tsconfig: "./tsconfig.json",
-    plugins: skipEmbedWebUi ? [] : [(await import("@opentui/solid/bun-plugin")).createSolidTransformPlugin()],
+    plugins: [(await import("@opentui/solid/bun-plugin")).createSolidTransformPlugin()],
     external: ["node-gyp"],
     format: "esm",
     minify: true,
