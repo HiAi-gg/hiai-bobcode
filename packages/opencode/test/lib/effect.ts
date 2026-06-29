@@ -19,9 +19,18 @@ const run = <A, E, R, E2>(value: Body<A, E, R | Scope.Scope>, layer: Layer.Layer
     return yield* exit
   }).pipe(Effect.runPromise)
 
-const make = <R, E>(testLayer: Layer.Layer<R, E>, liveLayer: Layer.Layer<R, E>) => {
-  const effect = <A, E2>(name: string, value: Body<A, E2, R | Scope.Scope>, opts?: number | TestOptions) =>
-    test(name, () => run(value, testLayer), opts)
+interface TestFn<R> {
+  <A, E2>(name: string, value: Body<A, E2, R | Scope.Scope>, opts?: number | TestOptions): void
+  only<A, E2>(name: string, value: Body<A, E2, R | Scope.Scope>, opts?: number | TestOptions): void
+  skip<A, E2>(name: string, value: Body<A, E2, R | Scope.Scope>, opts?: number | TestOptions): void
+}
+
+const make = <R, E>(
+  testLayer: Layer.Layer<R, E>,
+  liveLayer: Layer.Layer<R, E>,
+): { effect: TestFn<R>; live: TestFn<R> } => {
+  const effect = (<A, E2>(name: string, value: Body<A, E2, R | Scope.Scope>, opts?: number | TestOptions) =>
+    test(name, () => run(value, testLayer), opts)) as TestFn<R>
 
   effect.only = <A, E2>(name: string, value: Body<A, E2, R | Scope.Scope>, opts?: number | TestOptions) =>
     test.only(name, () => run(value, testLayer), opts)
@@ -29,8 +38,8 @@ const make = <R, E>(testLayer: Layer.Layer<R, E>, liveLayer: Layer.Layer<R, E>) 
   effect.skip = <A, E2>(name: string, value: Body<A, E2, R | Scope.Scope>, opts?: number | TestOptions) =>
     test.skip(name, () => run(value, testLayer), opts)
 
-  const live = <A, E2>(name: string, value: Body<A, E2, R | Scope.Scope>, opts?: number | TestOptions) =>
-    test(name, () => run(value, liveLayer), opts)
+  const live = (<A, E2>(name: string, value: Body<A, E2, R | Scope.Scope>, opts?: number | TestOptions) =>
+    test(name, () => run(value, liveLayer), opts)) as TestFn<R>
 
   live.only = <A, E2>(name: string, value: Body<A, E2, R | Scope.Scope>, opts?: number | TestOptions) =>
     test.only(name, () => run(value, liveLayer), opts)

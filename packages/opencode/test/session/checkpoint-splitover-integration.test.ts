@@ -227,9 +227,7 @@ describe("CheckpointSplitoverPlugin spawn-loop integration", () => {
 
 describe("CheckpointContext producer (tryStartCheckpointWriter)", () => {
   test("populates context before spawn and cleans up via Effect.ensuring after settle", async () => {
-    const server = startScriptedLLMServer([
-      { lines: textStopResponse("turn 0 output (writer ran)") },
-    ])
+    const server = startScriptedLLMServer([{ lines: textStopResponse("turn 0 output (writer ran)") }])
 
     let sessionIDForCleanup: SessionID | undefined
     try {
@@ -318,6 +316,14 @@ describe("CheckpointContext producer (tryStartCheckpointWriter)", () => {
                 )
               })
 
+              // Force Actor.defaultLayer to initialize so spawnRef.current is
+              // populated. tryStartCheckpointWriter reads spawnRef.current at
+              // call time (see src/actor/spawn-ref.ts); if no caller in the
+              // current effect graph yields Actor.Service, the layer stays
+              // uninitialised and the ref is undefined → "skipped" instead
+              // of "started". The ref is set inside Actor.layer's init via
+              // `spawnRef.current = impl` (src/actor/spawn.ts:711).
+              const _actor = yield* Actor.Service
               const svc = yield* SessionCheckpoint.Service
               const status = yield* svc.tryStartCheckpointWriter({
                 sessionID: sess.id,
@@ -376,9 +382,7 @@ describe("parentSessionID end-to-end (Axis A wiring)", () => {
     // (before MR review M1) would surface ≥1 reentry event with a
     // "checkpoint file did not exist" reason because the plugin read from
     // the child's path.
-    const server = startScriptedLLMServer([
-      { lines: textStopResponse("turn 0: writer would normally write here") },
-    ])
+    const server = startScriptedLLMServer([{ lines: textStopResponse("turn 0: writer would normally write here") }])
 
     const CLEAN = `Topic: clean parent checkpoint
 
@@ -482,6 +486,14 @@ describe("parentSessionID end-to-end (Axis A wiring)", () => {
                 Effect.forkScoped,
               )
 
+              // Force Actor.defaultLayer to initialize so spawnRef.current is
+              // populated. tryStartCheckpointWriter reads spawnRef.current at
+              // call time (see src/actor/spawn-ref.ts); if no caller in the
+              // current effect graph yields Actor.Service, the layer stays
+              // uninitialised and the ref is undefined → "skipped" instead
+              // of "started". The ref is set inside Actor.layer's init via
+              // `spawnRef.current = impl` (src/actor/spawn.ts:711).
+              const _actor = yield* Actor.Service
               // Trigger checkpoint writer the production way — this creates
               // a child session and spawns the writer in it. The wiring under
               // test: actor.spawn must receive parentSessionID = parent.id,

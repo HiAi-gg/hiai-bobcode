@@ -49,10 +49,11 @@ const hangingActor = Layer.effect(
       cancel: () => Effect.void,
       getForkContext: () => Effect.succeed(undefined),
     })
+    const previousSpawnRef = spawnRef.current
     spawnRef.current = impl
     yield* Effect.addFinalizer(() =>
       Effect.sync(() => {
-        if (spawnRef.current === impl) spawnRef.current = undefined
+        if (spawnRef.current === impl) spawnRef.current = previousSpawnRef
       }),
     )
     return impl

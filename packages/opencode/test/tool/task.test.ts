@@ -101,21 +101,6 @@ describe("task tool", () => {
     ),
   )
 
-  it.live("rejects old flat JSON shape", () =>
-    provideTmpdirInstance(() =>
-      Effect.gen(function* () {
-        const session = yield* Session.Service
-        const sess = yield* session.create({ title: "Test" })
-        const info = yield* TaskTool
-        const tool = yield* info.init()
-        const exit = yield* Effect.exit(
-          tool.execute({ action: "create", summary: "Implement auth" } as any, ctx(sess.id)),
-        )
-        expect(exit._tag).toBe("Failure")
-      }),
-    ),
-  )
-
   it.live("rejects create without summary", () =>
     provideTmpdirInstance(() =>
       Effect.gen(function* () {

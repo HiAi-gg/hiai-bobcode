@@ -1,7 +1,8 @@
-import { afterEach, describe, expect } from "bun:test"
+import { afterEach, beforeEach, describe, expect } from "bun:test"
 import { Effect, Layer } from "effect"
 import * as fs from "fs/promises"
 import path from "path"
+import { Global } from "../../src/global"
 import { Bus } from "../../src/bus"
 import { Config } from "../../src/config"
 import { Memory } from "../../src/memory"
@@ -14,8 +15,48 @@ import * as CrossSpawnSpawner from "../../src/effect/cross-spawn-spawner"
 import { provideTmpdirInstance } from "../fixture/fixture"
 import { testEffect } from "../lib/effect"
 
+// Clear MEMORY.md pollution from sibling tests in the same process. Without
+// this, an earlier test (e.g. checkpoint-render-verify) that writes
+// `<XDG_DATA_HOME>/memory/projects/global/MEMORY.md` lingers across tests
+// because provideTmpdirInstance uses projectID="global" whenever the tmpdir
+// has no .git. renderRebuildContext then reads the polluted file instead of
+// seeing the empty-clean state this file's tests assume.
+//
+// We aggressively clear every per-project memory file plus the global one:
+//   * `<root>/memory/projects/<id>/MEMORY.md` and the legacy `memory.md` for
+//     every project ID we know about (we don't enumerate the directory
+//     because some test files create `proj_test_*` IDs and add their own).
+//     Reading the project IDs from a known list is also racy.
+//   * `<root>/memory/projects/<id>/` directory itself for `global` and any
+//     `proj_test_*` siblings — recursively removes the MEMORY.md, memory.md,
+//     and any other artifact the previous test left behind.
+//   * `<root>/memory/global/MEMORY.md` (user-level cross-project file).
+// We deliberately do NOT delete the whole `<root>/memory` directory because
+// the FTS DB connection (MIMOCODE_DB=:memory:) is process-scoped, but the
+// per-test Instance DB lives in the tmpdir. There is no shared on-disk DB
+// file under <root>/memory to worry about, so per-file/dir removal is
+// sufficient and avoids the FTS reopen race a directory-wide rm would cause.
+async function clearMemoryPollution() {
+  const root = path.join(Global.Path.data, "memory")
+  // Drop every per-project memory artifact under <root>/projects/*. We do
+  // not want to enumerate the directory because some sibling tests
+  // (checkpoint-splitover, checkpoint-render-verify, etc.) write
+  // `MEMORY.md` for transient `proj_test_*` IDs, and missing even one
+  // re-leaks the polluted file into the rebuild-v3 "no memory" tests.
+  const projectsDir = path.join(root, "projects")
+  await fs.rm(projectsDir, { recursive: true, force: true }).catch(() => {})
+  await fs.mkdir(projectsDir, { recursive: true }).catch(() => {})
+  // Global user-level memory. Recreating the dir so a subsequent write
+  // doesn't need its own mkdir.
+  const globalDir = path.join(root, "global")
+  await fs.rm(globalDir, { recursive: true, force: true }).catch(() => {})
+  await fs.mkdir(globalDir, { recursive: true }).catch(() => {})
+}
+
+beforeEach(clearMemoryPollution)
 afterEach(async () => {
   await Instance.disposeAll()
+  await clearMemoryPollution()
 })
 
 const it = testEffect(
@@ -73,9 +114,7 @@ describe("renderRebuildContext v3", () => {
         const root = yield* memory.root()
         const projDir = path.join(root, "projects", "global")
         yield* Effect.promise(() => fs.mkdir(projDir, { recursive: true }))
-        yield* Effect.promise(() =>
-          fs.writeFile(path.join(projDir, "memory.md"), "用 Bun 不用 npm"),
-        )
+        yield* Effect.promise(() => fs.writeFile(path.join(projDir, "memory.md"), "用 Bun 不用 npm"))
 
         const out = yield* cp.renderRebuildContext(sess.id)
         expect(out).toContain("## Project memory")
@@ -96,9 +135,7 @@ describe("renderRebuildContext v3", () => {
         const root = yield* memory.root()
         const globalDir = path.join(root, "global")
         yield* Effect.promise(() => fs.mkdir(globalDir, { recursive: true }))
-        yield* Effect.promise(() =>
-          fs.writeFile(path.join(globalDir, "MEMORY.md"), "prefer terse responses"),
-        )
+        yield* Effect.promise(() => fs.writeFile(path.join(globalDir, "MEMORY.md"), "prefer terse responses"))
 
         const out = yield* cp.renderRebuildContext(sess.id)
         expect(out).toContain("## Global memory")
@@ -117,9 +154,7 @@ describe("renderRebuildContext v3", () => {
         const root = yield* memory.root()
         const globalDir = path.join(root, "global")
         yield* Effect.promise(() => fs.mkdir(globalDir, { recursive: true }))
-        yield* Effect.promise(() =>
-          fs.writeFile(path.join(globalDir, "MEMORY.md"), "global only content"),
-        )
+        yield* Effect.promise(() => fs.writeFile(path.join(globalDir, "MEMORY.md"), "global only content"))
 
         // No tasks, no checkpoint.md, no project memory.md — only global.
         const out = yield* cp.renderRebuildContext(sess.id)
@@ -143,9 +178,7 @@ describe("renderRebuildContext v3", () => {
         const root = yield* memory.root()
         const taskDir = path.join(root, "sessions", sess.id, "tasks", t1.id)
         yield* Effect.promise(() => fs.mkdir(taskDir, { recursive: true }))
-        yield* Effect.promise(() =>
-          fs.writeFile(path.join(taskDir, "progress.md"), "Step 1 done. Working on step 2."),
-        )
+        yield* Effect.promise(() => fs.writeFile(path.join(taskDir, "progress.md"), "Step 1 done. Working on step 2."))
 
         const out = yield* cp.renderRebuildContext(sess.id)
         expect(out).toContain(t1.id)
@@ -181,7 +214,9 @@ describe("renderRebuildContext v3", () => {
         const sess = yield* session.create({ title: "Test" })
         yield* reg.create({ session_id: sess.id, summary: "Some task" })
 
-        const out = yield* cp.renderRebuildContext(sess.id, { lastMessageInfo: { role: "assistant", finish: "tool-calls" } })
+        const out = yield* cp.renderRebuildContext(sess.id, {
+          lastMessageInfo: { role: "assistant", finish: "tool-calls" },
+        })
         expect(out).toContain("mid-loop in an autonomous task")
       }),
     ),

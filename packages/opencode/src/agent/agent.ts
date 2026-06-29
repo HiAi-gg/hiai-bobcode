@@ -385,7 +385,6 @@ export const layer = Layer.effect(
           if (value.model) {
             if (value.model.includes("/")) {
               item.model = Provider.parseModel(value.model)
-              item.modelRef = value.model
             } else item.modelRef = value.model
           }
           item.variant = value.variant ?? item.variant

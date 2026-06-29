@@ -292,7 +292,8 @@ describe("Tool whitelist (Task 14)", () => {
         })
 
         // Locate the bash tool part in the persisted message stream.
-        const msgs = yield* MessageV2.filterCompactedEffect(session.id)
+        // Important: pass agentID so we read the actor's slice, not "main".
+        const msgs = yield* MessageV2.filterCompactedEffect(session.id, { agentID: actorID })
         const tool = msgs
           .flatMap((msg) => msg.parts)
           .find(
@@ -350,10 +351,15 @@ describe("Tool whitelist (Task 14)", () => {
           parts: [{ type: "text", text: "no tool call needed" }],
         })
 
-        const msgs = yield* MessageV2.filterCompactedEffect(session.id)
+        const msgs = yield* MessageV2.filterCompactedEffect(session.id, { agentID: actorID })
         const rejected = msgs
           .flatMap((msg) => msg.parts)
-          .find((part) => part.type === "tool" && part.state.status === "completed" && (part.state.metadata?.rejected as unknown) === true)
+          .find(
+            (part) =>
+              part.type === "tool" &&
+              part.state.status === "completed" &&
+              (part.state.metadata?.rejected as unknown) === true,
+          )
         expect(rejected).toBeUndefined()
       }),
       { git: true, config: providerCfg },

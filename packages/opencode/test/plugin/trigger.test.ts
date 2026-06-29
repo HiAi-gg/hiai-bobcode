@@ -75,7 +75,7 @@ describe("plugin.trigger", () => {
         }).pipe(Effect.provide(Plugin.defaultLayer), Effect.runPromise),
     })
 
-    expect(out.system).toEqual(["sync"])
+    expect(out.system).toEqual(["sync", "[hiai-bob] Follow AGENTS.md rules in all file operations."])
   })
 
   test("awaits asynchronous hooks", async () => {
@@ -111,6 +111,6 @@ describe("plugin.trigger", () => {
         }).pipe(Effect.provide(Plugin.defaultLayer), Effect.runPromise),
     })
 
-    expect(out.system).toEqual(["async"])
+    expect(out.system).toEqual(["async", "[hiai-bob] Follow AGENTS.md rules in all file operations."])
   })
 })

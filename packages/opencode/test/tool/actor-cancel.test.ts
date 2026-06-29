@@ -1,4 +1,4 @@
-import { afterEach, beforeAll, describe, expect } from "bun:test"
+import { afterAll, afterEach, beforeAll, describe, expect } from "bun:test"
 import { Effect, Layer } from "effect"
 import { Agent } from "../../src/agent/agent"
 import { Bus } from "../../src/bus"
@@ -36,7 +36,11 @@ const it = testEffect(
     Truncate.defaultLayer,
     ToolRegistry.defaultLayer,
     ActorRegistry.defaultLayer,
-    ActorWaiter.layer.pipe(Layer.provide(Bus.layer), Layer.provide(ActorRegistry.defaultLayer), Layer.provide(Session.defaultLayer)),
+    ActorWaiter.layer.pipe(
+      Layer.provide(Bus.layer),
+      Layer.provide(ActorRegistry.defaultLayer),
+      Layer.provide(Session.defaultLayer),
+    ),
     Team.defaultLayer,
     SessionCheckpoint.defaultLayer,
     TaskRegistry.defaultLayer,
@@ -59,18 +63,25 @@ function parseOutput(output: string): CancelResponse {
 // test (with fiber interruption) lives in test/actor/spawn.test.ts.
 const cancelled: Array<{ sessionID: SessionID; actorID: string; mode: "graceful" | "forced" }> = []
 let installedRegistry: ActorRegistry.Interface | undefined
+let previousSpawnRef: typeof spawnRef.current
 beforeAll(() => {
+  previousSpawnRef = spawnRef.current
   spawnRef.current = {
     spawn: () => Effect.die("spawn not used in cancel tests"),
     cancel: (sessionID, actorID, mode) =>
       Effect.gen(function* () {
         cancelled.push({ sessionID, actorID, mode })
         if (installedRegistry) {
-          yield* installedRegistry.updateStatus(sessionID, actorID, { status: "idle", lastOutcome: "cancelled" }).pipe(Effect.ignore)
+          yield* installedRegistry
+            .updateStatus(sessionID, actorID, { status: "idle", lastOutcome: "cancelled" })
+            .pipe(Effect.ignore)
         }
       }),
     getForkContext: () => Effect.succeed(undefined),
   } satisfies ActorInterface
+})
+afterAll(() => {
+  spawnRef.current = previousSpawnRef
 })
 
 function ctxFor(sessionID: SessionID) {
@@ -202,5 +213,4 @@ describe("actor tool — cancel action", () => {
       }),
     ),
   )
-
 })

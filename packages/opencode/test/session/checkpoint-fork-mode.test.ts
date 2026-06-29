@@ -35,7 +35,9 @@ const ref = {
 // settle: when true, actor.spawn settles outcome with success immediately so the
 // settle watcher fires deterministically (mirrors checkpoint-child-session.test.ts).
 const spawnLog: { count: number; lastInput?: { sessionID: string; mode: string; forkContext?: unknown } } = { count: 0 }
-const captureLog: { calls: Array<{ sessionID: string; agentName: string; msgsLen: number; firstMsgRole?: string; firstMsgID?: string }> } = { calls: [] }
+const captureLog: {
+  calls: Array<{ sessionID: string; agentName: string; msgsLen: number; firstMsgRole?: string; firstMsgID?: string }>
+} = { calls: [] }
 
 // Actor stub: records spawn input (incl. forkContext) and settles outcome with
 // success immediately so the writer doesn't hang the test.
@@ -60,10 +62,11 @@ const recordingActor = Layer.effect(
       cancel: () => Effect.void,
       getForkContext: () => Effect.succeed(undefined),
     })
+    const previousSpawnRef = spawnRef.current
     spawnRef.current = impl
     yield* Effect.addFinalizer(() =>
       Effect.sync(() => {
-        if (spawnRef.current === impl) spawnRef.current = undefined
+        if (spawnRef.current === impl) spawnRef.current = previousSpawnRef
       }),
     )
     return impl
@@ -138,7 +141,7 @@ const reset = Effect.sync(() => {
 // OpenCode's storage doesn't normally produce tool_result parts (tools are
 // unified on assistants), so we use `as never` to bypass the discriminated
 // union — the helper only inspects part.type as a string.
-const PAD = "x ".repeat(25_000)  // ~50K chars → ~12.5K tokens
+const PAD = "x ".repeat(25_000) // ~50K chars → ~12.5K tokens
 const seedFourMessages = Effect.fn("seedFourMessages")(function* () {
   const ssn = yield* SessionNs.Service
   const info = yield* ssn.create({})
@@ -273,9 +276,7 @@ describe("checkpoint writer forkContext shape per mode", () => {
           expect(call.firstMsgRole).toBe("user")
 
           // Fork context flows through to actor.spawn with the canned values.
-          const fc = spawnLog.lastInput?.forkContext as
-            | { system: string[]; watermarkMsgID: string }
-            | undefined
+          const fc = spawnLog.lastInput?.forkContext as { system: string[]; watermarkMsgID: string } | undefined
           expect(fc).toBeDefined()
           expect(fc?.system).toEqual(["sys-canned"])
           expect(fc?.watermarkMsgID).toBe(u2.id)
@@ -301,7 +302,8 @@ describe("checkpoint writer forkContext shape per mode", () => {
           // delta = msgs.slice(0, watermarkIdx + 1) = msgs.slice(0, 3) = [u1, a1, u2].
           yield* Effect.sync(() =>
             Database.use((d) =>
-              d.update(SessionTable)
+              d
+                .update(SessionTable)
                 .set({ last_checkpoint_message_id: a1.id })
                 .where(eq(SessionTable.id, info.id))
                 .run(),
@@ -487,9 +489,7 @@ describe("checkpoint writer forkContext shape per mode", () => {
           // Parent's last_checkpoint_message_id is null by default after session.create({}).
           // No setup needed; verify it's null first.
           const before = yield* Effect.sync(() =>
-            Database.use((d) =>
-              d.select().from(SessionTable).where(eq(SessionTable.id, info.id)).get(),
-            ),
+            Database.use((d) => d.select().from(SessionTable).where(eq(SessionTable.id, info.id)).get()),
           )
           expect(before?.last_checkpoint_message_id ?? null).toBeNull()
 
@@ -548,7 +548,8 @@ describe("checkpoint writer forkContext shape per mode", () => {
           // tool_result parts) to u1, producing a non-empty delta=[u1,a1,u2].
           yield* Effect.sync(() =>
             Database.use((d) =>
-              d.update(SessionTable)
+              d
+                .update(SessionTable)
                 .set({ last_checkpoint_message_id: a2.id })
                 .where(eq(SessionTable.id, info.id))
                 .run(),
