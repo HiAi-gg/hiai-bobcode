@@ -49,7 +49,6 @@ import { Format } from "../../src/format"
 import { provideTmpdirServer } from "../fixture/fixture"
 import { testEffect } from "../lib/effect"
 import { TestLLMServer } from "../lib/llm-server"
-import { ModelID, ProviderID } from "../../src/provider/schema"
 import { Inbox } from "../../src/inbox"
 
 afterEach(async () => {

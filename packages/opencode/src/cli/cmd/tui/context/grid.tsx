@@ -29,7 +29,7 @@ export const { use: useGrid, provider: GridProvider } = createSimpleContext({
             initialStore = normalizeGridState(parsed)
           }
         }
-      } catch (e) {
+      } catch {
         // ignore
       }
     }

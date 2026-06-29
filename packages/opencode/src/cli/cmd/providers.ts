@@ -16,7 +16,6 @@ import type { Hooks } from "@mimo-ai/plugin"
 import { Process } from "../../util"
 import { text } from "node:stream/consumers"
 import { Effect } from "effect"
-import * as readline from "readline"
 
 type PluginAuth = NonNullable<Hooks["auth"]>
 
@@ -235,37 +234,6 @@ async function mimoLogin() {
   )
   prompts.outro("Done")
   process.exit(1)
-}
-
-function raceCallbackAndStdin<T>(
-  browserPromise: Promise<T>,
-): Promise<{ source: "browser"; data: T } | { source: "paste"; input: string }> {
-  return new Promise((resolve) => {
-    const rl = readline.createInterface({ input: process.stdin, output: process.stdout })
-
-    let settled = false
-    const cleanup = () => {
-      if (settled) return
-      settled = true
-      rl.close()
-    }
-
-    browserPromise.then((data) => {
-      if (settled) return
-      cleanup()
-      process.stdout.write("\n")
-      resolve({ source: "browser", data })
-    })
-
-    rl.question("Paste code here if prompted > ", (answer) => {
-      if (settled) return
-      const trimmed = answer.trim()
-      if (trimmed.length > 0) {
-        cleanup()
-        resolve({ source: "paste", input: trimmed })
-      }
-    })
-  })
 }
 
 export const ProvidersCommand = cmd({

@@ -111,9 +111,6 @@ describe("compose spec-anchored review contract", () => {
   })
 
   describe("dispatch vocabulary uses mimocode's actor tool, not Claude Code's", () => {
-    const allContent = () =>
-      Object.values(bundle).flatMap((files) => Object.values(files))
-
     test("no bundle file uses Claude Code's 'Task tool' / 'general-purpose' phrasing", () => {
       const offenders = Object.entries(bundle).flatMap(([skill, files]) =>
         Object.entries(files)
