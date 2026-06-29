@@ -1084,7 +1084,12 @@ export const layer: Layer.Layer<
       )
       const globalText = globalResult?.text ?? ""
 
-      const actors = yield* actorRegistry.listActive()
+      // Scope actors to this session: `listActive` is a global query and would
+      // include background actors left running by other tests in the same
+      // in-memory DB process, breaking the empty-rebuild-context early-return
+      // (and any caller that relies on it for no-op behavior).
+      const sessionActors = yield* actorRegistry.listBySession(sessionID)
+      const actors = sessionActors.filter((a) => a.background && (a.status === "pending" || a.status === "running"))
 
       // Bail early if absolutely nothing to push: no tasks, no memory content, no live actors.
       if (

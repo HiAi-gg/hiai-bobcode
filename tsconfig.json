@@ -1,5 +1,35 @@
 {
   "$schema": "https://json.schemastore.org/tsconfig",
   "extends": "@tsconfig/bun/tsconfig.json",
-  "compilerOptions": {}
+  "compilerOptions": {
+    "lib": ["ESNext", "DOM", "DOM.Iterable"],
+    "types": [],
+    "noUncheckedIndexedAccess": false
+  },
+  "include": [
+    "script/**/*.ts",
+    "script/**/*.tsx",
+    "packages/**/*.ts",
+    "packages/**/*.tsx",
+    "sdks/**/*.ts",
+    "sdks/**/*.tsx",
+    "*.ts",
+    "*.tsx"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    ".build",
+    ".sst",
+    "**/node_modules",
+    "**/dist",
+    "**/.build",
+    "**/.sst",
+    "**/*.d.ts",
+    "**/sdk.gen.ts",
+    "packages/opencode/src/plugin/bob/skills/**",
+    "packages/opencode/src/plugin/bob/design-systems/**",
+    "packages/sdk/js/src/gen/**",
+    "packages/sdk/js/src/v2/gen/**"
+  ]
 }
