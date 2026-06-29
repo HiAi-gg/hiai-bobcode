@@ -1,7 +1,10 @@
-import { afterEach, describe, expect } from "bun:test"
+import { afterEach, beforeEach, describe, expect } from "bun:test"
 import { Effect, Layer } from "effect"
+import * as fs from "fs/promises"
+import path from "path"
 import { Bus } from "../../src/bus"
 import { Config } from "../../src/config"
+import { Global } from "../../src/global"
 import { Memory } from "../../src/memory"
 import { Session as SessionNs } from "../../src/session"
 import { SessionCheckpoint } from "../../src/session/checkpoint"
@@ -23,8 +26,29 @@ const ref = {
   modelID: ModelID.make("test-model"),
 }
 
+// Wipe the cross-session memory pollution that sibling tests leave behind in
+// `<XDG_DATA_HOME>/memory/` (resolveMimocodeHome sets `data` per-PID via
+// test/preload.ts, but files written there persist within the same `bun test`
+// process). Without this, renderRebuildContext's early-return check sees a
+// non-empty `memoryText` (project MEMORY.md) or `globalText` (user-level
+// MEMORY.md) and produces a real rebuild body — so `insertRebuildBoundary`
+// returns true instead of false, breaking the "empty rebuild context" test
+// below. Same reasoning and shape as `clearMemoryPollution` in
+// test/session/checkpoint-rebuild-v3.test.ts.
+async function clearMemoryPollution() {
+  const root = path.join(Global.Path.data, "memory")
+  const projectsDir = path.join(root, "projects")
+  await fs.rm(projectsDir, { recursive: true, force: true }).catch(() => {})
+  await fs.mkdir(projectsDir, { recursive: true }).catch(() => {})
+  const globalDir = path.join(root, "global")
+  await fs.rm(globalDir, { recursive: true, force: true }).catch(() => {})
+  await fs.mkdir(globalDir, { recursive: true }).catch(() => {})
+}
+
+beforeEach(clearMemoryPollution)
 afterEach(async () => {
   await Instance.disposeAll()
+  await clearMemoryPollution()
 })
 
 const it = testEffect(
