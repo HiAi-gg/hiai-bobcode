@@ -23,13 +23,6 @@ for (const file of pkgjsons) {
 }
 
 await $`bun install`
-await $`./packages/sdk/js/script/build.ts`
 
 console.log("\n=== cli ===\n")
 await $`bun ./packages/opencode/script/publish.ts`
-
-console.log("\n=== sdk ===\n")
-await $`bun ./packages/sdk/js/script/publish.ts`
-
-console.log("\n=== plugin ===\n")
-await $`bun ./packages/plugin/script/publish.ts`
