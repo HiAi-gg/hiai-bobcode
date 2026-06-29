@@ -27,6 +27,10 @@ await Bun.file(`./dist/package.json`).write(
       },
       os: ["linux"],
       cpu: ["x64"],
+      repository: {
+        type: "git",
+        url: "https://github.com/HiAi-gg/hiai-bobcode",
+      },
     },
     null,
     2,
