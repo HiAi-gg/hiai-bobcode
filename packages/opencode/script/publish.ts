@@ -33,7 +33,6 @@ await Bun.file(`./dist/package.json`).write(
   ),
 )
 
-const tarball = await $`bun pm pack`.cwd("./dist").text()
-const tgz = tarball.trim().split("\n").pop()!
+const tgz = (await $`bun pm pack --quiet`.cwd("./dist").text()).trim()
 
 await $`npm publish ${tgz} --access public --tag ${Script.channel} --provenance`.cwd("./dist")
