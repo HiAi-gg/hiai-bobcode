@@ -15,7 +15,9 @@
 
 ## What's the deal?
 
-`hiai-bobcode` started as a fork of [MiMoCode](https://github.com/XiaomiMiMo/MiMo-Code) (which is itself a fork of [OpenCode]([https://github.com/opencode-ai/opencode](https://github.com/anomalyco/opencode))), but is now a **fully independent project**. It absorbed the agent orchestration logic from the former `hiai-opencode` plugin and ships as a standalone product with zero runtime dependencies on its predecessors. Previously named `hiai-bob`, renamed to `hiai-bobcode`.
+`hiai-bobcode` started as a fork of [MiMoCode](https://github.com/XiaomiMiMo/MiMo-Code) (which is itself a fork of [OpenCode](https://github.com/anomalyco/opencode), but is now a **fully independent project**. It absorbed the agent orchestration logic from the former `hiai-opencode` plugin and ships as a standalone product with zero runtime dependencies on its predecessors.
+<img width="3794" height="2017" alt="Screenshot 2026-06-24 220813" src="https://github.com/user-attachments/assets/a2e47911-b797-41a1-ba26-50a14f833aef" />
+
 
 We took MiMoCode (which already handles reasoning, compaction, fallback, and context management natively) and bundled a first-party plugin called **BobPlugin** on top. BobPlugin adds three things MiMoCode doesn't have:
 
@@ -127,7 +129,10 @@ Why watch one AI session when you can watch four? The Session Grid lets you run 
 | Surface | Modes | How |
 |---------|-------|-----|
 | **TUI** | single, split-h, split-v, 2×2 | `--grid` flag, `MIMOCODE_GRID` env, or "Grid Mode" on home screen |
+<img width="3797" height="2039" alt="Screenshot 2026-06-24 220256" src="https://github.com/user-attachments/assets/3c83b9fb-a1ff-4cb4-81ff-abadfe9c2cda" />
+
 | **Web** | 1, 2, 3, 4, 6, 8 cells | Dropdown toggle in session header |
+<img width="3830" height="1960" alt="Screenshot 2026-06-25 110710" src="https://github.com/user-attachments/assets/bc0a3dd7-8f16-4e27-8c12-803500f9aacb" />
 
 Each cell is an independent session — its own chat, its own prompt, its own file tabs. Switch between them with keyboard shortcuts (`<leader>1..9`), drag the splitter to resize, or toggle any cell into **plan-only mode** (tasks, diffs, agent status — no chat).
 
