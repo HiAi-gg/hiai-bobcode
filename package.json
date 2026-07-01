@@ -23,6 +23,7 @@
   },
   "workspaces": {
     "packages": [
+      "packages/app",
       "packages/opencode",
       "packages/plugin",
       "packages/script",
