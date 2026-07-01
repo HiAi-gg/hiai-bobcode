@@ -66,3 +66,9 @@ packages/slack/
 sdks/
 *.tar.gz
 *.zip
+
+# Re-include package.json files from excluded workspace dirs so workspace
+# lockfile resolution and the Dockerfile COPY steps see them in the build
+# context (Docker's buildkit is content-aware, but workspace tooling needs
+# the manifest to exist on disk).
+!packages/app/package.json
